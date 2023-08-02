@@ -1,0 +1,31 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  GREETING: Hello, World!
+
+tasks:
+  frontend:
+    dir: frontend
+    cmds:
+      - npm run build
+    method: timestamp
+    sources:
+      - src
+      - static
+    generates:
+      - build
+  cp:
+    cmds:
+      - pwsh -c rm -r ".\Backend\frontend_build\*"
+      - pwsh -c "cp -r frontend/build/* backend/frontend_build/"
+    deps:
+      - frontend
+    internal: true
+  build:
+    deps:
+      - cp
+    cmds:
+      - go build main.go
+    dir: backend
