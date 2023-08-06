@@ -72,3 +72,5 @@ frontend/build
 .task
 
 backend/frontend_build
+
+*.exe

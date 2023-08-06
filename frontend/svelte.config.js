@@ -1,5 +1,6 @@
 import adapter from '@sveltejs/adapter-static';
 import {vitePreprocess} from '@sveltejs/kit/vite';
+import path from "path";
 
 /** @type {{preprocess: *, kit: {adapter: Adapter}}} */
 const config = {
@@ -19,9 +20,13 @@ const config = {
             fallback: undefined,
             precompress: true,
             strict: true
-        })
+        }),
+        alias: {
+            "@components": path.resolve("./src/components")
+        }
     },
-    serverSideRendering: false
+    serverSideRendering: false,
+    allowImportingTsExtensions: true
 
 };
 export default config;

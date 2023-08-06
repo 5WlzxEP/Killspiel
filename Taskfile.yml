@@ -8,12 +8,14 @@ vars:
 tasks:
   frontend:
     dir: frontend
+    env:
+      VITE_BACKEND_URL:
     cmds:
       - npm run build
     method: timestamp
     sources:
-      - src
-      - static
+      - frontend/src
+      - frontend/static
     generates:
       - build
   cp:
