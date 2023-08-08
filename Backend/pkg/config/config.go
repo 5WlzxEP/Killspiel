@@ -23,14 +23,14 @@ func FindConfigPath() (string, error) {
 		for _, end := range []string{helper.EnvOrDefault("KILLSPIEL_CONFIG_PATH", "Killspiel")} {
 			p := path.Join(base, end, configName)
 			if existsAndFile(p) {
-				return p, nil
+				return path.Join(base, end), nil
 			}
 		}
 	}
 	for _, pa := range localPaths {
 		p := path.Join(pa, configName)
 		if existsAndFile(p) {
-			return p, nil
+			return pa, nil
 		}
 	}
 
@@ -43,4 +43,7 @@ func existsAndFile(path string) bool {
 		return false
 	}
 	return !stat.IsDir()
+}
+
+type Config struct {
 }

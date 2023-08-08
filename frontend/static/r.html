@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Redirect</title>
+    <script>
+        const loc = window.location.pathname + window.location.search
+        // console.log(loc)
+        const redir = `/Redirect?${encodeURI(loc)}`
+        // console.log(redir)
+        window.location.replace(redir)
+    </script>
+</head>
+</html>

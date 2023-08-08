@@ -1,9 +1,12 @@
 <script>
     import  {TabGroup, Tab} from "@skeletonlabs/skeleton"
-
-    let tabSet = 0;
+    let tabSet = 0
 
 </script>
+
+<svelte:head>
+    <title>Settings | Killspiel</title>
+</svelte:head>
 
 <div class="mx-auto container p-2">
     <div class="card container">

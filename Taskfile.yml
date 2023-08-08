@@ -2,9 +2,6 @@
 
 version: '3'
 
-vars:
-  GREETING: Hello, World!
-
 tasks:
   frontend:
     dir: frontend
@@ -12,12 +9,12 @@ tasks:
       VITE_BACKEND_URL:
     cmds:
       - npm run build
-    method: timestamp
     sources:
-      - frontend/src
+      - frontend/src/**/*.{svelte,js.ts}
       - frontend/static
     generates:
-      - build
+      - frontend/build
+
   cp:
     cmds:
       - pwsh -c rm -r ".\Backend\frontend_build\*"
@@ -25,9 +22,24 @@ tasks:
     deps:
       - frontend
     internal: true
+
+  fixFrontend:
+    cmds:
+      - py fixFrontend.py
+    deps:
+      - cp
+    internal: true
+
   build:
     deps:
       - cp
     cmds:
       - go build main.go
     dir: backend
+    sources:
+      - backend/main.go
+      - backend/**/*.go
+      - backend/go.mod
+      - backend/frontend_build
+    generates:
+      - main.go

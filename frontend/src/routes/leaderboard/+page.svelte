@@ -1,7 +1,7 @@
 <script lang="ts">
-    import type {PaginationSettings} from "@skeletonlabs/skeleton";
-    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-    import Leaderboard from "@components/Leaderboard.svelte";
+    import type {PaginationSettings} from "@skeletonlabs/skeleton"
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
+    import Leaderboard from "@components/Leaderboard.svelte"
 
     type Leaderboard = {
         rank: number
@@ -28,6 +28,9 @@
 
 </script>
 
+<svelte:head>
+    <title>Leaderboard | Killspiel </title>
+</svelte:head>
 <div class="container mx-auto">
     <Leaderboard />
 </div>

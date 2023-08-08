@@ -1,14 +1,17 @@
 <script lang='ts'>
     // The ordering of these imports is critical to your app working properly
-    import '@skeletonlabs/skeleton/themes/theme-skeleton.css';
+    import '@skeletonlabs/skeleton/themes/theme-skeleton.css'
+
     // If you have source.organizeImports set to true in VSCode, then it will auto change this ordering
-    import '@skeletonlabs/skeleton/styles/skeleton.css';
+    import '@skeletonlabs/skeleton/styles/skeleton.css'
     // Most of your app wide CSS should be put in this file
-    import '../app.postcss';
-    import {AppShell, AppBar} from '@skeletonlabs/skeleton';
-    import {LightSwitch} from '@skeletonlabs/skeleton';
-    import {IconSettings, IconBadges, IconHome} from '@tabler/icons-svelte';
-    import {afterUpdate} from "svelte";
+    import '../app.postcss'
+    import {AppShell, AppBar } from '@skeletonlabs/skeleton'
+
+    import {IconSettings, IconBadges, IconHome} from '@tabler/icons-svelte'
+    import {afterUpdate} from "svelte"
+    import { autoModeWatcher } from '@skeletonlabs/skeleton'
+    import {LightSwitch} from "@skeletonlabs/skeleton"
 
     type crumb = {
         path: string,
@@ -23,17 +26,20 @@
         let base = ""
 
         for (let crumb of cs) {
+            if (crumb === "") {
+                continue
+            }
             base = `${base}/${crumb}`
             crumbs.push({
                 path: base,
                 name: crumb
             })
         }
-
-        console.log(crumbs)
     })
+
 </script>
 
+<svelte:head>{@html `<script>${autoModeWatcher.toString()} autoModeWatcher();</script>`}</svelte:head>
 <!-- App Shell -->
 <AppShell>
     <svelte:fragment slot="header">
@@ -49,17 +55,16 @@
                     <IconBadges/>
                     <p>Leaderboard</p>
                 </a>
-                <a href="/settings" class="p-2 btn variant-ghost">
+                <a href="/settings" class="p-2 btn-icon variant-ghost">
                     <IconSettings/>
                 </a>
-
             </svelte:fragment>
         </AppBar>
     </svelte:fragment>
 
     <!-- Page Route Content -->
     <div class="mx-auto container justify-center items-center p-2">
-        <ol class="breadcrumb mt-1">
+        <ol class="breadcrumb btn">
             <li class="crumb"><a class="anchor" href="/">
                 <IconHome/>
             </a></li>
@@ -67,8 +72,12 @@
 
                 <li class="crumb-separator" aria-hidden="true">&rsaquo;</li>
                 {#if crumb.name === "settings"}
-                    <li class="crumb"><a class="anchor" href="/settings">
+                    <li class="crumb"><a class="anchor" href="{crumb.path}">
                         <IconSettings/>
+                    </a></li>
+                {:else if crumb.name === "leaderboard"}
+                    <li class="crumb"><a class="anchor" href="{crumb.path}">
+                        <IconBadges/>
                     </a></li>
                 {:else }
                     <li class="crumb"><a class="anchor" href="{crumb.path}">{crumb.name}</a></li>
@@ -90,7 +99,7 @@
             </svelte:fragment>
             <svelte:fragment slot="trail">
                 <div class="p-4">
-                    <LightSwitch/>
+                    <LightSwitch />
                 </div>
             </svelte:fragment>
         </AppBar>

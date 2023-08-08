@@ -2,7 +2,7 @@ import adapter from '@sveltejs/adapter-static';
 import {vitePreprocess} from '@sveltejs/kit/vite';
 import path from "path";
 
-/** @type {{preprocess: *, kit: {adapter: Adapter}}} */
+/** @type {{preprocess: *, kit: {adapter: Adapter, alias: {"@components": string}}, allowImportingTsExtensions: boolean, serverSideRendering: boolean}} */
 const config = {
     // Consult https://kit.svelte.dev/docs/integrations#preprocessors
     // for more information about preprocessors
@@ -18,11 +18,11 @@ const config = {
             pages: 'build',
             assets: 'build',
             fallback: undefined,
-            precompress: true,
             strict: true
         }),
         alias: {
-            "@components": path.resolve("./src/components")
+            "@components": path.resolve("./src/components"),
+            '@stores': path.resolve('./src/stores')
         }
     },
     serverSideRendering: false,

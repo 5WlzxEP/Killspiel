@@ -1,24 +1,31 @@
 package main
 
 import (
+	"Killspiel/pkg/Killspiel"
 	"embed"
-	"io/fs"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"net/http"
 )
 
 var (
 	//go:embed frontend_build/*
 	frontendBuild embed.FS
-
-	frontend, _ = fs.Sub(frontendBuild, "frontend_build")
 )
 
 func main() {
+	app := fiber.New()
 
-	http.Handle("/", http.FileServer(http.FS(frontend)))
+	Killspiel.Init(app)
 
-	err := http.ListenAndServe(":8088", nil)
-	if err != nil {
-		panic(err)
-	}
+	app.Use("/", filesystem.New(filesystem.Config{
+		Root:         http.FS(frontendBuild),
+		PathPrefix:   "frontend_build",
+		MaxAge:       0,
+		NotFoundFile: "r.html",
+	}))
+
+	go Killspiel.Run()
+
+	panic(app.Listen(":8088"))
 }
