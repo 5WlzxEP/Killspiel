@@ -32,7 +32,8 @@
             base = `${base}/${crumb}`
             crumbs.push({
                 path: base,
-                name: crumb
+                name: crumb.charAt(0).toUpperCase()
+                    + crumb.slice(1)
             })
         }
     })
@@ -51,17 +52,16 @@
                 </a>
             </svelte:fragment>
             <svelte:fragment slot="trail">
-                <a href="/leaderboard" class="btn  items-center variant-ghost ">
+                <a href="/leaderboard" class="btn items-center variant-ghost ">
                     <IconBadges/>
                     <p>Leaderboard</p>
                 </a>
                 <a href="/settings" class="p-2 btn-icon variant-ghost">
-                    <IconSettings/>
+                    <IconSettings />
                 </a>
             </svelte:fragment>
         </AppBar>
     </svelte:fragment>
-
     <!-- Page Route Content -->
     <div class="mx-auto container justify-center items-center p-2">
         <ol class="breadcrumb btn">
@@ -71,11 +71,11 @@
             {#each crumbs as crumb}
 
                 <li class="crumb-separator" aria-hidden="true">&rsaquo;</li>
-                {#if crumb.name === "settings"}
+                {#if crumb.name === "Settings"}
                     <li class="crumb"><a class="anchor" href="{crumb.path}">
                         <IconSettings/>
                     </a></li>
-                {:else if crumb.name === "leaderboard"}
+                {:else if crumb.name === "Leaderboard"}
                     <li class="crumb"><a class="anchor" href="{crumb.path}">
                         <IconBadges/>
                     </a></li>
@@ -86,6 +86,7 @@
 
         </ol>
     </div>
+
     <slot/>
 
     <svelte:fragment slot="pageFooter">

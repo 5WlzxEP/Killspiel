@@ -8,19 +8,22 @@ tasks:
     env:
       VITE_BACKEND_URL:
     cmds:
-      - npm run build
+      - pnpm run build
     sources:
       - frontend/src/**/*.{svelte,js.ts}
       - frontend/static
     generates:
       - frontend/build
-
   cp:
     cmds:
       - pwsh -c rm -r ".\Backend\frontend_build\*"
       - pwsh -c "cp -r frontend/build/* backend/frontend_build/"
     deps:
       - frontend
+    sources:
+      - frontend/build/*
+    generates:
+      - backend/frontend_build/*
     internal: true
 
   fixFrontend:
@@ -28,11 +31,9 @@ tasks:
       - py fixFrontend.py
     deps:
       - cp
-    internal: true
 
-  build:
-    deps:
-      - cp
+  backend:
+
     cmds:
       - go build main.go
     dir: backend
@@ -42,4 +43,10 @@ tasks:
       - backend/go.mod
       - backend/frontend_build
     generates:
-      - main.go
+      - main.exe
+
+
+  build:
+    cmds:
+      - task: fixFrontend
+      - task: backend

@@ -85,7 +85,6 @@
         {:else }
             <tr>
                 <td>
-<!--                    <ProgressRadial width="w-11" stroke={100} meter="stroke-primary-500" track="stroke-primary-500/30"/>-->
                     <div class="placeholder animate-pulse" />
                 </td>
                 <td>
