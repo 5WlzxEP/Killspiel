@@ -73,4 +73,4 @@ frontend/build
 
 backend/frontend_build
 
-*.exe
+*/*.exe
