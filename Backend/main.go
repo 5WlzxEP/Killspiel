@@ -10,11 +10,14 @@ import (
 
 var (
 	//go:embed frontend_build/*
-	frontendBuild embed.FS
+	frontendBuild         embed.FS
+	DisableStartupMessage = "false"
 )
 
 func main() {
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		DisableStartupMessage: DisableStartupMessage == "true",
+	})
 
 	Killspiel.Init(app)
 

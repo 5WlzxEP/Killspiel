@@ -35,7 +35,7 @@ tasks:
   backend:
 
     cmds:
-      - go build main.go
+      - go build -ldflags "-X main.DisableStartupMessage=true" main.go
     dir: backend
     sources:
       - backend/main.go
