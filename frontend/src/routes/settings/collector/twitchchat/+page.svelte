@@ -102,7 +102,7 @@
                     modal={{title: 'Nachricht zum Begin der Erhebung', body: 'Diese Nachricht wird zum Beginn der Erhebung, also wenn die Zuschauer ihre Schätzungen abgeben können, in den Chat gepostet. <br> ' +
                         'Es können Twitchfeatures wie /announce genutzt werden, jedoch sind für diese eventuell Rechte nötig.'}} />
 
-                <InputArea bind:value={MsgEnd} label="Nachricht zum Ende der Erhebung" placeholder="/announceorange Das Voten ist abgeschloßen. Ab jetzt bitte keine Stimmen in der Chat mehr."
+                <InputArea bind:value={MsgEnd} label="Nachricht zum Ende der Erhebung" placeholder="/announceorange Das Voten ist abgeschlossen. Ab jetzt bitte keine Stimmen in der Chat mehr."
                     modal={{title: 'Nachricht zum Ende der Erhebung', body: 'Diese Nachricht wird zum Ende der Erhebung in den Chat gepostet. <br> ' +
                         'Es können Twitchfeatures wie /announce genutzt werden, jedoch sind für diese eventuell Rechte nötig.'}} />
 

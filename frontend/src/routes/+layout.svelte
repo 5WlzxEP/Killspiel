@@ -89,7 +89,6 @@
 
     <slot/>
 
-
     <svelte:fragment slot="pageFooter">
         <AppBar>
             <svelte:fragment slot="lead">
