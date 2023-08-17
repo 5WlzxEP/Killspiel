@@ -58,9 +58,9 @@
             const val = await res.json()
             ApiKey = val.apiKey
             Channel = val.channel
-            ChannelSender = val.channelApi
+            ChannelSender = val.channelSender
             Prefix = val.prefix
-            MsgBegin = val.msgBeginn
+            MsgBegin = val.msgBegin
             MsgEnd = val.msgEnd
             MsgFinal = val.msgFinal
         } catch (e) {
