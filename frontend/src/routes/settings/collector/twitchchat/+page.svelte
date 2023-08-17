@@ -10,7 +10,7 @@
     let Channel: string
     let ChannelSender: string
     let Prefix: string
-    let MsgBeginn: string
+    let MsgBegin: string
     let MsgEnd: string
     let MsgFinal: string
 
@@ -27,7 +27,7 @@
                     "channel": Channel,
                     "channelSender": ChannelSender,
                     "prefix": Prefix,
-                    "msgBeginn": MsgBeginn,
+                    "msgBegin": MsgBegin,
                     "msgEnd": MsgEnd,
                     "msgFinal": MsgFinal,
                 })
@@ -60,7 +60,7 @@
             Channel = val.channel
             ChannelSender = val.channelApi
             Prefix = val.prefix
-            MsgBeginn = val.msgBeginn
+            MsgBegin = val.msgBeginn
             MsgEnd = val.msgEnd
             MsgFinal = val.msgFinal
         } catch (e) {
@@ -82,6 +82,7 @@
         <hr>
         <form class="p-5" on:submit|preventDefault={submit}>
             <div class="grid lg:!grid-cols-2 gap-10 w-full m-2">
+
                 <InputText bind:value={Channel} label="Twitch Channel" prefix="twitch.tv/" required={true} placeholder="5W_lzxEP"
                    modal={{title: "Twitch Channel", body: "Dies ist der Twitchchannel mit dessen Chat interagiert wird."}} />
 
@@ -98,8 +99,8 @@
                         'Wenn keiner gesetzt wird, wird der Twitchchannel genutzt, wessen Chat genutzt wird. <br> ' +
                         'Um Twitchchatfeatures wie /announce zu nutzen, muss der Account auf dem Channel Mod-Rechte haben.',}}/>
 
-                <InputArea bind:value={MsgBeginn} label="Nachricht zum Begin der Erhebung" placeholder="/announceblue Das Killspiel hat begonnen. Nimm jetzt Teil mit /guess <Dein Guess>."
-                    modal={{title: 'Nachricht zum Begin der Erhebung', body: 'Diese Nachricht wird zum Beginn der Erhebung, also wenn die Zuschauer ihre Schätzungen abgeben können, in den Chat gepostet. <br> ' +
+                <InputArea bind:value={MsgBegin} label="Nachricht zum Begin der Erhebung" placeholder="/announceblue Das Killspiel hat begonnen. Nimm jetzt Teil mit /guess <Dein Guess>."
+                           modal={{title: 'Nachricht zum Begin der Erhebung', body: 'Diese Nachricht wird zum Beginn der Erhebung, also wenn die Zuschauer ihre Schätzungen abgeben können, in den Chat gepostet. <br> ' +
                         'Es können Twitchfeatures wie /announce genutzt werden, jedoch sind für diese eventuell Rechte nötig.'}} />
 
                 <InputArea bind:value={MsgEnd} label="Nachricht zum Ende der Erhebung" placeholder="/announceorange Das Voten ist abgeschlossen. Ab jetzt bitte keine Stimmen in der Chat mehr."
