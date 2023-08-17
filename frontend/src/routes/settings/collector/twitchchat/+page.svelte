@@ -1,7 +1,8 @@
 <script lang="ts">
-    import {Modal, modalStore, type ModalSettings, type ToastSettings, toastStore, Toast} from '@skeletonlabs/skeleton'
-    import {IconHelp} from "@tabler/icons-svelte"
+    import {type ToastSettings, toastStore, Toast} from '@skeletonlabs/skeleton'
     import {onMount} from "svelte";
+    import InputText from "@components/InputText.svelte";
+    import InputArea from "@components/InputArea.svelte";
 
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
@@ -12,50 +13,6 @@
     let MsgBeginn: string
     let MsgEnd: string
     let MsgFinal: string
-
-    const modalApiKey: ModalSettings = {
-        type: 'alert',
-        title: 'Twitch Api Key',
-        body: 'Der Twitch Api Key ist nötig um im Chat Nachrichten zu schreiben. So kann der Begin angekündigt werden, auf Ende hingewiesen und das Ergebnis bekannt gegeben werden. ' +
-            'Am einfachsten kann man den Twitch Api Key über <a class="underline" target="_blank" href="https://twitchapps.com/tmi/">https://twitchapps.com/tmi/</a> möglich.',
-        buttonTextCancel: "Schließen",
-    }
-    const modalPrefix: ModalSettings = {
-        type: 'alert',
-        title: 'Prefix',
-        body: 'Der Prefix gibt an, womit eine Nachricht beginnen muss, damit sie als Guess registriert wird. Der Prefix kann auch leer sein, dann wird jede Nachricht, die nur eine Zahl darstellt ausgewertet.',
-        buttonTextCancel: "Schließen",
-    }
-    const modalChannel: ModalSettings = {
-        type: 'alert',
-        title: 'Twitch Channel',
-        body: 'Dies ist der Twitchchannel mit dessen Chat interagiert wird.',
-        buttonTextCancel: "Schließen",
-    }
-    const modalChannelApi: ModalSettings = {
-        type: 'alert',
-        title: 'Twitch Account Api',
-        body: 'Dies ist der Twitchchannel von dem der Api Key stammt. Dieser Account wird die Nachrichten senden. Wenn keiner gesetzt wird, wird der Twitchchannel genutzt, wessen Chat genutzt wird. <br> Um Twitchchatfeatures wie /announce zu nutzen, muss der Account auf dem Channel Mod-Rechte haben.',
-        buttonTextCancel: "Schließen",
-    }
-    const modalBeginn: ModalSettings = {
-        type: 'alert',
-        title: 'Nachricht zum Begin der Erhebung',
-        body: 'Diese Nachricht wird zum Beginn der Erhebung, also wenn die Zuschauer ihre Schätzungen abgeben können, in den Chat gepostet. <br> Es können Twitchfeatures wie /announce genutzt werden, jedoch sind für diese eventuell Rechte nötig.',
-        buttonTextCancel: "Schließen",
-    }
-    const modalEnd: ModalSettings = {
-        type: 'alert',
-        title: 'Nachricht zum Ende der Erhebung',
-        body: 'Diese Nachricht wird zum Ende der Erhebung in den Chat gepostet. <br> Es können Twitchfeatures wie /announce genutzt werden, jedoch sind für diese eventuell Rechte nötig.',
-        buttonTextCancel: "Schließen",
-    }
-    const modalFinal: ModalSettings = {
-        type: 'alert',
-        title: 'Nachricht zum Auflösen der richtigen Schätzungen',
-        body: 'Diese Nachricht wird versendet, wenn das Ergebnis feststeht. <br> <i>$WINNERS</i> sind die Gewinner <br> <i>$RESULT</i> sind die erzielten Kills',
-        buttonTextCancel: "Schließen",
-    }
 
     async function submit(e: Event) {
         console.log(e)
@@ -125,93 +82,34 @@
         <hr>
         <form class="p-5" on:submit|preventDefault={submit}>
             <div class="grid lg:!grid-cols-2 gap-10 w-full m-2">
-                <label class="label">
-                        <span>Twitch Channel
-                            <button on:click={() => {modalStore.trigger(modalChannel)}} class="inline-block p-1"
-                                    type="button">
-                            <IconHelp class="inline-block"/>
-                            </button>
-                        </span>
-                    <div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
-                        <div class="input-group-shim">twitch.tv/</div>
-                        <input type="text" bind:value={Channel} tabindex="0"
-                               placeholder="5W_lzxEP" required/>
-                        <div class="">*</div>
+                <InputText bind:value={Channel} label="Twitch Channel" prefix="twitch.tv/" required={true} placeholder="5W_lzxEP"
+                   modal={{title: "Twitch Channel", body: "Dies ist der Twitchchannel mit dessen Chat interagiert wird."}} />
 
-                    </div>
-                </label>
-                <label class="label">
-                        <span>Prefix
-                            <button on:click={() => {modalStore.trigger(modalPrefix)}} class="inline-block p-1"
-                                    type="button">
-                            <IconHelp class="inline-block"/>
-                            </button>
-                        </span>
-                        <input class="input" type="text" bind:value={Prefix} tabindex="0"
-                               placeholder="/guess"/>
+                <InputText bind:value={Prefix} label="Prefix" placeholder="/guess"
+                    modal={{title: "Prefix", body: 'Der Prefix gibt an, womit eine Nachricht beginnen muss, damit sie als Guess registriert wird. ' +
+                        'Der Prefix kann auch leer sein, dann wird jede Nachricht, die nur eine Zahl darstellt ausgewertet.'}} />
 
-                </label>
-                <label class="label">
-                    <span>Twitch Api Key
-                        <button on:click={() => {modalStore.trigger(modalApiKey)}} class="inline-block p-1"
-                                type="button">
-                            <IconHelp class="inline-block mx-auto"/>
-                        </button>
-                    </span>
-                    <div class="input-group input-group-divider grid-cols-[1fr_auto]">
-                        <input class="input" type="text" bind:value={ApiKey}
-                               placeholder="oauth:bcgf6ogc8swu329nmnqprwgdodizgw" required/>
-                        <div class="">*</div>
+                <InputText bind:value={ApiKey} label="Twitch Api Key" placeholder="oauth:bcgf6ogc8swu329nmnqprwgdodizgw" required={true}
+                    modal={{title: "Twitch Api Key", body: 'Der Twitch Api Key ist nötig um im Chat Nachrichten zu schreiben. So kann der Begin angekündigt werden, auf Ende hingewiesen und das Ergebnis bekannt gegeben werden. ' +
+                        'Am einfachsten kann man den Twitch Api Key über <a class="underline" target="_blank" href="https://twitchapps.com/tmi/">https://twitchapps.com/tmi/</a> möglich.'}}/>
 
-                    </div>
-                </label>
+                <InputText bind:value={ChannelSender} label="Twitch Account (selber wie vom Api Key)" placeholder="5W_lzxEP" prefix="twitch.tv/"
+                    modal={{title: "Twitch Account Api", body: 'Dies ist der Twitchchannel von dem der Api Key stammt. Dieser Account wird die Nachrichten senden. ' +
+                        'Wenn keiner gesetzt wird, wird der Twitchchannel genutzt, wessen Chat genutzt wird. <br> ' +
+                        'Um Twitchchatfeatures wie /announce zu nutzen, muss der Account auf dem Channel Mod-Rechte haben.',}}/>
 
-                <label class="label">
-                        <span>Twitch Account (selber wie vom Api Key)
-                            <button on:click={() => {modalStore.trigger(modalChannelApi)}} class="inline-block p-1"
-                                    type="button">
-                            <IconHelp class="inline-block"/>
-                            </button>
-                        </span>
-                    <div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
-                        <div class="input-group-shim">twitch.tv/</div>
-                        <input type="text" bind:value={ChannelSender}
-                               placeholder="5W_lzxEP"/>
-                    </div>
+                <InputArea bind:value={MsgBeginn} label="Nachricht zum Begin der Erhebung" placeholder="/announceblue Das Killspiel hat begonnen. Nimm jetzt Teil mit /guess <Dein Guess>."
+                    modal={{title: 'Nachricht zum Begin der Erhebung', body: 'Diese Nachricht wird zum Beginn der Erhebung, also wenn die Zuschauer ihre Schätzungen abgeben können, in den Chat gepostet. <br> ' +
+                        'Es können Twitchfeatures wie /announce genutzt werden, jedoch sind für diese eventuell Rechte nötig.'}} />
 
-                </label>
-                <label class="label">
-                    <span>
-                        <div>Nachricht zum Begin der Erhebung
-                            <button on:click={() => {modalStore.trigger(modalBeginn)}} class="inline-block p-1"
-                                    type="button">
-                            <IconHelp class="inline-block"/>
-                        </button>
-                        </div>
-                    </span>
-                    <textarea class="textarea" rows="4" bind:value={MsgBeginn}
-                              placeholder="/announceblue Das Killspiel hat begonnen. Nimm jetzt Teil mit /guess <Dein Guess>."/>
-                </label>
-                <label class="label">
-                    <span>Nachricht zum Ende der Erhebung
-                        <button on:click={() => {modalStore.trigger(modalEnd)}} class="inline-block p-1" type="button">
-                            <IconHelp class="inline-block"/>
-                        </button>
-                    </span>
+                <InputArea bind:value={MsgEnd} label="Nachricht zum Ende der Erhebung" placeholder="/announceorange Das Voten ist abgeschloßen. Ab jetzt bitte keine Stimmen in der Chat mehr."
+                    modal={{title: 'Nachricht zum Ende der Erhebung', body: 'Diese Nachricht wird zum Ende der Erhebung in den Chat gepostet. <br> ' +
+                        'Es können Twitchfeatures wie /announce genutzt werden, jedoch sind für diese eventuell Rechte nötig.'}} />
 
-                    <textarea class="textarea" rows="4" bind:value={MsgEnd}
-                              placeholder="/announceorange Das Voten ist abgeschloßen. Ab jetzt bitte keine Stimmen in der Chat mehr."/>
-                </label>
-                <label class="label">
-                    <span>Nachricht zum Auflösen der richtigen Schätzungen
-                        <button on:click={() => {modalStore.trigger(modalFinal)}} class="inline-block p-1" type="button">
-                            <IconHelp class="inline-block"/>
-                        </button>
-                    </span>
+                <InputArea bind:value={MsgFinal} label="Nachricht zum Auflösen der richtigen Schätzungen" placeholder="/announcegreen Das Killspiel ist beendet. Es wurden $RESULT Kills erzielt und somit haben $WINNERS gewonnen."
+                    modal={{title: 'Nachricht zum Auflösen der richtigen Schätzungen', body: 'Diese Nachricht wird versendet, wenn das Ergebnis feststeht. <br> ' +
+                        '<i>$WINNERS</i> sind die Gewinner <br> <i>$RESULT</i> sind die erzielten Kills'}} />
 
-                    <textarea class="textarea" rows="4" bind:value={MsgFinal}
-                              placeholder="/announcegreen Das Killspiel ist beendet. Es wurden $RESULT Kills erzielt und somit haben $WINNERS gewonnen."/>
-                </label>
             </div>
             <div class="flex">
                 Mit * markierte Felder sind Pflicht
@@ -220,4 +118,3 @@
         </form>
     </div>
 </div>
-<Modal/>

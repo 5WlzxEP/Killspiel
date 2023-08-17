@@ -6,7 +6,7 @@
     import '@skeletonlabs/skeleton/styles/skeleton.css'
     // Most of your app wide CSS should be put in this file
     import '../app.postcss'
-    import {AppShell, AppBar } from '@skeletonlabs/skeleton'
+    import {AppShell, AppBar, Modal} from '@skeletonlabs/skeleton'
 
     import {IconSettings, IconBadges, IconHome} from '@tabler/icons-svelte'
     import {afterUpdate} from "svelte"
@@ -89,6 +89,7 @@
 
     <slot/>
 
+
     <svelte:fragment slot="pageFooter">
         <AppBar>
             <svelte:fragment slot="lead">
@@ -106,3 +107,4 @@
         </AppBar>
     </svelte:fragment>
 </AppShell>
+<Modal/>
