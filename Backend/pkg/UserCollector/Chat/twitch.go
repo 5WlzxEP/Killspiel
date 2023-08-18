@@ -25,12 +25,25 @@ type TwitchChat struct {
 	StartMsg      string `json:"msgBegin"`
 	EndMsg        string `json:"msgEnd"`
 	FinalMsg      string `json:"msgFinal"`
-	guesses       map[string]int
 	configPath    string
+	// Caches Ready data
+	ready struct {
+		ready   bool
+		changed bool
+	}
 	sync.Mutex
 }
 
 func (tc *TwitchChat) Ready() bool {
+	if !tc.ready.changed {
+		return tc.ready.ready
+	}
+	tc.Lock()
+	defer tc.Unlock()
+
+	tc.ready.changed = false
+	tc.ready.ready = false
+
 	err := tc.client.Connect()
 	if err != nil {
 		return false
@@ -39,7 +52,53 @@ func (tc *TwitchChat) Ready() bool {
 	if err != nil {
 		return false
 	}
+
+	tc.ready.ready = true
 	return true
+}
+
+func New(configPath string, r fiber.Router) *TwitchChat {
+	tc := newConfig(configPath)
+	if tc == nil {
+		tc = &TwitchChat{
+			configPath: path.Join(configPath, CONFIG_NAME),
+		}
+		tc.saveConfig()
+	}
+
+	tc.client = twitch.NewClient(tc.ChannelSender, tc.ApiKey)
+
+	r.Get("/", tc.get)
+
+	r.Post("/", tc.post)
+
+	return tc
+}
+
+func newConfig(configPath string) *TwitchChat {
+	conf := path.Join(configPath, CONFIG_NAME)
+
+	if !config.ExistsAndFile(conf) {
+		return nil
+	}
+
+	f, err := os.Open(conf)
+	if err != nil {
+		return nil
+	}
+	defer f.Close()
+
+	var tc TwitchChat
+	err = json.NewDecoder(f).Decode(&tc)
+	if err != nil {
+		return nil
+	}
+
+	tc.configPath = conf
+
+	tc.checkEmptySender()
+
+	return &tc
 }
 
 func (tc *TwitchChat) AnnounceResult(winners []string, correctGuess int) {
@@ -48,51 +107,16 @@ func (tc *TwitchChat) AnnounceResult(winners []string, correctGuess int) {
 	tc.Lock()
 	defer tc.Unlock()
 
-	tc.client.Connect()
+	err := tc.client.Connect()
+	if err != nil {
+		return
+	}
 	tc.client.Say(tc.Channel, msg)
 	tc.client.Disconnect()
 }
 
-func New(configPath string, r fiber.Router) *TwitchChat {
-	chat := newConfig(configPath)
-	if chat == nil {
-		chat = &TwitchChat{
-			guesses:    make(map[string]int),
-			configPath: path.Join(configPath, CONFIG_NAME),
-		}
-		chat.saveConfig()
-	}
-
-	r.Get("/", chat.get)
-	//r.Get("/", func(ctx *fiber.Ctx) error {
-	//	return ctx.SendString("ABCDEFGH")
-	//})
-	r.Post("/", chat.post)
-
-	return chat
-}
-
-func newConfig(configPath string) *TwitchChat {
-	conf := path.Join(configPath, CONFIG_NAME)
-	if !config.ExistsAndFile(conf) {
-		return nil
-	}
-	f, err := os.Open(conf)
-	if err != nil {
-		return nil
-	}
-	defer f.Close()
-	var tc TwitchChat
-	err = json.NewDecoder(f).Decode(&tc)
-	if err != nil {
-		return nil
-	}
-	tc.configPath = conf
-	tc.guesses = make(map[string]int)
-	return &tc
-}
-
-func (tc *TwitchChat) CollectGuesses(ctx context.Context) map[string]int {
+// CollectGuesses collect the user votes until the context cancels
+func (tc *TwitchChat) CollectGuesses(ctx context.Context, collect func(s string)) {
 	tc.Lock()
 	defer tc.Unlock()
 	client := tc.client
@@ -103,22 +127,21 @@ func (tc *TwitchChat) CollectGuesses(ctx context.Context) map[string]int {
 		client.Say(tc.Channel, tc.StartMsg)
 	})
 
-	clear(tc.guesses)
-
-	// TODO move into client creation
-	client.OnPrivateMessage(func(m twitch.PrivateMessage) {
+	tc.client.OnPrivateMessage(func(m twitch.PrivateMessage) {
 		if !strings.HasPrefix(m.Message, tc.Prefix) {
 			return
 		}
 
-		guess, err := strconv.Atoi(strings.TrimLeft(m.Message, tc.Prefix))
-		if err != nil {
-			return
-		}
-		tc.guesses[m.User.Name] = guess
+		collect(strings.TrimLeft(m.Message, tc.Prefix))
 	})
 
-	go client.Connect()
+	ctx, cancel := context.WithCancel(ctx)
+	go func() {
+		err := client.Connect()
+		if err != nil {
+			cancel()
+		}
+	}()
 
 	if c := ctx.Done(); c != nil {
 		<-c
@@ -127,15 +150,16 @@ func (tc *TwitchChat) CollectGuesses(ctx context.Context) map[string]int {
 	client.Say(tc.Channel, tc.EndMsg)
 	client.Disconnect()
 
-	return tc.guesses
 }
 
+// formatFinalMessage replaces $RESULT and $WINNERS for the message for the chat
 func (tc *TwitchChat) formatFinalMessage(winners []string, result int) (res string) {
 	res = strings.Replace(tc.FinalMsg, "$RESULT", strconv.Itoa(result), -1)
-	res = strings.Replace(tc.FinalMsg, "$Winners", strings.Join(winners, ", "), -1)
+	res = strings.Replace(tc.FinalMsg, "$WINNERS", strings.Join(winners, ", "), -1)
 	return
 }
 
+// saveConfig saves the config into the configPath file
 func (tc *TwitchChat) saveConfig() error {
 	file, err := os.OpenFile(tc.configPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
@@ -145,15 +169,16 @@ func (tc *TwitchChat) saveConfig() error {
 	return json.NewEncoder(file).Encode(tc)
 }
 
+// get returns the current config json encoded
 func (tc *TwitchChat) get(ctx *fiber.Ctx) error {
 	return ctx.JSON(tc)
 }
 
 // post "gets" new Config from the frontend, checks ist and saves it.
 //
-// Might recreate the client if the client credentials change.
+// might recreate the client if the client credentials change.
 //
-// Returns a 409 if CollectGuesses runs, because it needs the TwitchChat.client running
+// returns a 409 if CollectGuesses runs, because it needs the TwitchChat.client running
 func (tc *TwitchChat) post(ctx *fiber.Ctx) error {
 	success := tc.TryLock()
 	if !success {
@@ -168,15 +193,11 @@ func (tc *TwitchChat) post(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	// check if channel sender and channel are the same and there ChannelSender empty
-	if tc.ChannelSender == "" {
-		tc.ChannelSender = tc.Channel
-	}
+	tc.checkEmptySender()
 
 	// recreate the client if credentials change
 	if client != tc.ChannelSender || auth != tc.ApiKey {
 		tc.client = twitch.NewClient(tc.ChannelSender, tc.ApiKey)
-
 	}
 
 	err = tc.saveConfig()
@@ -184,6 +205,14 @@ func (tc *TwitchChat) post(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	ctx.Status(http.StatusOK)
+	ctx.Status(http.StatusNoContent)
 	return nil
+}
+
+// checkEmptySender check is sender is empty, if so sets channel as sender
+func (tc *TwitchChat) checkEmptySender() {
+	// check if channel sender and channel are the same and there ChannelSender empty
+	if tc.ChannelSender == "" {
+		tc.ChannelSender = tc.Channel
+	}
 }
