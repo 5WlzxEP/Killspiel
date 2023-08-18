@@ -2,6 +2,10 @@ import os
 
 BASE = "Backend/frontend_build"
 
+b = os.getenv("FRONTEND_BASE")
+if not b == "":
+    BASE = b
+
 for (dirpath, dirnames, filenames) in os.walk(BASE):
     if "_app" in dirpath:
         continue

@@ -2,6 +2,9 @@
 
 version: '3'
 
+vars:
+  image: git.5wp.de/ceddy/killspiel
+
 tasks:
   frontend:
     dir: frontend
@@ -50,3 +53,10 @@ tasks:
     cmds:
       - task: fixFrontend
       - task: backend
+
+  docker:
+    cmds:
+      - docker buildx build -f Dockerfile -t {{.image}} .
+
+  push:
+    cmd: docker push {{.image}}
