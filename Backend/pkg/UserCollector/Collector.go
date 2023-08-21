@@ -12,7 +12,7 @@ type Collectors []Collector
 
 type Collector interface {
 	Ready() bool
-	CollectGuesses(ctx context.Context, collector func(guess string))
+	CollectGuesses(ctx context.Context, collector func(user, guess string))
 	AnnounceResult(winners []string, correctGuess int)
 }
 
