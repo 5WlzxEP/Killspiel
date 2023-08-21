@@ -29,11 +29,6 @@ tasks:
       - backend/frontend_build/*
     internal: true
 
-  fixFrontend:
-    cmds:
-      - py fixFrontend.py
-    deps:
-      - cp
 
   backend:
 
@@ -51,7 +46,7 @@ tasks:
 
   build:
     cmds:
-      - task: fixFrontend
+      - task: cp
       - task: backend
 
   docker:

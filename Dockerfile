@@ -16,18 +16,6 @@ ENV VITE_BACKEND_URL=""
 
 RUN npm run build
 
-FROM python:latest as fixedFrontend
-
-WORKDIR /app
-
-COPY fixFrontend.py .
-
-COPY --from=frontend /app/build/ ./build
-
-ENV FRONTEND_BASE=build
-
-RUN python3 fixFrontend.py
-
 FROM golang:latest as backend
 
 WORKDIR /app
@@ -36,7 +24,7 @@ COPY Backend/ ./
 
 RUN go mod download
 
-COPY --from=fixedFrontend /app/build ./frontend_build/
+COPY --from=frontend /app/build ./frontend_build/
 
 ENV CGO_ENABLED=0
 
