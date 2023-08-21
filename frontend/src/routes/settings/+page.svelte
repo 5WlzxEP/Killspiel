@@ -13,8 +13,8 @@
 
         <section class="p-4">
             <div class="text-center">
-                <a href="settings/collector" class="btn variant-ghost">Collectors</a>
-                <a href="settings/data" class="btn variant-ghost">Daten Collectors</a>
+                <a href="/settings/collector" class="btn variant-ghost">Collectors</a>
+                <a href="/settings/data" class="btn variant-ghost">Daten Collectors</a>
             </div>
         </section>
         <hr>

@@ -17,7 +17,7 @@
     }
 
     async function submit(e: Event) {
-        console.log(e)
+
         try {
             const res = await fetch(`${BACKEND_URL}/api/collector/chat/`, {
                 headers: {
@@ -69,7 +69,6 @@
 
 </script>
 
-<Toast/>
 <div class="container mx-auto">
     <div class="card w-full">
         <h1 class="text-center text-2xl p-3">Twitchchat Settings</h1>
@@ -86,7 +85,7 @@
 
                 <InputText bind:value={d.apiKey} label="Twitch Api Key" placeholder="oauth:bcgf6ogc8swu329nmnqprwgdodizgw" required={true}
                            modal={{title: "Twitch Api Key", body: 'Der Twitch Api Key ist nötig um im Chat Nachrichten zu schreiben. So kann der Begin angekündigt werden, auf Ende hingewiesen und das Ergebnis bekannt gegeben werden. ' +
-                        'Am einfachsten kann man den Twitch Api Key über <a class="underline" target="_blank" href="https://twitchapps.com/tmi/">https://twitchapps.com/tmi/</a> möglich.'}}/>
+                        'Am einfachsten kann man den Twitch Api Key über <a class="anchor" target="_blank" href="https://twitchapps.com/tmi/">https://twitchapps.com/tmi/</a> möglich.'}}/>
 
                 <InputText bind:value={d.channelSender} label="Twitch Account (selber wie vom Api Key)" placeholder="5W_lzxEP" prefix="twitch.tv/"
                            modal={{title: "Twitch Account Api", body: 'Dies ist der Twitchchannel von dem der Api Key stammt. Dieser Account wird die Nachrichten senden. ' +
