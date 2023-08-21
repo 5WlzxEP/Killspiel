@@ -6,16 +6,18 @@
     import '@skeletonlabs/skeleton/styles/skeleton.css'
     // Most of your app wide CSS should be put in this file
     import '../app.postcss'
-    import {AppShell, AppBar, Modal} from '@skeletonlabs/skeleton'
+    import {AppShell, AppBar, Modal, Toast} from '@skeletonlabs/skeleton'
 
-    import {IconSettings, IconBadges, IconHome} from '@tabler/icons-svelte'
-    import {afterUpdate} from "svelte"
+    import { IconSettings, IconBadges, IconHome, IconBrandTwitch } from '@tabler/icons-svelte'
+    import { afterUpdate } from "svelte"
     import { autoModeWatcher } from '@skeletonlabs/skeleton'
-    import {LightSwitch} from "@skeletonlabs/skeleton"
+    import { LightSwitch } from "@skeletonlabs/skeleton"
+    import type ComponentType from "svelte/types/compiler/compile/Component";
 
     type crumb = {
         path: string,
         name: string,
+        icon: ComponentType  | undefined
     }
 
     let crumbs: Array<crumb> = [];
@@ -30,10 +32,25 @@
                 continue
             }
             base = `${base}/${crumb}`
+            const name = crumb.charAt(0).toUpperCase() + crumb.slice(1)
+            let icon: ComponentType | undefined = undefined
+            switch (name) {
+                case "Leaderboard":
+                    icon = IconBadges
+                    break
+                case "Settings":
+                    icon = IconSettings
+                    break
+                case "Twitchchat":
+                    icon = IconBrandTwitch
+                    break
+            }
+
+            console.log(typeof icon)
             crumbs.push({
+                icon: icon,
                 path: base,
-                name: crumb.charAt(0).toUpperCase()
-                    + crumb.slice(1)
+                name: name,
             })
         }
     })
@@ -65,19 +82,16 @@
     <!-- Page Route Content -->
     <div class="mx-auto container justify-center items-center p-2">
         <ol class="breadcrumb btn">
-            <li class="crumb"><a class="anchor" href="/">
+            <li class="crumb"><a class="anchor" title="Home" href="/">
                 <IconHome/>
             </a></li>
             {#each crumbs as crumb}
 
                 <li class="crumb-separator" aria-hidden="true">&rsaquo;</li>
-                {#if crumb.name === "Settings"}
-                    <li class="crumb"><a class="anchor" href="{crumb.path}">
-                        <IconSettings/>
-                    </a></li>
-                {:else if crumb.name === "Leaderboard"}
-                    <li class="crumb"><a class="anchor" href="{crumb.path}">
-                        <IconBadges/>
+
+                {#if crumb.icon}
+                    <li class="crumb"><a class="anchor" title="{crumb.name}" href="{crumb.path}">
+                        <svelte:component this={crumb.icon} />
                     </a></li>
                 {:else }
                     <li class="crumb"><a class="anchor" href="{crumb.path}">{crumb.name}</a></li>
@@ -107,3 +121,4 @@
     </svelte:fragment>
 </AppShell>
 <Modal/>
+<Toast/>
