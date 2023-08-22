@@ -1,6 +1,7 @@
 package Manual
 
 import (
+	"errors"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
 )
@@ -9,9 +10,12 @@ type state int
 
 const (
 	none state = iota
-	result
 	begin
+	running
+	result
 )
+
+var WrongState = errors.New("wrong State")
 
 type Manuel struct {
 	begin  chan struct{}
@@ -32,25 +36,33 @@ func New(r fiber.Router) *Manuel {
 	return m
 }
 
-func (m *Manuel) Begin() {
+func (m *Manuel) Begin() error {
+	if m.state != none {
+		return WrongState
+	}
 	m.state = begin
 
 	<-m.begin
 
-	m.state = none
+	m.state = running
+
+	return nil
 }
 
-func (m *Manuel) Result() (res int) {
+func (m *Manuel) Result() (res int, err error) {
+	if m.state != running {
+		return 0, WrongState
+	}
 	m.state = result
 
 	res = <-m.result
 
 	m.state = none
-	return res
+	return res, nil
 }
 
 func (m *Manuel) get(ctx *fiber.Ctx) error {
-	return ctx.JSON(map[string]state{"State": m.state})
+	return ctx.JSON(map[string]state{"state": m.state})
 }
 
 func (m *Manuel) post(ctx *fiber.Ctx) error {

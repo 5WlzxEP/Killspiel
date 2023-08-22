@@ -59,7 +59,7 @@ def chat():
     global chat_config
     if request.method == "GET":
         return chat_config
-    if request.method == "POST":
+    elif request.method == "POST":
         data = request.json
         chat_config = data
         return "", 200

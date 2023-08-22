@@ -2,6 +2,7 @@ package main
 
 import (
 	"Killspiel/pkg/Killspiel"
+	"Killspiel/pkg/helper"
 	"embed"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
@@ -15,6 +16,7 @@ var (
 )
 
 func main() {
+	//goland:noinspection GoBoolExpressions
 	app := fiber.New(fiber.Config{
 		DisableStartupMessage: DisableStartupMessage == "true",
 	})
@@ -30,5 +32,6 @@ func main() {
 
 	go Killspiel.Run()
 
-	panic(app.Listen(":8088"))
+	panic(app.Listen(helper.EnvOrDefault("Address", ":8088")))
+
 }
