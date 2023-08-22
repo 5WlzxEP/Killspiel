@@ -2,6 +2,7 @@ package config
 
 import (
 	"errors"
+	"github.com/goccy/go-json"
 	"os"
 	"path"
 )
@@ -9,10 +10,14 @@ import (
 import "Killspiel/pkg/helper"
 
 var (
-	NO_CONFIG_FOUND = errors.New("no config file found")
-	localPaths      = [...]string{"./config", "."}
-	configName      = "config.json"
+	NoConfigFound = errors.New("no config file found")
+	localPaths    = [...]string{"./config", "."}
+	configName    = "config.json"
 )
+
+type Config struct {
+	UserCollector UserCollect `json:"userCollector"`
+}
 
 func FindConfigPath() (string, error) {
 	file, exists := os.LookupEnv("KILLSPIEL_CONFIG")
@@ -34,7 +39,7 @@ func FindConfigPath() (string, error) {
 		}
 	}
 
-	return "", NO_CONFIG_FOUND
+	return "", NoConfigFound
 }
 
 func ExistsAndFile(path string) bool {
@@ -45,5 +50,17 @@ func ExistsAndFile(path string) bool {
 	return !stat.IsDir()
 }
 
-type Config struct {
+func GetConfig(p string) (config Config, err error) {
+	var f *os.File
+	f, err = os.Open(path.Join(p, configName))
+	if err != nil {
+		return
+	}
+
+	err = json.NewDecoder(f).Decode(&config)
+	if err != nil {
+		return
+	}
+
+	return
 }
