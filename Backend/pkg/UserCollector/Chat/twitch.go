@@ -6,6 +6,7 @@ import (
 	"github.com/gempir/go-twitch-irc/v4"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
+	"log"
 	"net/http"
 	"os"
 	"path"
@@ -57,7 +58,7 @@ func (tc *TwitchChat) Ready() bool {
 	return true
 }
 
-func New(configPath string, r fiber.Router) *TwitchChat {
+func New(configPath string, r fiber.Router) (*TwitchChat, string) {
 	tc := newConfig(configPath)
 	if tc == nil {
 		tc = &TwitchChat{
@@ -72,7 +73,7 @@ func New(configPath string, r fiber.Router) *TwitchChat {
 
 	r.Post("/", tc.post)
 
-	return tc
+	return tc, "Twitchchat"
 }
 
 func newConfig(configPath string) *TwitchChat {
@@ -116,7 +117,7 @@ func (tc *TwitchChat) AnnounceResult(winners []string, correctGuess int) {
 }
 
 // CollectGuesses collect the user votes until the context cancels
-func (tc *TwitchChat) CollectGuesses(ctx context.Context, collect func(user, message string)) {
+func (tc *TwitchChat) CollectGuesses(ctx context.Context, collect func(id int, user, message string)) {
 	tc.Lock()
 	defer tc.Unlock()
 	client := tc.client
@@ -132,7 +133,12 @@ func (tc *TwitchChat) CollectGuesses(ctx context.Context, collect func(user, mes
 			return
 		}
 
-		collect(strings.ToLower(m.User.Name), strings.TrimLeft(m.Message, tc.Prefix))
+		id, err := strconv.Atoi(m.User.ID)
+		if err != nil {
+			log.Printf("Error parsing %s user id (%s): %v", m.User.Name, m.User.ID, err)
+		}
+
+		collect(id, strings.ToLower(m.User.Name), strings.TrimLeft(m.Message, tc.Prefix))
 	})
 
 	ctx, cancel := context.WithCancel(ctx)
@@ -178,7 +184,7 @@ func (tc *TwitchChat) get(ctx *fiber.Ctx) error {
 //
 // might recreate the client if the client credentials change.
 //
-// returns a 409 if CollectGuesses runs, because it needs the TwitchChat.client running
+// returns a 409 if CollectGuesses runs because it needs the TwitchChat.client running
 func (tc *TwitchChat) post(ctx *fiber.Ctx) error {
 	success := tc.TryLock()
 	if !success {

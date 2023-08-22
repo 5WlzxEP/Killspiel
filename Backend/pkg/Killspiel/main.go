@@ -15,13 +15,18 @@ func Init(app *fiber.App) {
 		log.Fatal(err)
 	}
 
+	conf, err := config.GetConfig(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	err = database.Init(path)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	api := router.CreateApiGroup(app)
-	UserCollector.Init(path, api.Group("/collector"))
+	UserCollector.Init(path, conf.UserCollector, api.Group("/collector"))
 }
 
 func Run() {
