@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {type ToastSettings, toastStore, Toast} from '@skeletonlabs/skeleton'
+    import {type ToastSettings, toastStore} from '@skeletonlabs/skeleton'
     import {onMount} from "svelte";
     import InputText from "@components/InputText.svelte";
     import InputArea from "@components/InputArea.svelte";

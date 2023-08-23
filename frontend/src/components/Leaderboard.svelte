@@ -3,7 +3,7 @@
     import type {PaginationSettings} from "@skeletonlabs/skeleton";
     import {onMount} from "svelte";
 
-    import { Toast, toastStore } from '@skeletonlabs/skeleton';
+    import { toastStore } from '@skeletonlabs/skeleton';
     import type { ToastSettings } from '@skeletonlabs/skeleton';
 
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
@@ -60,7 +60,6 @@
     })
 </script>
 
-<Toast />
 <div class="table-container mx-auto w-full m-1">
     <!-- Native Table Element -->
     <table class="table table-hover table-cell-fit mx-auto w-full m-1">

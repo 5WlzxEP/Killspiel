@@ -1,9 +1,6 @@
 <script lang="ts">
-    import {type ToastSettings, toastStore, Toast} from '@skeletonlabs/skeleton'
+    import {type ToastSettings, toastStore} from '@skeletonlabs/skeleton'
     import {onMount} from "svelte";
-    import InputText from "@components/InputText.svelte";
-    import InputArea from "@components/InputArea.svelte";
-    import {writable} from "svelte/store";
 
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
@@ -11,21 +8,34 @@
     let state = 0
     let start: HTMLButtonElement
     let dissolve: HTMLButtonElement
+    let end: HTMLButtonElement
+
+    let r: number | string
+
+    $: {
+        if (typeof r === "number")
+            r = Math.abs(r)
+    }
 
     function change(e: MouseEvent & { currentTarget: (EventTarget & HTMLButtonElement) }) {
-        state = ++state % 3
-        console.log(state)
-        start.disabled = (state != 0) // none
-        dissolve.disabled = (state != 2) || (result == undefined) // running
 
+        setState(++state)
 
         if (state === 1) {
             setTimeout(change, 5000)
         }
     }
 
+    function setState(change: number) {
+        state = change % 3
+
+        start.disabled = (state != 0) // none
+        end.disabled = state !== 1 // collecting
+        dissolve.disabled = (state !== 2) || (result == undefined) // running
+    }
+
     async function submit(e: Event) {
-        console.log(e)
+        // console.log(e)
         try {
             const res = await fetch(`${BACKEND_URL}/api/collector/chat/`, {
                 headers: {
@@ -53,12 +63,31 @@
         }
     }
 
+    async function submitEnd() {
+        const url = `${BACKEND_URL}/api/end`
+        try {
+            const res = await fetch(url)
+            const val = await res.json()
+        } catch (e) {
+            console.error(e)
+            const t: ToastSettings = {
+                message: 'Es ist ein Fehler beim Abfragen der aktuellen Einstellungen aufgetreten.',
+                timeout: 5000,
+                background: 'variant-filled-error',
+            }
+
+            toastStore.trigger(t)
+        }
+    }
+
     onMount(async () => {
+        setState(0)
+
         const url = `${BACKEND_URL}/api/data/manual/`
         try {
             const res = await fetch(url)
             const val = await res.json()
-            state = val.state
+            setState(val.state)
         } catch (e) {
             const t: ToastSettings = {
                 message: 'Es ist ein Fehler beim Abfragen der aktuellen Einstellungen aufgetreten.',
@@ -67,10 +96,6 @@
             }
             toastStore.trigger(t)
         }
-        start.disabled = (state != 0) // none
-         // running
-
-        console.log(result)
     })
 
 </script>
@@ -79,10 +104,13 @@
     <div class="card w-full">
         <h1 class="text-center text-2xl p-3">Manuell</h1>
         <hr>
-        <div class="grid gap-10 w-full m-2 grid-cols-[7fr_1fr_3fr_1fr_7fr] p-2">
+        <div class="grid gap-10 w-full m-2 grid-cols-[2fr_auto_1fr_auto_2fr] p-2">
             <div class="p-2 grid gap-2 h-3">
                 <button class="btn variant-ghost" type="button" bind:this={start} on:click={e => change(e)}>
                     Starten
+                </button>
+                <button class="btn variant-ghost" type="button" bind:this={end} on:click={submitEnd}>
+                    Beenden
                 </button>
             </div>
 
@@ -102,7 +130,8 @@
             <span class="divider-vertical h-full"/>
 
             <form class="p-2 gap-2 grid">
-                <input class="input" bind:value={result} on:change={() => dissolve.disabled = (state !== 2) || (result === undefined)} placeholder="7.2" type="number" required>
+                <input class="input" bind:value={r} on:keyup={() => dissolve.disabled = (state !== 2) || (result === null)}
+                       placeholder="7.2" type="number" required min="0">
                 <button class="btn variant-ghost" bind:this={dissolve} on:click={e => change(e)} type="submit">
                     Ergebnis speichern
                 </button>

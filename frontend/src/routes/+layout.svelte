@@ -46,7 +46,6 @@
                     break
             }
 
-            console.log(typeof icon)
             crumbs.push({
                 icon: icon,
                 path: base,
