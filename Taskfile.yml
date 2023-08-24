@@ -41,7 +41,7 @@ tasks:
       - backend/go.mod
       - backend/frontend_build
     generates:
-      - main.exe
+      - backend/main.exe
 
 
   build:
