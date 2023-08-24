@@ -9,13 +9,8 @@ import (
 	"time"
 )
 
-type Guess struct {
-	Name  string
-	Guess float64
-}
-
 var EndCollect context.CancelFunc
-var guesses map[int]Guess
+var guesses map[int]database.Guess
 
 func Collect(config config.UserCollect) {
 
@@ -30,7 +25,7 @@ func Collect(config config.UserCollect) {
 		if err != nil {
 			return
 		}
-		guesses[id] = Guess{
+		guesses[id] = database.Guess{
 			Name:  user,
 			Guess: g,
 		}

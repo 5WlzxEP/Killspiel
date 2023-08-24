@@ -1,11 +1,16 @@
 package database
 
 import (
-	"Killspiel/pkg/UserCollector"
 	"database/sql"
 )
 
-func SaveGuesses(m *map[int]UserCollector.Guess) (err error) {
+// TODO moves types into own package
+type Guess struct {
+	Name  string
+	Guess float64
+}
+
+func SaveGuesses(m *map[int]Guess) (err error) {
 	tx, err := DB.Begin()
 	if err != nil {
 		return
