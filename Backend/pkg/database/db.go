@@ -51,9 +51,10 @@ func CreateTables() error {
 
 	// Votes
 	_, err = tx.Exec(`CREATE TABLE IF NOT EXISTS Votes (
-    	game int primary key,
-    	player int primary key,
+    	game int,
+    	player int,
     	vote float,
+    	PRIMARY KEY (game, player),
     	foreign key (game) REFERENCES Game(id),
     	foreign key (player) REFERENCES Users(id) 
  	)`)
