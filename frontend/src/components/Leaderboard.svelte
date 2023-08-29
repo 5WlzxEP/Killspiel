@@ -3,8 +3,10 @@
     import type {PaginationSettings} from "@skeletonlabs/skeleton";
     import {onMount} from "svelte";
 
-    import { toastStore } from '@skeletonlabs/skeleton';
+    import { getToastStore } from '@skeletonlabs/skeleton';
     import type { ToastSettings } from '@skeletonlabs/skeleton';
+
+    const toastStore = getToastStore()
 
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
@@ -12,7 +14,7 @@
     export let limit = 25
 
     let meta: PaginationSettings = {
-        offset: offset,
+        page: offset,
         limit: limit,
         size: 0,
         amounts: [10, 25, 50, 100],
@@ -31,7 +33,7 @@
     }
 
     async function fetchLeaderboard(): Promise<Array<Leaderboard>> {
-        const url = `${BACKEND_URL}/api/leaderboard?o=${meta.offset * meta.limit}&l=${meta.limit}`
+        const url = `${BACKEND_URL}/api/leaderboard?o=${meta.page * meta.limit}&l=${meta.limit}`
         try {
             const resp = await fetch(url);
             const ob: result = await resp.json()

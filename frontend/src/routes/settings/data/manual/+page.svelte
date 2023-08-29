@@ -1,7 +1,8 @@
 <script lang="ts">
-    import {type ToastSettings, toastStore} from '@skeletonlabs/skeleton'
+    import {type ToastSettings, getToastStore} from '@skeletonlabs/skeleton'
     import {onMount} from "svelte";
 
+    const toastStore = getToastStore()
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
     let result = 0

@@ -1,8 +1,10 @@
 <script lang="ts">
-    import {modalStore, type ModalSettings} from "@skeletonlabs/skeleton";
+    import { getModalStore, type ModalSettings} from "@skeletonlabs/skeleton";
     import {IconHelp} from "@tabler/icons-svelte";
 
     let ModalSett: ModalSettings
+
+    const modalStore = getModalStore()
 
     export let value: string
     export let placeholder = ""

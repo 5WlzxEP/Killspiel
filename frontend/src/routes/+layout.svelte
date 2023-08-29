@@ -1,23 +1,16 @@
 <script lang='ts'>
-    // The ordering of these imports is critical to your app working properly
-    import '@skeletonlabs/skeleton/themes/theme-skeleton.css'
 
-    // If you have source.organizeImports set to true in VSCode, then it will auto change this ordering
-    import '@skeletonlabs/skeleton/styles/skeleton.css'
-    // Most of your app wide CSS should be put in this file
     import '../app.postcss'
-    import {AppShell, AppBar, Modal, Toast} from '@skeletonlabs/skeleton'
-
+    import { AppShell, AppBar, autoModeWatcher, LightSwitch, initializeStores, Toast, Modal } from '@skeletonlabs/skeleton'
     import { IconSettings, IconBadges, IconHome, IconBrandTwitch } from '@tabler/icons-svelte'
-    import { afterUpdate } from "svelte"
-    import { autoModeWatcher } from '@skeletonlabs/skeleton'
-    import { LightSwitch } from "@skeletonlabs/skeleton"
-    import type ComponentType from "svelte/types/compiler/compile/Component";
+    import { afterUpdate, SvelteComponentTyped } from "svelte"
+
+    initializeStores();
 
     type crumb = {
         path: string,
         name: string,
-        icon: ComponentType  | undefined
+        icon: SvelteComponentTyped  | undefined
     }
 
     let crumbs: Array<crumb> = [];
@@ -33,7 +26,7 @@
             }
             base = `${base}/${crumb}`
             const name = crumb.charAt(0).toUpperCase() + crumb.slice(1)
-            let icon: ComponentType | undefined = undefined
+            let icon: SvelteComponentTyped | undefined = undefined
             switch (name) {
                 case "Leaderboard":
                     icon = IconBadges

@@ -1,10 +1,12 @@
 <script lang="ts">
-    import {type ToastSettings, toastStore} from '@skeletonlabs/skeleton'
+    import {type ToastSettings, getToastStore } from '@skeletonlabs/skeleton'
     import {onMount} from "svelte";
     import InputText from "@components/InputText.svelte";
     import InputArea from "@components/InputArea.svelte";
 
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
+
+    const toastStore = getToastStore()
 
     const d = {
         "apiKey": "",
@@ -16,7 +18,7 @@
         "msgFinal": "",
     }
 
-    async function submit(e: Event) {
+    async function submit() {
 
         try {
             const res = await fetch(`${BACKEND_URL}/api/collector/chat/`, {

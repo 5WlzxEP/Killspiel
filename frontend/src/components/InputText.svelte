@@ -1,6 +1,8 @@
 <script lang="ts">
-    import {modalStore, type ModalSettings} from "@skeletonlabs/skeleton";
+    import {getModalStore, type ModalSettings} from "@skeletonlabs/skeleton";
     import {IconHelp} from "@tabler/icons-svelte";
+
+    const modalStore = getModalStore()
 
     let ModalSett: ModalSettings
 
