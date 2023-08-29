@@ -28,7 +28,7 @@
                 <div class="input-group input-group-divider grid-cols-[1fr_auto]">
                     <input title="3" type="number" placeholder="3"/>
                     <select bind:value={scale}>
-                        <option selected="selected" value="60">min</option>
+                        <option value="60">min</option>
                         <option value="1">s</option>
                     </select>
                 </div>
