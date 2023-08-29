@@ -1,6 +1,7 @@
 <script lang="ts">
     import {getModalStore, type ModalSettings} from "@skeletonlabs/skeleton";
     import {IconHelp} from "@tabler/icons-svelte";
+    import {onMount} from "svelte";
 
     const modalStore = getModalStore()
 
@@ -14,7 +15,7 @@
     export let modal: {
         title: string,
         body: string
-    } | undefined = undefined
+    }
 
     if (modal) {
         ModalSett = {
@@ -24,6 +25,12 @@
             buttonTextCancel: "Schließen",
         }
     }
+
+    let div: HTMLDivElement
+
+    onMount(() => {
+        div.classList.add(prefix ? "grid-cols-[auto_1fr_auto]" : "grid-cols-[1fr_auto]")
+    })
 </script>
 
 <label class="label">
@@ -35,7 +42,7 @@
             </button>
         {/if}
     </span>
-    <div class="input-group input-group-divider grid-cols-[{prefix ? 'auto_': ''}1fr_auto]">
+    <div bind:this={div} class="input-group input-group-divider">
         {#if prefix}
             <div class="input-group-shim">{prefix}</div>
         {/if}
