@@ -1,5 +1,6 @@
 <script>
 
+import Theme from "./Theme.svelte";
 </script>
 
 <svelte:head>
@@ -21,5 +22,6 @@
         <section class="p-4">
             <h2>Allgemeine Einstellungen</h2>
         </section>
+        <Theme />
     </div>
 </div>

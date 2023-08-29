@@ -44,7 +44,7 @@
                {required}
         />
         {#if required}
-            <div class="">*</div>
+            <div class="input-group-shim">*</div>
         {/if}
     </div>
 </label>

@@ -3,7 +3,9 @@
     import '../app.postcss'
     import { AppShell, AppBar, autoModeWatcher, LightSwitch, initializeStores, Toast, Modal } from '@skeletonlabs/skeleton'
     import { IconSettings, IconBadges, IconHome, IconBrandTwitch } from '@tabler/icons-svelte'
-    import { afterUpdate, SvelteComponentTyped } from "svelte"
+    import {afterUpdate, onMount, SvelteComponentTyped} from "svelte"
+    import {get} from "svelte/store";
+    import {themeStore} from "@stores/theme";
 
     initializeStores();
 
@@ -45,6 +47,13 @@
                 name: name,
             })
         }
+    })
+
+    // set theme
+    onMount(() => {
+        const theme = get(themeStore)
+
+        document.getElementsByTagName("body")[0].dataset.theme = theme
     })
 
 </script>
@@ -93,9 +102,12 @@
         </ol>
     </div>
 
-    <slot/>
+    <div class="mb-2">
+        <slot/>
+    </div>
 
-    <svelte:fragment slot="pageFooter">
+
+    <svelte:fragment slot="pageFooter" >
         <AppBar>
             <svelte:fragment slot="lead">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
