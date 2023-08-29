@@ -20,7 +20,7 @@
         { type: 'hamlindigo', name: 'Hamlindigo', icon: '👔' },
         { type: 'gold-nouveau', name: 'Gold Nouveau', icon: '💫' },
         { type: 'crimson', name: 'Crimson', icon: '⭕' },
-        {type: "wintry", name: "wintry", icon: ""}
+        {type: "wintry", name: "wintry", icon: "🌨️"}
     ]
 
     let selected: string
@@ -33,7 +33,7 @@
 <div class="p-4 w-1/2">
     <label class="label">
         <span>Theme</span>
-        <select class="select" bind:value={selected} on:change={change(selected)}>
+        <select class="select" bind:value={selected} on:change={() => change(selected)}>
             {#each Themes as theme}
                 <option value="{theme.type}">{theme.icon} {theme.name}</option>
             {/each}
