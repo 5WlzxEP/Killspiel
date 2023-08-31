@@ -3,6 +3,8 @@ package config
 import (
 	"errors"
 	"github.com/goccy/go-json"
+	"io/fs"
+	"log"
 	"os"
 	"path"
 )
@@ -12,7 +14,7 @@ import "Killspiel/pkg/helper"
 var (
 	NoConfigFound = errors.New("no config file found")
 	localPaths    = [...]string{"./config", "."}
-	configName    = "config.json"
+	configName    = helper.EnvOrDefault("ConfigName", "config.json")
 )
 
 type Config struct {
@@ -63,4 +65,52 @@ func GetConfig(p string) (config Config, err error) {
 	}
 
 	return
+}
+
+// Default creates the folder config in the current location and creates the default config
+func Default() (string, error) {
+
+	// check if folder exists and create if not exists
+	stat, err := os.Stat("./config")
+	if errors.Is(err, fs.ErrNotExist) {
+		err = os.Mkdir("./config", 0744)
+		if err != nil {
+			return "", err
+		}
+	} else if err != nil {
+		return "", err
+	} else {
+		if !stat.IsDir() {
+			return "", errors.New("config exists, but is file")
+		}
+	}
+
+	f, err := os.OpenFile(path.Join("./config", configName), os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	err = json.NewEncoder(f).Encode(&Config{})
+	if err != nil {
+		return "", err
+	}
+
+	return "./config", nil
+}
+
+func FindConfOrDefault() (string, error) {
+	configPath, err := FindConfigPath()
+	if errors.Is(err, NoConfigFound) {
+		log.Println("No config found, creating default.")
+		configPath, err = Default()
+
+		if err != nil {
+			return "", err
+		}
+	} else if err != nil {
+		return "", nil
+	}
+
+	return configPath, nil
 }

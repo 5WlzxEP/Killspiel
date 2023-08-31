@@ -10,7 +10,7 @@ import (
 )
 
 func Init(app *fiber.App) {
-	path, err := config.FindConfigPath()
+	path, err := config.FindConfOrDefault()
 	if err != nil {
 		log.Fatal(err)
 	}
