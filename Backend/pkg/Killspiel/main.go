@@ -1,6 +1,7 @@
 package Killspiel
 
 import (
+	"Killspiel/pkg/Leaderboard"
 	"Killspiel/pkg/UserCollector"
 	"Killspiel/pkg/config"
 	"Killspiel/pkg/database"
@@ -27,6 +28,8 @@ func Init(app *fiber.App) {
 
 	api := router.CreateApiGroup(app)
 	UserCollector.Init(path, conf.UserCollector, api.Group("/collector"))
+
+	Leaderboard.Init(api.Group("/leaderboard"))
 }
 
 func Run() {

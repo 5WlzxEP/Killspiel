@@ -23,7 +23,8 @@ for i in range(1, 102):
         "rank": i,
         "name": faker.name(),
         "points": points,
-        "guesses": randint(points, 1_000)
+        "guesses": randint(points, 1_000),
+        "latest": randint(0, 255)
     })
 
 Leaderboard["meta"]["size"] = 100
@@ -38,6 +39,16 @@ chat_config = {
 }
 
 
+def sortdata(sort: str, o: bool):
+    global data
+    if sort == "p":
+        data.sort(key=lambda x: x['points'], reverse=not o)
+    elif sort == "n":
+        data.sort(key=lambda x: x['name'], reverse=o)
+    elif sort == "g":
+        data.sort(key=lambda x: x['guesses'], reverse=not o)
+
+
 @app.route("/")
 def test():
     return "<p>Hallo Welt</p>"
@@ -47,9 +58,16 @@ def test():
 def leaderboard():
     # time.sleep(.5)
     global Leaderboard
+    global data
     limit = min(int(request.args.get("l", 25)), len(data) - 1)
-    offset = int(request.args.get("o", 0))
+    offset = int(request.args.get("p", 0))
     end = min(offset + limit, len(data) - 1)
+
+    s = request.args.get("s", "p")
+    o = request.args.get("o", 0) == "0"
+
+    sortdata(s, o)
+
     Leaderboard["data"] = data[offset:end]
     return Leaderboard
 

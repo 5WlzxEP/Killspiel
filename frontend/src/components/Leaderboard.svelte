@@ -1,20 +1,29 @@
 <script lang="ts">
-    import {Paginator} from "@skeletonlabs/skeleton";
-    import type {PaginationSettings} from "@skeletonlabs/skeleton";
-    import {onMount} from "svelte";
-
-    import { getToastStore } from '@skeletonlabs/skeleton';
-    import type { ToastSettings } from '@skeletonlabs/skeleton';
+    import {onMount, SvelteComponent} from "svelte";
+    import {fade} from "svelte/transition";
+    import {getToastStore, type ToastSettings, type PaginationSettings, Paginator} from '@skeletonlabs/skeleton';
+    import {IconCheck, IconX} from "@tabler/icons-svelte";
+    import Check from "@components/Check.svelte";
+    import X from "@components/X.svelte";
 
     const toastStore = getToastStore()
 
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
-    export let offset = 0
+    type ascDesc = "asc" | "desc"
+
+    export let page = 0
     export let limit = 25
+    export let sortedBy: "p" | "n" | "g" = "p"
+    let order: {"p": ascDesc, "n": ascDesc, "g": ascDesc} = {
+        "p": "desc",
+        "n": "asc",
+        "g": "desc"
+    }
+    let currentOrder: ascDesc = "desc"
 
     let meta: PaginationSettings = {
-        page: offset,
+        page: page,
         limit: limit,
         size: 0,
         amounts: [10, 25, 50, 100],
@@ -25,6 +34,8 @@
         name: string
         points: number
         guesses: number
+        latest: number
+        l: Array<SvelteComponent>
     }
 
     type result = {
@@ -33,7 +44,7 @@
     }
 
     async function fetchLeaderboard(): Promise<Array<Leaderboard>> {
-        const url = `${BACKEND_URL}/api/leaderboard?o=${meta.page * meta.limit}&l=${meta.limit}`
+        const url = `${BACKEND_URL}/api/leaderboard?p=${meta.page * meta.limit}&l=${meta.limit}&s=${sortedBy}&o=${currentOrder === "desc" ? "0" : "1"}`
         try {
             const resp = await fetch(url);
             const ob: result = await resp.json()
@@ -53,13 +64,58 @@
     let data: Array<Leaderboard> = []
 
     async function update() {
-        data = []
+        // data = []
         data = await fetchLeaderboard()
     }
 
+    let first: HTMLHRElement
+
     onMount(async () => {
         await update()
+
+        latest = first
     })
+
+    function toggleAscDesc(s: ascDesc, target: HTMLHRElement): ascDesc {
+        if (s === "asc") {
+            target.classList.remove("table-sort-asc")
+            target.classList.add("table-sort-dsc")
+            return "desc"
+        }
+
+        target.classList.replace("table-sort-dsc", "table-sort-asc")
+        return "asc"
+    }
+
+    let latest: HTMLHRElement
+
+    function changeSorting(s: "g" | "p" | "n", event: Event) {
+        const target: HTMLHRElement = event.target
+        if (sortedBy === s) {
+            order[s] = toggleAscDesc(order[s], target)
+        } else {
+            latest.classList.remove("table-sort-dsc")
+            latest.classList.remove("table-sort-asc")
+
+            latest = target
+
+            sortedBy = s
+            if (order[s] === "desc") {
+                target.classList.add("table-sort-dsc")
+            } else {
+                target.classList.add("table-sort-asc")
+            }
+        }
+        currentOrder = order[s]
+        update()
+    }
+
+    function* generateLatest(n: number) {
+        for (let i = 0; i < 8; i++) {
+            yield n % 2 === 1 ? Check : X
+            n = n >> 1
+        }
+    }
 </script>
 
 <div class="table-container mx-auto w-full m-1">
@@ -67,50 +123,66 @@
     <table class="table table-hover table-cell-fit mx-auto w-full m-1">
         <thead>
         <tr>
-            <th class="table-sort-asc p-1 m-1">Rank </th>
-            <th class="text-center">Name</th>
-            <th class="text-center">Punkte</th>
-            <th class="text-center">Teilnahmen</th>
-            <th class="text-center">Rate</th>
+            <th class="p-1 m-1 w-[10%]">Rank</th>
+            <th class="text-center w-[15%] cursor-pointer" on:click={(e) => changeSorting("n", e)}>Name</th>
+            <th class="text-center table-sort-asc w-[10%] cursor-pointer" bind:this={first} on:click={(e) => changeSorting("p", e)}>Punkte</th>
+            <th class="text-center w-[10%] cursor-pointer" on:click={(e) => changeSorting("g", e)}>Teilnahmen</th>
+            <th class="text-center w-[10%]">Rate</th>
+            <th class="text-right w-[15%] min-w-[200px]">Lastest</th>
         </tr>
         </thead>
         <tbody>
         {#each data as row}
-            <tr class="">
+            <tr>
                 <td>{row.rank}</td>
                 <td>{row.name}</td>
                 <td class="text-right">{row.points}</td>
                 <td class="text-right">{row.guesses}</td>
                 <td class="text-right">{((row.guesses > 0 ? row.points / row.guesses : 0) * 100).toFixed(2)} %</td>
+                <td class="grid-cols-8 grid">
+                    {#each [...generateLatest(row.latest)] as icon }
+                        <svelte:component this="{icon}"/>
+                    {/each}
+                </td>
             </tr>
         {:else }
             <tr>
                 <td>
-                    <div class="placeholder animate-pulse" />
+                    <div class="placeholder animate-pulse"/>
                 </td>
                 <td>
-                    <div class="placeholder animate-pulse" />
+                    <div class="placeholder animate-pulse"/>
                 </td>
                 <td>
-                    <div class="placeholder animate-pulse" />
+                    <div class="placeholder animate-pulse"/>
                 </td>
                 <td>
-                    <div class="placeholder animate-pulse" />
+                    <div class="placeholder animate-pulse"/>
                 </td>
                 <td>
-                    <div class="placeholder animate-pulse" />
+                    <div class="placeholder animate-pulse"/>
+                </td>
+                <td>
+                    <div class="placeholder animate-pulse"/>
                 </td>
             </tr>
         {/each}
         </tbody>
     </table>
     <div class="mt-2">
-                <Paginator
-                        bind:settings={meta}
-                        showFirstLastButtons="{true}"
-                        showPreviousNextButtons="{true}"
-                        on:page={update}
-                        on:amount={update}
-                />
+        <Paginator
+                bind:settings={meta}
+                showFirstLastButtons="{true}"
+                showPreviousNextButtons="{true}"
+                on:page={update}
+                on:amount={update}
+        />
     </div>
 </div>
+
+<style>
+    td {
+        /*width: 10rem;*/
+
+    }
+</style>

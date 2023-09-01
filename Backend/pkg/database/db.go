@@ -81,7 +81,7 @@ var (
 )
 
 func prepareStmts() (err error) {
-	createGame, err = DB.Prepare("INSERT INTO Game VALUES ()")
+	createGame, err = DB.Prepare("INSERT INTO Game DEFAULT VALUES")
 	if err != nil {
 		return
 	}
@@ -91,7 +91,7 @@ func prepareStmts() (err error) {
 		return
 	}
 
-	createUser, err = DB.Prepare("INSERT INTO Users VALUES (?, ?)")
+	createUser, err = DB.Prepare("INSERT INTO Users VALUES (?, ?, default, default, default)")
 	if err != nil {
 		return
 	}
@@ -114,6 +114,28 @@ func prepareStmts() (err error) {
 	getWinners, err = DB.Prepare("SELECT * from Users WHERE id in (SELECT player FROM Votes WHERE game = ? AND abs(vote - ?) <= 1e-6)")
 	if err != nil {
 		return
+	}
+
+	LeaderboardAsc, err = DB.Prepare(`SELECT name, guesses, points, latest FROM Users ORDER BY 
+                                                    CASE ? 
+                                                        WHEN 1 THEN points 
+                                                        WHEN 2 THEN name 
+                                                        WHEN 3 THEN guesses
+													END 
+													LIMIT ? OFFSET ?`)
+	if err != nil {
+		return err
+	}
+
+	LeaderboardDesc, err = DB.Prepare(`SELECT name, guesses, points, latest FROM Users ORDER BY 
+                                                    CASE ? 
+                                                        WHEN 1 THEN points 
+                                                        WHEN 2 THEN name 
+                                                        WHEN 3 THEN guesses
+													END 
+													DESC LIMIT ? OFFSET ?`)
+	if err != nil {
+		return err
 	}
 
 	return
