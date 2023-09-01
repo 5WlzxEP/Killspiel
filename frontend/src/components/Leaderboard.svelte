@@ -1,8 +1,6 @@
 <script lang="ts">
     import {onMount, SvelteComponent} from "svelte";
-    import {fade} from "svelte/transition";
     import {getToastStore, type ToastSettings, type PaginationSettings, Paginator} from '@skeletonlabs/skeleton';
-    import {IconCheck, IconX} from "@tabler/icons-svelte";
     import Check from "@components/Check.svelte";
     import X from "@components/X.svelte";
 
@@ -35,7 +33,6 @@
         points: number
         guesses: number
         latest: number
-        l: Array<SvelteComponent>
     }
 
     type result = {
@@ -110,7 +107,7 @@
         update()
     }
 
-    function* generateLatest(n: number) {
+    function* generateLatest(n: number): Generator<SvelteComponent> {
         for (let i = 0; i < 8; i++) {
             yield n % 2 === 1 ? Check : X
             n = n >> 1
@@ -119,7 +116,6 @@
 </script>
 
 <div class="table-container mx-auto w-full m-1">
-    <!-- Native Table Element -->
     <table class="table table-hover table-cell-fit mx-auto w-full m-1">
         <thead>
         <tr>
@@ -179,10 +175,3 @@
         />
     </div>
 </div>
-
-<style>
-    td {
-        /*width: 10rem;*/
-
-    }
-</style>
