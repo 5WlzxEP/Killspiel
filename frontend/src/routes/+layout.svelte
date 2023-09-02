@@ -6,13 +6,19 @@
 		autoModeWatcher,
 		initializeStores,
 		LightSwitch,
-		Modal,
 		Toast
 	} from "@skeletonlabs/skeleton"
-	import { IconBadges, IconBrandTwitch, IconHome, IconSettings } from "@tabler/icons-svelte"
+	import {
+		IconBadges,
+		IconBrandTwitch,
+		IconHome,
+		IconSettings,
+		IconUser
+	} from "@tabler/icons-svelte"
 	import { afterUpdate, onMount, SvelteComponentTyped } from "svelte"
 	import { get } from "svelte/store"
 	import { themeStore } from "@stores/theme"
+	import Modal from "@components/Modal.svelte"
 
 	initializeStores()
 
@@ -46,6 +52,9 @@
 				case "Twitchchat":
 					icon = IconBrandTwitch
 					break
+				case "User":
+					icon = IconUser
+					break
 			}
 
 			crumbs.push({
@@ -67,7 +76,7 @@
 >
 <!-- App Shell -->
 <AppShell>
-	<svelte:fragment slot="header">
+	<svelte:fragment slot="pageHeader">
 		<!-- App Bar -->
 		<AppBar>
 			<svelte:fragment slot="lead">

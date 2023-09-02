@@ -33,6 +33,7 @@
 	}
 
 	type Leaderboard = {
+		id: number
 		rank: number
 		name: string
 		points: number
@@ -128,16 +129,17 @@
 			<tr>
 				<th class="p-1 m-1 w-[10%]">Rank</th>
 				<th class="text-center w-[15%] cursor-pointer" on:click={(e) => changeSorting("n", e)}
-					>Name</th
-				>
+					>Name
+				</th>
 				<th
 					class="text-center table-sort-asc w-[10%] cursor-pointer"
 					bind:this={first}
-					on:click={(e) => changeSorting("p", e)}>Punkte</th
-				>
+					on:click={(e) => changeSorting("p", e)}
+					>Punkte
+				</th>
 				<th class="text-center w-[10%] cursor-pointer" on:click={(e) => changeSorting("g", e)}
-					>Teilnahmen</th
-				>
+					>Teilnahmen
+				</th>
 				<th class="text-center w-[10%]">Rate</th>
 				<th class="text-right w-[15%] min-w-[200px]">Lastest</th>
 			</tr>
@@ -146,12 +148,12 @@
 			{#each data as row}
 				<tr>
 					<td>{row.rank}</td>
-					<td>{row.name}</td>
+					<td><a href="/user/{row.id}" class="w-full p-4">{row.name}</a></td>
 					<td class="text-right">{row.points}</td>
 					<td class="text-right">{row.guesses}</td>
 					<td class="text-right"
-						>{((row.guesses > 0 ? row.points / row.guesses : 0) * 100).toFixed(2)} %</td
-					>
+						>{((row.guesses > 0 ? row.points / row.guesses : 0) * 100).toFixed(2)} %
+					</td>
 					<td class="grid-cols-8 grid">
 						{#each [...generateLatest(row.latest)] as icon}
 							<svelte:component this={icon} />

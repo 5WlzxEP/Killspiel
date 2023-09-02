@@ -8,6 +8,7 @@ import (
 )
 
 type User struct {
+	Id      int    `json:"id"`
 	Rank    int    `json:"rank"`
 	Name    string `json:"name"`
 	Guesses int    `json:"guesses"`
@@ -53,7 +54,7 @@ func get(ctx *fiber.Ctx) error {
 
 	i := 0
 	for ; rows.Next() && i < limit; i++ {
-		err = rows.Scan(&result[i].Name, &result[i].Guesses, &result[i].Points, &result[i].Latest)
+		err = rows.Scan(&result[i].Id, &result[i].Name, &result[i].Guesses, &result[i].Points, &result[i].Latest)
 		if err != nil {
 			rows.Close()
 			return err

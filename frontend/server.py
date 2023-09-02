@@ -1,3 +1,6 @@
+import random
+import string
+
 from flask import Flask, request
 from flask_cors import CORS
 from faker import Faker
@@ -20,6 +23,7 @@ points = 1_000
 for i in range(1, 102):
     points = randint(points - 15, points)
     data.append({
+        "id": i,
         "rank": i,
         "name": faker.name(),
         "points": points,
@@ -38,6 +42,29 @@ chat_config = {
     "msgEnd": "val.msgEnd",
 }
 
+
+class Buffer:
+    def __init__(self):
+        self._buf = [i for i in range(10)]
+        self._index = 0
+
+    def add(self, val) -> None:
+        self._buf[self._index] = val
+        self._index = (self._index + 1) % 10
+
+    def __getitem__(self, item) -> object | None:
+        if item < 10:
+            return self._buf[item]
+
+    def __contains__(self, item) -> bool:
+        return item in self._buf
+
+
+buf = Buffer()
+
+
+def genKey() -> str:
+    return "".join(random.choices(string.ascii_lowercase, k=15))
 
 def sortdata(sort: str, o: bool):
     global data
@@ -82,3 +109,28 @@ def chat():
         chat_config = data
         return "", 200
     return "", 404
+
+
+@app.route("/api/user/<int:id>/", methods=["GET", "DELETE"])
+def user(id: int):
+    if request.method == "GET":
+        return {
+            "name": "TestUser123",
+            "id": id,
+            "guesses": randint(100, 1_000),
+            "points": randint(0, 100),
+            "latest": randint(0, 255),
+            "history": [
+                {"game": i, "guess": randint(0, 10), "correct": randint(0, 10)}
+                for i in range(10)
+            ]
+        }
+    if request.is_json:
+        res = request.get_json()
+        if res["key"] not in buf:
+            return "", 400
+        return "", 204
+    else:
+        key = genKey()
+        buf.add(key)
+        return {"key": key}

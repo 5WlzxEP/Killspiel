@@ -116,7 +116,7 @@ func prepareStmts() (err error) {
 		return
 	}
 
-	LeaderboardAsc, err = DB.Prepare(`SELECT name, guesses, points, latest FROM Users ORDER BY 
+	LeaderboardAsc, err = DB.Prepare(`SELECT id, name, guesses, points, latest FROM Users ORDER BY 
                                                     CASE ? 
                                                         WHEN 1 THEN points 
                                                         WHEN 2 THEN name 
@@ -127,7 +127,7 @@ func prepareStmts() (err error) {
 		return err
 	}
 
-	LeaderboardDesc, err = DB.Prepare(`SELECT name, guesses, points, latest FROM Users ORDER BY 
+	LeaderboardDesc, err = DB.Prepare(`SELECT id, name, guesses, points, latest FROM Users ORDER BY 
                                                     CASE ? 
                                                         WHEN 1 THEN points 
                                                         WHEN 2 THEN name 
