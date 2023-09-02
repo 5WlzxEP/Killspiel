@@ -1,10 +1,10 @@
 <script lang="ts">
-    import Leaderboard from "@components/Leaderboard.svelte"
+	import Leaderboard from "@components/Leaderboard.svelte"
 </script>
 
 <svelte:head>
-    <title>Leaderboard | Killspiel </title>
+	<title>Leaderboard | Killspiel</title>
 </svelte:head>
 <div class="container mx-auto">
-    <Leaderboard />
+	<Leaderboard />
 </div>
