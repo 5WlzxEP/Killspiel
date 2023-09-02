@@ -10,7 +10,7 @@ type Guess struct {
 	Guess float64
 }
 
-func SaveGuesses(m *map[int]Guess) (err error) {
+func SaveGuesses(m *map[int]Guess) (gameId int64, err error) {
 	tx, err := DB.Begin()
 	if err != nil {
 		return
@@ -21,7 +21,6 @@ func SaveGuesses(m *map[int]Guess) (err error) {
 	if err != nil {
 		return
 	}
-	var gameId int64
 	if gameId, err = result.LastInsertId(); err != nil {
 		var rows *sql.Rows
 		rows, err = tx.Query("SELECT last_insert_rowid()")
@@ -41,7 +40,7 @@ func SaveGuesses(m *map[int]Guess) (err error) {
 		rows.Next()
 		var exists bool
 		_ = rows.Scan(&exists)
-		rows.Close()
+		_ = rows.Close()
 
 		if !exists {
 			_, err = tx.Stmt(createUser).Exec(id, guess.Name)

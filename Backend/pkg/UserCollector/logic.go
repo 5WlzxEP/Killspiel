@@ -11,6 +11,7 @@ import (
 
 var EndCollect context.CancelFunc
 var guesses map[int]database.Guess
+var latestId int64
 
 func Collect(config config.UserCollect) {
 
@@ -31,7 +32,8 @@ func Collect(config config.UserCollect) {
 		}
 	})
 
-	err := database.SaveGuesses(&guesses)
+	var err error
+	latestId, err = database.SaveGuesses(&guesses)
 	if err != nil {
 		log.Printf("Error saving guesses: %v", err)
 		return
