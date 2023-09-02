@@ -2,7 +2,7 @@ import type { PageLoad } from "../../../../.svelte-kit/types/src/routes/user/[id
 import { error } from "@sveltejs/kit"
 import type { SvelteComponentTyped } from "svelte"
 
-export const prerender = "auto"
+export const prerender = false
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
