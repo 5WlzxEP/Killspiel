@@ -13,7 +13,8 @@
 		IconBrandTwitch,
 		IconHome,
 		IconSettings,
-		IconUser
+		IconUser,
+		IconUserSearch
 	} from "@tabler/icons-svelte"
 	import { afterUpdate, onMount, SvelteComponentTyped } from "svelte"
 	import { get } from "svelte/store"
@@ -85,6 +86,9 @@
 				</a>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
+				<a href="/user" class="btn-icon variant-ghost">
+					<IconUserSearch />
+				</a>
 				<a href="/leaderboard" class="btn items-center variant-ghost">
 					<IconBadges />
 					<p>Leaderboard</p>

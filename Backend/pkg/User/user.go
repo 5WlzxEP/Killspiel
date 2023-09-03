@@ -109,8 +109,9 @@ type searchName struct {
 }
 
 type searchResult struct {
-	Id   int    `json:"id"`
-	Name string `json:"name"`
+	Id     int    `json:"id"`
+	Name   string `json:"name"`
+	Points int    `json:"points"`
 }
 
 func search(ctx *fiber.Ctx) error {
@@ -131,7 +132,7 @@ func search(ctx *fiber.Ctx) error {
 
 	for rows.Next() {
 		var res searchResult
-		err = rows.Scan(&res.Id, &res.Name)
+		err = rows.Scan(&res.Id, &res.Name, &res.Points)
 		if err != nil {
 			continue
 		}

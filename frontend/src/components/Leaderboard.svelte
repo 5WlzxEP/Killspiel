@@ -141,7 +141,7 @@
 					>Teilnahmen
 				</th>
 				<th class="text-center w-[10%]">Rate</th>
-				<th class="text-right w-[15%] min-w-[200px]">Lastest</th>
+				<th class="text-right w-[15%] min-w-[200px]">letzten 8 Versuche</th>
 			</tr>
 		</thead>
 		<tbody>

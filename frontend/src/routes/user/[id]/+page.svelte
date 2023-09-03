@@ -77,58 +77,56 @@
 	<title>{data.name} | Killspiel</title>
 </svelte:head>
 
-<div class="container mx-auto">
-	<div class=" p-2">
-		<h1 class="text-6xl text-center">{data.name}</h1>
-		<hr class="p-2" />
+<div class="container mx-auto p-2">
+	<h1 class="text-6xl text-center">{data.name}</h1>
+	<hr class="p-2 mt-3" />
 
-		<div class="grid grid-cols-3 gap-4">
-			<div class="card p-2 text-xl">
-				Punkte:
-				<div class="text-5xl text-center">{data.points}</div>
-			</div>
-			<div class="card p-2 text-xl">
-				Versuche:
-				<div class="text-5xl text-center">{data.guesses}</div>
-			</div>
-			<div class="card p-2 text-xl">
-				Rate:
-				<div class="text-5xl text-center">
-					{data.guesses !== 0 ? ((data.points / data.guesses) * 100).toFixed(2) : 0}%
-				</div>
-			</div>
+	<div class="grid grid-cols-3 gap-4">
+		<div class="card p-2 text-xl">
+			Punkte:
+			<div class="text-5xl text-center">{data.points}</div>
 		</div>
-
-		<div class="mt-6">
-			<div class="table-container">
-				<!-- Native Table Element -->
-				<table class="table table-hover">
-					<thead>
-						<tr>
-							<th>Game</th>
-							<th>Schätzung</th>
-							<th>Ergebnis</th>
-							<th>Treffer</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each data.history as row}
-							<tr>
-								<td>{row.game}</td>
-								<td>{row.guess}</td>
-								<td>{row.correct}</td>
-								<td>
-									<svelte:component this={row.icon} />
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
+		<div class="card p-2 text-xl">
+			Versuche:
+			<div class="text-5xl text-center">{data.guesses}</div>
+		</div>
+		<div class="card p-2 text-xl">
+			Trefferrate:
+			<div class="text-5xl text-center">
+				{data.guesses !== 0 ? ((data.points / data.guesses) * 100).toFixed(2) : 0}%
 			</div>
 		</div>
 	</div>
 
-	<div class="flex">
-		<button class="ms-auto mr-3 btn variant-ghost" on:click={deleteUser}>Lösche User</button>
+	<div class="mt-6 {data.history.length > 0 ? '' : 'hidden'}">
+		<div class="table-container">
+			<!-- Native Table Element -->
+			<table class="table table-hover">
+				<thead>
+					<tr>
+						<th>Game</th>
+						<th>Schätzung</th>
+						<th>Ergebnis</th>
+						<th>Treffer</th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each data.history as row}
+						<tr>
+							<td>{row.game}</td>
+							<td>{row.guess}</td>
+							<td>{row.correct}</td>
+							<td>
+								<svelte:component this={row.icon} />
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<div class="flex mt-4">
+		<button class="ms-auto mr-3 btn variant-ghost" on:click={deleteUser}>User löschen</button>
 	</div>
 </div>

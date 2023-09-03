@@ -95,7 +95,7 @@ func prepareStmts() (err error) {
 		return
 	}
 
-	SearchUser, err = DB.Prepare("SELECT id, name FROM Users WHERE name like ?")
+	SearchUser, err = DB.Prepare("SELECT id, name, points FROM Users WHERE name like ?")
 	if err != nil {
 		return err
 	}
