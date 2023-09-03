@@ -84,7 +84,7 @@ func prepareStmts() (err error) {
 		return
 	}
 
-	GetUser, err = DB.Prepare("SELECT id, correct, vote FROM Game JOIN (SELECT game, vote FROM Votes WHERE player = ? LIMIT 50 ORDER BY game desc) V on Game.id = V.game")
+	GetUserGames, err = DB.Prepare("SELECT id, correct, vote FROM Game JOIN (SELECT game, vote FROM Votes WHERE player = ? ORDER BY game desc LIMIT 50) V on Game.id = V.game")
 	if err != nil {
 		return
 	}

@@ -4,8 +4,10 @@ import (
 	"Killspiel/pkg/Killspiel"
 	"Killspiel/pkg/helper"
 	"embed"
+	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"net/http"
 )
 
@@ -19,14 +21,18 @@ func main() {
 	//goland:noinspection GoBoolExpressions
 	app := fiber.New(fiber.Config{
 		DisableStartupMessage: DisableStartupMessage == "true",
+		JSONDecoder:           json.Unmarshal,
+		JSONEncoder:           json.Marshal,
 	})
+
+	app.Use(logger.New())
 
 	Killspiel.Init(app)
 
 	app.Use("/", filesystem.New(filesystem.Config{
 		Root:         http.FS(frontendBuild),
 		PathPrefix:   "frontend_build",
-		MaxAge:       0,
+		MaxAge:       30 * 60,
 		NotFoundFile: "r.html",
 	}))
 
