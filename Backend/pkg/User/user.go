@@ -21,6 +21,7 @@ var buf = helper.Buffer[key]{}
 func Init(r fiber.Router) {
 	r.Get("/:id/", get)
 	r.Delete("/:id/", del)
+	r.Post("/", search)
 }
 
 type User struct {
@@ -101,4 +102,41 @@ func deleteUser(id int) {
 	if err != nil {
 		log.Printf("An error occured deleteing user %d: %v\n", id, err)
 	}
+}
+
+type searchName struct {
+	Name string `json:"name"`
+}
+
+type searchResult struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
+}
+
+func search(ctx *fiber.Ctx) error {
+	var name searchName
+	_ = ctx.BodyParser(&name)
+	if len(name.Name) < 3 {
+		return ctx.JSON(fiber.Map{
+			"error": "name must be at least 3 characters long",
+		})
+	}
+
+	var result []searchResult
+
+	rows, err := database.SearchUser.Query("%" + name.Name + "%")
+	if err != nil {
+		return err
+	}
+
+	for rows.Next() {
+		var res searchResult
+		err = rows.Scan(&res.Id, &res.Name)
+		if err != nil {
+			continue
+		}
+		result = append(result, res)
+	}
+
+	return ctx.JSON(result)
 }

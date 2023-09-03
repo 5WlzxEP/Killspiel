@@ -40,6 +40,11 @@ func CreateTables() error {
 		return err
 	}
 
+	_, err = tx.Exec("CREATE UNIQUE INDEX IF NOT EXISTS Usernames ON Users(name)")
+	if err != nil {
+		return err
+	}
+
 	// Games
 	_, err = tx.Exec(`CREATE TABLE IF NOT EXISTS Game (
     	id integer primary key AUTOINCREMENT,

@@ -15,6 +15,7 @@ var (
 	GetUser      *sql.Stmt
 	GetUserGames *sql.Stmt
 	DeleteUser   *sql.Stmt
+	SearchUser   *sql.Stmt
 
 	// Leaderboard
 	LeaderboardAsc  *sql.Stmt
@@ -92,6 +93,11 @@ func prepareStmts() (err error) {
 	DeleteUser, err = DB.Prepare("DELETE FROM Users WHERE id = ?")
 	if err != nil {
 		return
+	}
+
+	SearchUser, err = DB.Prepare("SELECT id, name FROM Users WHERE name like ?")
+	if err != nil {
+		return err
 	}
 
 	return
