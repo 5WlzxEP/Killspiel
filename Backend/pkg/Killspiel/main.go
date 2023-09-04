@@ -7,8 +7,10 @@ import (
 	"Killspiel/pkg/config"
 	"Killspiel/pkg/database"
 	"Killspiel/pkg/router"
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"log"
+	"net/http"
 )
 
 func Init(app *fiber.App) {
@@ -32,6 +34,12 @@ func Init(app *fiber.App) {
 
 	Leaderboard.Init(api.Group("/leaderboard"))
 	User.Init(api.Group("/user"))
+
+	// Redirecting user access per link, because /user/:id is routed through svelte
+	app.Get("/user/:id/", func(ctx *fiber.Ctx) error {
+		ctx.Status(http.StatusFound).Location(fmt.Sprintf("/Redirect/?%s", ctx.OriginalURL()))
+		return nil
+	})
 }
 
 func Run() {
