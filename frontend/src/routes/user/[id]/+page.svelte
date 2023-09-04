@@ -113,7 +113,7 @@
 				<tbody>
 					{#each data.history as row}
 						<tr>
-							<td>{row.game}</td>
+							<td>{row.id}</td>
 							<td>{row.guess}</td>
 							<td>{row.correct}</td>
 							<td>

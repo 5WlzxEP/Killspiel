@@ -61,7 +61,7 @@ func get(ctx *fiber.Ctx) error {
 	}
 	for rows.Next() {
 		g := Game{}
-		err = rows.Scan(g.Id, g.Correct, g.Guess)
+		err = rows.Scan(&g.Id, &g.Correct, &g.Guess)
 		if err != nil {
 			continue
 		}
