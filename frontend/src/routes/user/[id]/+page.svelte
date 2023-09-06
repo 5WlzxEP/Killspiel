@@ -42,6 +42,7 @@
 	}
 
 	async function deleteUser() {
+		modalButtonPositive.set("variant-filled-error")
 		const url = `${BACKEND_URL}/api/user/${data.id}/`
 		const res = await fetch(url, {
 			method: "DELETE"
@@ -67,7 +68,7 @@
 				await deleteConfirmed(j.key)
 			}
 		}
-		modalButtonPositive.set("variant-filled-error")
+
 		modalStore.trigger(modal)
 	}
 </script>

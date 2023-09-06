@@ -20,7 +20,7 @@ export type User = {
 	}>
 }
 
-export const load: PageLoad = async ({ params }) => {
+export const load: PageLoad = async ({ fetch: fetch, params }) => {
 	try {
 		const url = `${BACKEND_URL}/api/user/${params.id}/`
 		const res = await fetch(url)

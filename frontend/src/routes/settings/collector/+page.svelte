@@ -1,7 +1,53 @@
 <script lang="ts">
 	import { IconBrandTwitch } from "@tabler/icons-svelte"
+	import { onMount } from "svelte"
+	import { getToastStore, type ToastSettings } from "@skeletonlabs/skeleton"
+	const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
+	const toastStore = getToastStore()
 
 	let scale: number
+	let time: number
+	let collector: string
+	let options: Array<any> = []
+	let select: HTMLSelectElement
+
+	onMount(async () => {
+		try {
+			const res = await fetch(`${BACKEND_URL}/api/collector/`)
+			if (res.ok) {
+				const j: {all: Array<{ name: string }>, collector: { name: string }, time: number} = await res.json()
+				options = j.all
+
+				if (j.collector !== undefined)
+				collector = j.collector.name
+
+				if (j.time % 60 === 0) {
+					time = Math.floor(j.time / 60)
+					scale = 60
+				} else {
+					time = j.time
+					scale = 1
+				}
+
+				select.value = String(scale)
+			} else {
+				const t: ToastSettings = {
+					message: await res.text(),
+					timeout: 5000,
+					background: "variant-filled-error"
+				}
+				toastStore.trigger(t)
+			}
+		} catch (e) {
+			console.error(e)
+			const t: ToastSettings = {
+				message: "Es ist ein Fehler beim Abfragen der aktualisieren Einstellungen aufgetreten.",
+				timeout: 5000,
+				background: "variant-filled-error"
+			}
+			toastStore.trigger(t)
+		}
+	})
 </script>
 
 <div class="container grid grid-cols-2 mx-auto gap-4">
@@ -24,14 +70,22 @@
 			<label class="label m-2">
 				<span>Dauer</span>
 				<div class="input-group input-group-divider grid-cols-[1fr_auto]">
-					<input title="3" type="number" placeholder="3" />
-					<select bind:value={scale}>
+					<input title="3" type="number" placeholder="3" bind:value={time} />
+					<select bind:this={select}>
 						<option value="60">min</option>
 						<option value="1">s</option>
 					</select>
 				</div>
 			</label>
-			<div class="flex">
+			<label class="label m-2">
+				<span>Aktiver Collector</span>
+				<select bind:value={collector} class="input select">
+					{#each options as option}
+						<option value="{option.name}">{option.name}</option>
+					{/each}
+				</select>
+			</label>
+			<div class="flex mt-4">
 				<button class="btn variant-ghost-success ms-auto" type="submit">Speichern</button>
 			</div>
 		</form>

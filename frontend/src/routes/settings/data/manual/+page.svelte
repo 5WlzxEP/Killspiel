@@ -1,53 +1,48 @@
 <script lang="ts">
 	import { type ToastSettings, getToastStore } from "@skeletonlabs/skeleton"
-	import { onMount } from "svelte"
+	import { onDestroy, onMount } from "svelte"
 
 	const toastStore = getToastStore()
 	const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
-	let result = 0
 	let state = 0
-	let start: HTMLButtonElement
-	let dissolve: HTMLButtonElement
-	let end: HTMLButtonElement
+	let dissolve: boolean
 
 	let r: number | string
 
 	$: {
 		if (typeof r === "number") r = Math.abs(r)
+		else if (r !== null) r = 0
 	}
 
-	function change(e: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }) {
-		setState(++state)
-
-		if (state === 1) {
-			setTimeout(change, 5000)
-		}
+	$: {
+		dissolve = state !== 2 || typeof r !== "number"
 	}
 
-	function setState(change: number) {
-		state = change % 3
-
-		start.disabled = state != 0 // none
-		end.disabled = state !== 1 // collecting
-		dissolve.disabled = state !== 2 || result == undefined // running
-	}
-
-	async function submit(e: Event) {
-		// console.log(e)
+	async function change(e: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }, result?: number) {
 		try {
-			const res = await fetch(`${BACKEND_URL}/api/collector/chat/`, {
+			const res = await fetch(`${BACKEND_URL}/api/data/`, {
 				headers: {
 					"Content-Type": "application/json"
 				},
 				method: "POST",
-				body: JSON.stringify("")
+				body: JSON.stringify({
+					"state": state,
+					"result": result,
+				})
 			})
 			if (res.ok) {
 				const t: ToastSettings = {
 					message: "Einstellungen erfolgreich gespeichert.",
 					timeout: 5000,
 					background: "variant-filled-success"
+				}
+				toastStore.trigger(t)
+			} else {
+				const t: ToastSettings = {
+					message: await res.text(),
+					timeout: 5000,
+					background: "variant-filled-error"
 				}
 				toastStore.trigger(t)
 			}
@@ -60,42 +55,43 @@
 			}
 			toastStore.trigger(t)
 		}
+
 	}
 
-	async function submitEnd() {
-		const url = `${BACKEND_URL}/api/end`
+	function printState(): string {
+		switch (state) {
+			case 0:
+				return "Ready"
+			case 1:
+				return "Sammle Schätzungen"
+			case 2:
+				return "Warte auf Auflösung"
+		}
+		return ""
+	}
+
+	async function update() {
+		const url = `${BACKEND_URL}/api/data/`
 		try {
 			const res = await fetch(url)
 			const val = await res.json()
+			state = val.state
 		} catch (e) {
 			console.error(e)
-			const t: ToastSettings = {
-				message: "Es ist ein Fehler beim Abfragen der aktuellen Einstellungen aufgetreten.",
-				timeout: 5000,
-				background: "variant-filled-error"
-			}
-
-			toastStore.trigger(t)
 		}
 	}
 
-	onMount(async () => {
-		setState(0)
+	let interval
 
-		const url = `${BACKEND_URL}/api/data/manual/`
-		try {
-			const res = await fetch(url)
-			const val = await res.json()
-			setState(val.state)
-		} catch (e) {
-			const t: ToastSettings = {
-				message: "Es ist ein Fehler beim Abfragen der aktuellen Einstellungen aufgetreten.",
-				timeout: 5000,
-				background: "variant-filled-error"
-			}
-			toastStore.trigger(t)
-		}
+	onMount(async () => {
+		await update()
+		interval = setInterval(update, 10_000)
 	})
+
+	onDestroy(() => {
+		clearInterval(interval)
+	})
+
 </script>
 
 <div class="container mx-auto">
@@ -107,12 +103,13 @@
 				<button
 					class="btn variant-ghost"
 					type="button"
-					bind:this={start}
-					on:click={(e) => change(e)}
+					disabled={state !== 0}
+					on:click={change}
 				>
 					Starten
 				</button>
-				<button class="btn variant-ghost" type="button" bind:this={end} on:click={submitEnd}>
+				<button class="btn variant-ghost" type="button" 					disabled={state !== 1}
+								on:click={change}>
 					Beenden
 				</button>
 			</div>
@@ -121,22 +118,15 @@
 
 			<div class="p-2 grid gap-2 h-3">
 				Current State:
-				{#if state === 0}
-					Ready
-				{:else if state === 1}
-					Sammele Schätzungen
-				{:else if state === 2}
-					Warte auf Auflösung
-				{/if}
+				{printState()}
 			</div>
 
 			<span class="divider-vertical h-full" />
 
 			<form class="p-2 gap-2 grid">
 				<input
-					class="input"
+					class="input lineNumbers"
 					bind:value={r}
-					on:keyup={() => (dissolve.disabled = state !== 2 || result === null)}
 					placeholder="7.2"
 					type="number"
 					required
@@ -144,8 +134,8 @@
 				/>
 				<button
 					class="btn variant-ghost"
-					bind:this={dissolve}
-					on:click={(e) => change(e)}
+					disabled={dissolve}
+					on:click={(e) => change(e, r)}
 					type="submit"
 				>
 					Ergebnis speichern
