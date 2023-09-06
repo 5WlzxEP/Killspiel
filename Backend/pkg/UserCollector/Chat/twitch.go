@@ -3,6 +3,7 @@ package Chat
 import (
 	"Killspiel/pkg/config"
 	"context"
+	"fmt"
 	"github.com/gempir/go-twitch-irc/v4"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
@@ -102,7 +103,7 @@ func newConfig(configPath string) *TwitchChat {
 	return &tc
 }
 
-func (tc *TwitchChat) AnnounceResult(winners []string, correctGuess int) {
+func (tc *TwitchChat) AnnounceResult(winners []string, correctGuess float64) {
 	msg := tc.formatFinalMessage(winners, correctGuess)
 
 	tc.Lock()
@@ -159,8 +160,8 @@ func (tc *TwitchChat) CollectGuesses(ctx context.Context, collect func(id int, u
 }
 
 // formatFinalMessage replaces $RESULT and $WINNERS for the message for the chat
-func (tc *TwitchChat) formatFinalMessage(winners []string, result int) (res string) {
-	res = strings.Replace(tc.FinalMsg, "$RESULT", strconv.Itoa(result), -1)
+func (tc *TwitchChat) formatFinalMessage(winners []string, result float64) (res string) {
+	res = strings.Replace(tc.FinalMsg, "$RESULT", fmt.Sprintf("%.2f", result), -1)
 	res = strings.Replace(tc.FinalMsg, "$WINNERS", strings.Join(winners, ", "), -1)
 	return
 }

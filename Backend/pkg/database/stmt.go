@@ -10,6 +10,7 @@ var (
 	userWin           *sql.Stmt
 	createVote        *sql.Stmt
 	getWinners        *sql.Stmt
+	UpdateUser        *sql.Stmt
 
 	// User
 	GetUser      *sql.Stmt
@@ -96,6 +97,11 @@ func prepareStmts() (err error) {
 	}
 
 	SearchUser, err = DB.Prepare("SELECT id, name, points FROM Users WHERE name like ?")
+	if err != nil {
+		return err
+	}
+
+	UpdateUser, err = DB.Prepare("UPDATE Users SET latest = ((latest << 1) + ?) % 256, points = points + ? WHERE id = ?;")
 	if err != nil {
 		return err
 	}

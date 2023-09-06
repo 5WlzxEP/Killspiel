@@ -5,8 +5,8 @@ import (
 	"Killspiel/pkg/config"
 	"context"
 	"github.com/gofiber/fiber/v2"
-	"net/http"
 	"slices"
+	"time"
 )
 
 type Collectors []cols
@@ -19,16 +19,16 @@ type cols struct {
 type Collector interface {
 	Ready() bool
 	CollectGuesses(ctx context.Context, collector func(id int, user, guess string))
-	AnnounceResult(winners []string, correctGuess int)
+	AnnounceResult(winners []string, correctGuess float64)
 }
 
 var collectors Collectors
 var currentCollector Collector
+var collectTime time.Duration
 
 func Init(configPath string, config config.UserCollect, r fiber.Router) {
 
 	r.Get("/", get)
-	r.Get("/cancel", cancel)
 
 	twitchChat, name := Chat.New(configPath, r.Group("/chat"))
 
@@ -37,28 +37,22 @@ func Init(configPath string, config config.UserCollect, r fiber.Router) {
 		Collector: twitchChat,
 	})
 
+	collectTime = config.Duration
+
 	i := slices.IndexFunc(collectors, func(c cols) bool {
 		return c.Name == config.Collector
 	})
-
 	if i == -1 {
 		return
 	}
-	currentCollector = collectors[i]
 
+	currentCollector = collectors[i]
 }
 
 func get(ctx *fiber.Ctx) error {
 	return ctx.JSON(map[string]any{
 		"current": currentCollector,
 		"all":     collectors,
+		"time":    collectTime,
 	})
-}
-
-// cancel ends the running collection of guesses
-func cancel(ctx *fiber.Ctx) error {
-	EndCollect()
-
-	ctx.Status(http.StatusNoContent)
-	return nil
 }

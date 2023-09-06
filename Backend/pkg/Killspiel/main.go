@@ -2,6 +2,7 @@ package Killspiel
 
 import (
 	"Killspiel/pkg/Leaderboard"
+	"Killspiel/pkg/ResultCollector"
 	"Killspiel/pkg/User"
 	"Killspiel/pkg/UserCollector"
 	"Killspiel/pkg/config"
@@ -11,6 +12,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"log"
 	"net/http"
+	"time"
 )
 
 func Init(app *fiber.App) {
@@ -31,6 +33,7 @@ func Init(app *fiber.App) {
 
 	api := router.CreateApiGroup(app)
 	UserCollector.Init(path, conf.UserCollector, api.Group("/collector"))
+	ResultCollector.Init(api.Group("/data"))
 
 	Leaderboard.Init(api.Group("/leaderboard"))
 	User.Init(api.Group("/user"))
@@ -43,5 +46,21 @@ func Init(app *fiber.App) {
 }
 
 func Run() {
+	for Ready() {
+		ResultCollector.Begin()
 
+		UserCollector.Collect()
+
+		res := ResultCollector.Result()
+
+		UserCollector.AnnounceResult(res)
+
+	}
+}
+
+func Ready() bool {
+	for !UserCollector.Ready() {
+		time.Sleep(5 * time.Second)
+	}
+	return true
 }

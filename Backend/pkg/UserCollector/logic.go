@@ -1,25 +1,37 @@
 package UserCollector
 
 import (
-	"Killspiel/pkg/config"
 	"Killspiel/pkg/database"
 	"context"
+	"fmt"
 	"log"
+	"os"
 	"strconv"
 	"time"
 )
 
 var EndCollect context.CancelFunc
 var guesses map[int]database.Guess
-var latestId int64
 
-func Collect(config config.UserCollect) {
+func Ready() bool {
+	if currentCollector != nil {
+		return currentCollector.Ready()
+	}
+	return false
+}
+
+func Collect() {
 
 	clear(guesses)
 
-	deadline := time.Now().Add(config.Duration * time.Second)
+	deadline := time.Now().Add(collectTime * time.Second)
 	var ctx context.Context
 	ctx, EndCollect = context.WithDeadline(context.Background(), deadline)
+
+	if currentCollector == nil {
+		_, _ = fmt.Fprintln(os.Stderr, "No UserCollector defined, skipping collecting guesses")
+		return
+	}
 
 	currentCollector.CollectGuesses(ctx, func(id int, user, guess string) {
 		g, err := strconv.ParseFloat(guess, 64)
@@ -33,10 +45,38 @@ func Collect(config config.UserCollect) {
 	})
 
 	var err error
-	latestId, err = database.SaveGuesses(&guesses)
+	_, err = database.SaveGuesses(&guesses)
 	if err != nil {
 		log.Printf("Error saving guesses: %v", err)
 		return
 	}
 
+}
+
+func AnnounceResult(correctGuess float64) {
+	var winners []string
+
+	tx, err := database.DB.Begin()
+	if err != nil {
+		return
+	}
+	defer tx.Rollback()
+	for id, user := range guesses {
+		add := 0
+		if user.Guess == correctGuess {
+			add = 1
+			winners = append(winners, user.Name)
+		}
+		_, err = tx.Stmt(database.UpdateUser).Exec(add, add, id)
+		if err != nil {
+			return
+		}
+	}
+	_ = tx.Commit()
+
+	if currentCollector != nil {
+		currentCollector.AnnounceResult(winners, correctGuess)
+	} else {
+		_, _ = fmt.Fprintln(os.Stderr, "No UserCollector defined, skipping announcing winners")
+	}
 }
