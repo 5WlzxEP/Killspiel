@@ -3,6 +3,7 @@ package Chat
 import (
 	"Killspiel/pkg/config"
 	"context"
+	"errors"
 	"fmt"
 	"github.com/gempir/go-twitch-irc/v4"
 	"github.com/goccy/go-json"
@@ -16,7 +17,7 @@ import (
 	"sync"
 )
 
-const CONFIG_NAME = "Twitch.json"
+const ConfigName = "Twitch.json"
 
 type TwitchChat struct {
 	client        *twitch.Client
@@ -46,12 +47,15 @@ func (tc *TwitchChat) Ready() bool {
 	tc.ready.changed = false
 	tc.ready.ready = false
 
+	var err2 error
+	tc.client.OnConnect(func() {
+		err2 = tc.client.Disconnect()
+	})
 	err := tc.client.Connect()
-	if err != nil {
+	if err != nil && !errors.Is(err, twitch.ErrClientDisconnected) {
 		return false
 	}
-	err = tc.client.Disconnect()
-	if err != nil {
+	if err2 != nil {
 		return false
 	}
 
@@ -63,22 +67,26 @@ func New(configPath string, r fiber.Router) (*TwitchChat, string) {
 	tc := newConfig(configPath)
 	if tc == nil {
 		tc = &TwitchChat{
-			configPath: path.Join(configPath, CONFIG_NAME),
+			configPath: path.Join(configPath, ConfigName),
 		}
 		tc.saveConfig()
 	}
 
 	tc.client = twitch.NewClient(tc.ChannelSender, tc.ApiKey)
 
+	tc.ready.changed = true
+	tc.Ready()
+
 	r.Get("/", tc.get)
 
 	r.Post("/", tc.post)
+	r.Get("/ready/", tc.isReady)
 
 	return tc, "Twitchchat"
 }
 
 func newConfig(configPath string) *TwitchChat {
-	conf := path.Join(configPath, CONFIG_NAME)
+	conf := path.Join(configPath, ConfigName)
 
 	if !config.ExistsAndFile(conf) {
 		return nil
@@ -109,6 +117,7 @@ func (tc *TwitchChat) AnnounceResult(winners []string, correctGuess float64) {
 	tc.Lock()
 	defer tc.Unlock()
 
+	// TODO Remove block
 	err := tc.client.Connect()
 	if err != nil {
 		return
@@ -189,8 +198,7 @@ func (tc *TwitchChat) get(ctx *fiber.Ctx) error {
 func (tc *TwitchChat) post(ctx *fiber.Ctx) error {
 	success := tc.TryLock()
 	if !success {
-		ctx.Status(http.StatusConflict)
-		return nil
+		return ctx.Status(http.StatusConflict).SendString("Killspiel laeuft gerade, keine aenderungen moeglich")
 	}
 	defer tc.Unlock()
 
@@ -204,6 +212,7 @@ func (tc *TwitchChat) post(ctx *fiber.Ctx) error {
 
 	// recreate the client if credentials change
 	if client != tc.ChannelSender || auth != tc.ApiKey {
+		tc.ready.changed = true
 		tc.client = twitch.NewClient(tc.ChannelSender, tc.ApiKey)
 	}
 
@@ -222,4 +231,12 @@ func (tc *TwitchChat) checkEmptySender() {
 	if tc.ChannelSender == "" {
 		tc.ChannelSender = tc.Channel
 	}
+}
+
+func (tc *TwitchChat) isReady(ctx *fiber.Ctx) error {
+	ctx.Status(http.StatusOK)
+	if tc.Ready() {
+		return ctx.SendString("true")
+	}
+	return ctx.SendString("false")
 }

@@ -10,13 +10,56 @@
 	let collector: string
 	let options: Array<any> = []
 	let select: HTMLSelectElement
+	let selectCollector: HTMLSelectElement
+
+	$: scale = select?.value as number
+
+
+	async function send() {
+		try {
+			const res = await fetch(`${BACKEND_URL}/api/collector/`, {
+				method: "POST",
+				headers: {
+					"content-type": "application/json"
+				},
+				body: JSON.stringify({
+					collector: selectCollector.value,
+					duration: scale * time
+				})
+			})
+			if (res.ok) {
+				const t: ToastSettings = {
+					message: "Erfolgreich gespeichert.",
+					timeout: 5000,
+					background: "variant-filled-success"
+				}
+				toastStore.trigger(t)
+			} else {
+				const t: ToastSettings = {
+					message: await res.text(),
+					timeout: 5000,
+					background: "variant-filled-error"
+				}
+				toastStore.trigger(t)
+			}
+		} catch (e) {
+			console.error(e)
+			const t: ToastSettings = {
+				message: "Es ist ein Fehler beim Abfragen der aktualisieren Einstellungen aufgetreten.",
+				timeout: 5000,
+				background: "variant-filled-error"
+			}
+			toastStore.trigger(t)
+		}
+	}
 
 	onMount(async () => {
 		try {
 			const res = await fetch(`${BACKEND_URL}/api/collector/`)
 			if (res.ok) {
-				const j: {all: Array<{ name: string }>, collector: { name: string }, time: number} = await res.json()
+				const j: {all: Array<{ name: string }>, collector: { name: string, ready: boolean }, time: number} = await res.json()
 				options = j.all
+				options.push({name: '', ready: true})
 
 				if (j.collector !== undefined)
 				collector = j.collector.name
@@ -71,7 +114,7 @@
 				<span>Dauer</span>
 				<div class="input-group input-group-divider grid-cols-[1fr_auto]">
 					<input title="3" type="number" placeholder="3" bind:value={time} />
-					<select bind:this={select}>
+					<select bind:this={select} >
 						<option value="60">min</option>
 						<option value="1">s</option>
 					</select>
@@ -79,14 +122,14 @@
 			</label>
 			<label class="label m-2">
 				<span>Aktiver Collector</span>
-				<select bind:value={collector} class="input select">
+				<select bind:value={collector} bind:this={selectCollector} class="input select">
 					{#each options as option}
-						<option value="{option.name}">{option.name}</option>
+						<option value="{option.name}" disabled="{!option.ready}">{option.name}</option>
 					{/each}
 				</select>
 			</label>
 			<div class="flex mt-4">
-				<button class="btn variant-ghost-success ms-auto" type="submit">Speichern</button>
+				<button class="btn variant-ghost-success ms-auto" type="submit" on:click={send}>Speichern</button>
 			</div>
 		</form>
 	</div>

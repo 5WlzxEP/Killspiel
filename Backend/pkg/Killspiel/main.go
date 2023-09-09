@@ -32,7 +32,7 @@ func Init(app *fiber.App) {
 	}
 
 	api := router.CreateApiGroup(app)
-	UserCollector.Init(path, conf.UserCollector, api.Group("/collector"))
+	UserCollector.Init(path, conf, api.Group("/collector"))
 	ResultCollector.Init(api.Group("/data"))
 
 	Leaderboard.Init(api.Group("/leaderboard"))

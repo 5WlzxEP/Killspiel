@@ -19,6 +19,25 @@ var (
 
 type Config struct {
 	UserCollector UserCollect `json:"userCollector"`
+	// location holds the path the config.json
+	// <br>
+	// is unexported to prevent json serialization
+	// and I'm too lazy to implementMarshalJSON and maintain it
+	location string
+}
+
+func (c *Config) GetLocation() string {
+	return c.location
+}
+
+func (c *Config) Save() error {
+	file, err := os.OpenFile(c.location, os.O_TRUNC|os.O_WRONLY, 0)
+	if err != nil {
+		return err
+	}
+
+	err = json.NewEncoder(file).Encode(c)
+	return err
 }
 
 func FindConfigPath() (string, error) {
@@ -52,19 +71,21 @@ func ExistsAndFile(path string) bool {
 	return !stat.IsDir()
 }
 
-func GetConfig(p string) (config Config, err error) {
-	var f *os.File
-	f, err = os.Open(path.Join(p, configName))
+func GetConfig(p string) (*Config, error) {
+	var config Config
+	loc := path.Join(p, configName)
+	f, err := os.Open(loc)
 	if err != nil {
-		return
+		return nil, err
 	}
 
 	err = json.NewDecoder(f).Decode(&config)
 	if err != nil {
-		return
+		return nil, err
 	}
 
-	return
+	config.location = loc
+	return &config, nil
 }
 
 // Default creates the folder config in the current location and creates the default config

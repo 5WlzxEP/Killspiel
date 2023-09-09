@@ -5,7 +5,9 @@ import (
 	"Killspiel/pkg/helper"
 	"embed"
 	"github.com/goccy/go-json"
+	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"net/http"
@@ -26,6 +28,20 @@ func main() {
 	})
 
 	app.Use(logger.New())
+	app.Use(cors.New(cors.ConfigDefault))
+	app.Use("/ws", func(c *fiber.Ctx) error {
+		// IsWebSocketUpgrade returns true if the client
+		// requested upgrade to the WebSocket protocol.
+		if websocket.IsWebSocketUpgrade(c) {
+			c.Locals("allowed", true)
+			return c.Next()
+		}
+		return fiber.ErrUpgradeRequired
+	})
+
+	app.Get("/ws/", websocket.New(func(conn *websocket.Conn) {
+
+	}))
 
 	Killspiel.Init(app)
 

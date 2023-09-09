@@ -1,12 +1,18 @@
 <script lang="ts">
 	import { type ToastSettings, getToastStore } from "@skeletonlabs/skeleton"
-	import { onMount } from "svelte"
+	import { onMount, SvelteComponentTyped } from "svelte"
 	import InputText from "@components/InputText.svelte"
 	import InputArea from "@components/InputArea.svelte"
+	import X from "@components/X.svelte"
+	import Check from "@components/Check.svelte"
+	import { redirect } from "@sveltejs/kit"
+	import { IconCheck, IconX } from "@tabler/icons-svelte"
 
 	const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 	const toastStore = getToastStore()
+
+	let ready: boolean
 
 	const d = {
 		apiKey: "",
@@ -35,6 +41,8 @@
 				}
 				toastStore.trigger(t)
 			}
+
+			await isReady()
 		} catch (e) {
 			console.error(e)
 			const t: ToastSettings = {
@@ -44,6 +52,12 @@
 			}
 			toastStore.trigger(t)
 		}
+	}
+
+	async function isReady() {
+		const url = `${BACKEND_URL}/api/collector/chat/ready/`
+		const res = await fetch(url)
+		ready = await res.text() === "true"
 	}
 
 	onMount(async () => {
@@ -58,6 +72,8 @@
 			d.msgBegin = val.msgBegin
 			d.msgEnd = val.msgEnd
 			d.msgFinal = val.msgFinal
+
+			await isReady()
 		} catch (e) {
 			const t: ToastSettings = {
 				message: "Es ist ein Fehler beim Abfragen der aktuellen Einstellungen aufgetreten.",
@@ -71,7 +87,17 @@
 
 <div class="container mx-auto">
 	<div class="card w-full">
-		<h1 class="text-center text-2xl p-3">Twitchchat Settings</h1>
+		<div class="text-center font-bold text-2xl p-3 flex mx-auto justify-center">
+			Twitchchat Settings
+			{#if (ready)}
+				<IconCheck size={30} color="lime" class="ml-2 mt-0.5" />
+			{:else }
+				<div class="cursor-help ml-2 mt-0.5" title="ApiKey und/oder TwitchAccount stimmen nicht.">
+				<IconX size={30} color="red"/>
+				</div>
+			{/if}
+
+		</div>
 		<hr />
 		<form class="p-5" on:submit|preventDefault={submit}>
 			<div class="grid lg:!grid-cols-2 gap-10 w-full m-2">

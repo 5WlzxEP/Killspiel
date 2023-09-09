@@ -66,6 +66,8 @@
 				return "Sammle Schätzungen"
 			case 2:
 				return "Warte auf Auflösung"
+			case 3:
+				return "Verkünde Ergebnis"
 		}
 		return ""
 	}

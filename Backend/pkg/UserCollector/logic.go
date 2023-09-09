@@ -15,7 +15,7 @@ var guesses map[int]database.Guess
 
 func Ready() bool {
 	if currentCollector != nil {
-		return currentCollector.Ready()
+		return currentCollector.Collector.Ready()
 	}
 	return false
 }
