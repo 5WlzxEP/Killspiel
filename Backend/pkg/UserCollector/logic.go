@@ -24,7 +24,7 @@ func Collect() {
 
 	clear(guesses)
 
-	deadline := time.Now().Add(collectTime * time.Second)
+	deadline := time.Now().Add(collectTime)
 	var ctx context.Context
 	ctx, EndCollect = context.WithDeadline(context.Background(), deadline)
 

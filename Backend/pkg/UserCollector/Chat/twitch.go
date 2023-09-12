@@ -15,6 +15,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 )
 
 const ConfigName = "Twitch.json"
@@ -118,12 +119,12 @@ func (tc *TwitchChat) AnnounceResult(winners []string, correctGuess float64) {
 	defer tc.Unlock()
 
 	// TODO Remove block
-	err := tc.client.Connect()
-	if err != nil {
-		return
-	}
-	tc.client.Say(tc.Channel, msg)
-	tc.client.Disconnect()
+	tc.client.OnConnect(func() {
+		tc.client.Say(tc.Channel, msg)
+		time.Sleep(50 * time.Millisecond)
+		tc.client.Disconnect()
+	})
+	_ = tc.client.Connect()
 }
 
 // CollectGuesses collect the user votes until the context cancels
@@ -154,24 +155,32 @@ func (tc *TwitchChat) CollectGuesses(ctx context.Context, collect func(id int, u
 	ctx, cancel := context.WithCancel(ctx)
 	go func() {
 		err := client.Connect()
-		if err != nil {
+		if err != nil && !errors.Is(err, twitch.ErrClientDisconnected) {
+			log.Println(err)
 			cancel()
 		}
 	}()
 
 	if c := ctx.Done(); c != nil {
 		<-c
+	} else {
+		log.Println(ctx.Err())
 	}
 
 	client.Say(tc.Channel, tc.EndMsg)
+	// make sure, a message is sent before the client is closed
+	time.Sleep(50 * time.Millisecond)
 	client.Disconnect()
-
 }
 
 // formatFinalMessage replaces $RESULT and $WINNERS for the message for the chat
 func (tc *TwitchChat) formatFinalMessage(winners []string, result float64) (res string) {
 	res = strings.Replace(tc.FinalMsg, "$RESULT", fmt.Sprintf("%.2f", result), -1)
-	res = strings.Replace(tc.FinalMsg, "$WINNERS", strings.Join(winners, ", "), -1)
+	if len(winners) == 0 {
+		winners = []string{"keiner"}
+	}
+	res = strings.Replace(res, "$WINNERS", strings.Join(winners, ", "), -1)
+
 	return
 }
 

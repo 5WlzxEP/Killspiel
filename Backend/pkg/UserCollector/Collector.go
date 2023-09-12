@@ -5,6 +5,7 @@ import (
 	"Killspiel/pkg/config"
 	"context"
 	"github.com/gofiber/fiber/v2"
+	"log"
 	"net/http"
 	"slices"
 	"time"
@@ -93,6 +94,7 @@ func post(ctx *fiber.Ctx) error {
 	}
 
 	conf.UserCollector.Duration = con.Duration
+	conf.UserCollector.Collector = col.Name
 
 	collectTime = con.Duration * time.Second
 	currentCollector = col
@@ -105,10 +107,12 @@ func post(ctx *fiber.Ctx) error {
 	return ctx.SendStatus(http.StatusNoContent)
 
 noCollector:
+	conf.UserCollector.Duration = con.Duration
 	collectTime = con.Duration * time.Second
 
 	err = conf.Save()
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 	return ctx.Status(299).SendString("Collector invalid, not saved but rest saved")
