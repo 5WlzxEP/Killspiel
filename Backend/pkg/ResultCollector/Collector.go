@@ -6,6 +6,7 @@ import (
 )
 
 type Collector interface {
+	Ready() bool
 	// Begin blocks until the Condition for the Collector to realize the voting event should start
 	Begin(ctx context.Context, cancelFunc context.CancelFunc)
 	// Result blocks until a result is present and returns it
@@ -45,10 +46,11 @@ func Begin() {
 	var ctx context.Context
 	ctx, beginCancelFunc = context.WithCancel(context.Background())
 	State.States = none
-	if collector != nil {
+	if collector != nil && collector.Ready() {
 		collector.Begin(ctx, beginCancelFunc)
 	}
 
+	// still blocks if no collector exists, which is ok, because the user can manually override it
 	<-ctx.Done()
 	State.States = begin
 }
@@ -61,7 +63,7 @@ func Result() float64 {
 	State.States = running
 
 	ctx, cancel := context.WithCancel(context.Background())
-	if collector != nil {
+	if collector != nil && collector.Ready() {
 		collector.Result(ctx, resultChan)
 	}
 	res := <-resultChan
