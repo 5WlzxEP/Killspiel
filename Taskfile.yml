@@ -31,9 +31,10 @@ tasks:
 
 
   backend:
-
+    env:
+      GOEXPERIMENT: arenas
     cmds:
-      - go build -ldflags "-X main.DisableStartupMessage=true" main.go
+      - go build main.go
     dir: backend
     sources:
       - backend/main.go

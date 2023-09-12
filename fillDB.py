@@ -12,8 +12,8 @@ class Vote:
 
 class User:
     def __init__(self):
-        self._id: int = random.randint(0, 1_000_000)
-        self._name: str = faker.name()
+        self._id: int = random.randint(0, 10_000_000)
+        self._name: str = faker.unique.name()
         self._guesses: int = 0
         self._points: int = 0
         self._latest: int = 0
@@ -37,28 +37,31 @@ class User:
         self._latest %= 256
 
 
-faker = Faker()
-with sqlite3.connect("config/db.sqlite") as db:
-    cursor = db.cursor()
+faker = Faker(use_weighting=False)
+while True:
+    try:
+        with sqlite3.connect("config/db.sqlite") as db:
+            cursor = db.cursor()
 
-    users = []
-    for _ in range(100):
-        users.append(User())
+            users = []
+            for _ in range(5_000):
+                users.append(User())
 
-    for i in range(200):
-        correct = random.randint(0, 15)
-        cursor.execute(f"INSERT INTO Game (correct) VALUES ({float(correct)});")
-        cursor.execute("SELECT last_insert_rowid()")
-        game = cursor.fetchone()[0]
+            for i in range(600):
+                correct = random.randint(0, 15)
+                cursor.execute(f"INSERT INTO Game (correct) VALUES ({float(correct)});")
+                cursor.execute("SELECT last_insert_rowid()")
+                game = cursor.fetchone()[0]
 
-        for user in users:
-            user.addVote(game, correct)
+                for user in users:
+                    if random.randint(0, 10) < 8:
+                        user.addVote(game, correct)
 
-    for user in users:
-        user.saveDB(cursor)
+            for user in users:
+                user.saveDB(cursor)
 
-    # for i in range(100):
-    #     g = random.randint(10, 150)
-    #     cursor.execute(f"INSERT INTO Users VALUES ({random.randint(0, 1_000_000)}, '{faker.name()}', {g}, {random.randint(0, g)}, {random.randint(0, 256)})")
-
-    db.commit()
+            db.commit()
+    except sqlite3.IntegrityError as e:
+        print(e)
+    else:
+        break

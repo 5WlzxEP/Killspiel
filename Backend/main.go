@@ -15,16 +15,14 @@ import (
 
 var (
 	//go:embed frontend_build/*
-	frontendBuild         embed.FS
-	DisableStartupMessage = "false"
+	frontendBuild embed.FS
 )
 
 func main() {
 	//goland:noinspection GoBoolExpressions
 	app := fiber.New(fiber.Config{
-		DisableStartupMessage: DisableStartupMessage == "true",
-		JSONDecoder:           json.Unmarshal,
-		JSONEncoder:           json.Marshal,
+		JSONDecoder: json.Unmarshal,
+		JSONEncoder: json.Marshal,
 	})
 
 	app.Use(logger.New())
