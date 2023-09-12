@@ -8,18 +8,16 @@
 	let state = 0
 	let dissolve: boolean
 
-	let r: number | string
+	let r: number | string | null
 
 	$: {
 		if (typeof r === "number") r = Math.abs(r)
 		else if (r !== null) r = 0
 	}
 
-	$: {
-		dissolve = state !== 2 || typeof r !== "number"
-	}
+	$: dissolve = state !== 2 || typeof r !== "number"
 
-	async function change(e: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }, result?: number) {
+	async function change() {
 		try {
 			const res = await fetch(`${BACKEND_URL}/api/data/`, {
 				headers: {
@@ -27,8 +25,8 @@
 				},
 				method: "POST",
 				body: JSON.stringify({
-					"state": state,
-					"result": result,
+					state: state,
+					result: r
 				})
 			})
 			if (res.ok) {
@@ -55,10 +53,9 @@
 			}
 			toastStore.trigger(t)
 		}
-
 	}
 
-	function printState(): string {
+	function printState(state: number): string {
 		switch (state) {
 			case 0:
 				return "Ready"
@@ -69,7 +66,7 @@
 			case 3:
 				return "Verkünde Ergebnis"
 		}
-		return ""
+		return "Unbekannter Status"
 	}
 
 	async function update() {
@@ -83,7 +80,8 @@
 		}
 	}
 
-	let interval
+	// eslint-disable-next-line no-undef
+	let interval: NodeJS.Timeout
 
 	onMount(async () => {
 		await update()
@@ -94,6 +92,8 @@
 		clearInterval(interval)
 	})
 
+	let printSt: string
+	$: printSt = printState(state)
 </script>
 
 <div class="container mx-auto">
@@ -102,25 +102,19 @@
 		<hr />
 		<div class="grid gap-10 w-full m-2 grid-cols-[2fr_auto_1fr_auto_2fr] p-2">
 			<div class="p-2 grid gap-2 h-3">
-				<button
-					class="btn variant-ghost"
-					type="button"
-					disabled={state !== 0}
-					on:click={change}
-				>
+				<button class="btn variant-ghost" type="button" disabled={state !== 0} on:click={change}>
 					Starten
 				</button>
-				<button class="btn variant-ghost" type="button" 					disabled={state !== 1}
-								on:click={change}>
+				<button class="btn variant-ghost" type="button" disabled={state !== 1} on:click={change}>
 					Beenden
 				</button>
 			</div>
 
 			<span class="divider-vertical h-full" />
 
-			<div class="p-2 grid gap-2 h-3">
-				Current State:
-				{printState()}
+			<div class="p-2 grid gap-2 h-3 text-center">
+				<!--				Current State:-->
+				{printSt}
 			</div>
 
 			<span class="divider-vertical h-full" />
@@ -134,12 +128,7 @@
 					required
 					min="0"
 				/>
-				<button
-					class="btn variant-ghost"
-					disabled={dissolve}
-					on:click={(e) => change(e, r)}
-					type="submit"
-				>
+				<button class="btn variant-ghost" disabled={dissolve} on:click={change} type="submit">
 					Ergebnis speichern
 				</button>
 			</form>

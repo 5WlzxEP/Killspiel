@@ -89,11 +89,19 @@
 				<a href="/user" class="btn-icon variant-ghost" data-sveltekit-preload-code="viewport">
 					<IconUserSearch />
 				</a>
-				<a href="/leaderboard" class="btn items-center variant-ghost" data-sveltekit-preload-code="viewport">
+				<a
+					href="/leaderboard"
+					class="btn items-center variant-ghost"
+					data-sveltekit-preload-code="viewport"
+				>
 					<IconBadges />
 					<p>Leaderboard</p>
 				</a>
-				<a href="/settings" class="p-2 btn-icon variant-ghost" data-sveltekit-preload-code="viewport">
+				<a
+					href="/settings"
+					class="p-2 btn-icon variant-ghost"
+					data-sveltekit-preload-code="viewport"
+				>
 					<IconSettings />
 				</a>
 			</svelte:fragment>

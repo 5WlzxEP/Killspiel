@@ -28,7 +28,7 @@
 	let meta: PaginationSettings = {
 		page: page,
 		limit: limit,
-		size: 0,
+		size: 1,
 		amounts: [10, 25, 50, 100]
 	}
 
@@ -148,7 +148,11 @@
 			{#each data as row}
 				<tr>
 					<td>{row.rank}</td>
-					<td><a href="/user/{row.id}" class="w-full p-4">{row.name}</a></td>
+					<td
+						><a href="/user/{row.id}" class="w-full p-4" data-sveltekit-preload-data="mousedown"
+							>{row.name}</a
+						></td
+					>
 					<td class="text-right">{row.points}</td>
 					<td class="text-right">{row.guesses}</td>
 					<td class="text-right"
@@ -161,26 +165,28 @@
 					</td>
 				</tr>
 			{:else}
-				<tr>
-					<td>
-						<div class="placeholder animate-pulse" />
-					</td>
-					<td>
-						<div class="placeholder animate-pulse" />
-					</td>
-					<td>
-						<div class="placeholder animate-pulse" />
-					</td>
-					<td>
-						<div class="placeholder animate-pulse" />
-					</td>
-					<td>
-						<div class="placeholder animate-pulse" />
-					</td>
-					<td>
-						<div class="placeholder animate-pulse" />
-					</td>
-				</tr>
+				{#each { length: meta.size } as _}
+					<tr>
+						<td>
+							<div class="placeholder animate-pulse" />
+						</td>
+						<td>
+							<div class="placeholder animate-pulse" />
+						</td>
+						<td>
+							<div class="placeholder animate-pulse" />
+						</td>
+						<td>
+							<div class="placeholder animate-pulse" />
+						</td>
+						<td>
+							<div class="placeholder animate-pulse" />
+						</td>
+						<td>
+							<div class="placeholder animate-pulse" />
+						</td>
+					</tr>
+				{/each}
 			{/each}
 		</tbody>
 	</table>
@@ -189,6 +195,7 @@
 			bind:settings={meta}
 			showFirstLastButtons={true}
 			showPreviousNextButtons={true}
+			showNumerals={true}
 			on:page={update}
 			on:amount={update}
 		/>
