@@ -1,12 +1,9 @@
 <script lang="ts">
 	import { type ToastSettings, getToastStore } from "@skeletonlabs/skeleton"
-	import { onMount, SvelteComponentTyped } from "svelte"
+	import { onMount } from "svelte"
 	import InputText from "@components/InputText.svelte"
 	import InputArea from "@components/InputArea.svelte"
-	import X from "@components/X.svelte"
-	import Check from "@components/Check.svelte"
-	import { redirect } from "@sveltejs/kit"
-	import { IconCheck, IconX } from "@tabler/icons-svelte"
+	import { IconBrandTwitch, IconCheck, IconX } from "@tabler/icons-svelte"
 
 	const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
@@ -57,7 +54,7 @@
 	async function isReady() {
 		const url = `${BACKEND_URL}/api/collector/chat/ready/`
 		const res = await fetch(url)
-		ready = await res.text() === "true"
+		ready = (await res.text()) === "true"
 	}
 
 	onMount(async () => {
@@ -83,20 +80,20 @@
 			toastStore.trigger(t)
 		}
 	})
+
 </script>
 
 <div class="container mx-auto">
 	<div class="card w-full">
 		<div class="text-center font-bold text-2xl p-3 flex mx-auto justify-center">
 			Twitchchat Settings
-			{#if (ready)}
+			{#if ready}
 				<IconCheck size={30} color="lime" class="ml-2 mt-0.5" />
-			{:else }
+			{:else}
 				<div class="cursor-help ml-2 mt-0.5" title="ApiKey und/oder TwitchAccount stimmen nicht.">
-				<IconX size={30} color="red"/>
+					<IconX size={30} color="red" />
 				</div>
 			{/if}
-
 		</div>
 		<hr />
 		<form class="p-5" on:submit|preventDefault={submit}>
@@ -116,7 +113,7 @@
 				<InputText
 					bind:value={d.prefix}
 					label="Prefix"
-					placeholder="/guess"
+					placeholder="!💀"
 					modal={{
 						title: "Prefix",
 						body:
@@ -147,39 +144,37 @@
 						title: "Twitch Account Api",
 						body:
 							"Dies ist der Twitchchannel von dem der Api Key stammt. Dieser Account wird die Nachrichten senden. " +
-							"Wenn keiner gesetzt wird, wird der Twitchchannel genutzt, wessen Chat genutzt wird. <br> " +
-							"Um Twitchchatfeatures wie /announce zu nutzen, muss der Account auf dem Channel Mod-Rechte haben."
+							"Wenn keiner gesetzt wird, wird der Twitchchannel genutzt, wessen Chat genutzt wird. <br> "
+						// "Um Twitchchatfeatures wie /announce zu nutzen, muss der Account auf dem Channel Mod-Rechte haben."
 					}}
 				/>
 
 				<InputArea
 					bind:value={d.msgBegin}
 					label="Nachricht zum Begin der Erhebung"
-					placeholder="/announceblue Das Killspiel hat begonnen. Nimm jetzt Teil mit /guess <Dein Guess>."
+					placeholder="Das Killspiel hat begonnen. Nimm jetzt Teil mit /guess <Dein Guess>."
 					modal={{
 						title: "Nachricht zum Begin der Erhebung",
-						body:
-							"Diese Nachricht wird zum Beginn der Erhebung, also wenn die Zuschauer ihre Schätzungen abgeben können, in den Chat gepostet. <br> " +
-							"Es können Twitchfeatures wie /announce genutzt werden, jedoch sind für diese eventuell Rechte nötig."
+						body: "Diese Nachricht wird zum Beginn der Erhebung, also wenn die Zuschauer ihre Schätzungen abgeben können, in den Chat gepostet. <br> "
+						// "Es können Twitchfeatures wie /announce genutzt werden, jedoch sind für diese eventuell Rechte nötig."
 					}}
 				/>
 
 				<InputArea
 					bind:value={d.msgEnd}
 					label="Nachricht zum Ende der Erhebung"
-					placeholder="/announceorange Das Voten ist abgeschlossen. Ab jetzt bitte keine Stimmen in der Chat mehr."
+					placeholder="Das Voten ist abgeschlossen. Ab jetzt bitte keine Stimmen in der Chat mehr."
 					modal={{
 						title: "Nachricht zum Ende der Erhebung",
-						body:
-							"Diese Nachricht wird zum Ende der Erhebung in den Chat gepostet. <br> " +
-							"Es können Twitchfeatures wie /announce genutzt werden, jedoch sind für diese eventuell Rechte nötig."
+						body: "Diese Nachricht wird zum Ende der Erhebung in den Chat gepostet. <br> "
+						//"Es können Twitchfeatures wie /announce genutzt werden, jedoch sind für diese eventuell Rechte nötig."
 					}}
 				/>
 
 				<InputArea
 					bind:value={d.msgFinal}
 					label="Nachricht zum Auflösen der richtigen Schätzungen"
-					placeholder="/announcegreen Das Killspiel ist beendet. Es wurden $RESULT Kills erzielt und somit haben $WINNERS gewonnen."
+					placeholder="Das Killspiel ist beendet. Es wurden $RESULT Kills erzielt und somit haben $WINNERS gewonnen."
 					modal={{
 						title: "Nachricht zum Auflösen der richtigen Schätzungen",
 						body:
@@ -187,6 +182,12 @@
 							"<i>$WINNERS</i> sind die Gewinner <br> <i>$RESULT</i> sind die erzielten Kills"
 					}}
 				/>
+				<!--				<div>-->
+				<!--					<IconBrandTwitch />-->
+				<!--					Wenn Befehle wie /announce genutzt werden sollen, so müss zuerst mit Twitch Verbunden werden:-->
+				<!--&lt;!&ndash;					TODO auf server verschieben &ndash;&gt;-->
+				<!--					<a href="https://id.twitch.tv/oauth2/authorize?{parameters}">Connect with Twitch</a>-->
+				<!--				</div>-->
 			</div>
 			<div class="flex">
 				Mit * markierte Felder sind Pflicht
