@@ -2,7 +2,6 @@ package Leaderboard
 
 import (
 	"Killspiel/pkg/database"
-	"arena"
 	"database/sql"
 	"github.com/gofiber/fiber/v2"
 )
@@ -19,6 +18,8 @@ type User struct {
 type meta struct {
 	Size int `json:"size"`
 }
+
+var buffer = [100]User{}
 
 func get(ctx *fiber.Ctx) error {
 
@@ -39,27 +40,21 @@ func get(ctx *fiber.Ctx) error {
 	} else {
 		rows, err = database.LeaderboardAsc.Query(sort, limit, start)
 	}
-
 	if err != nil {
 		return err
 	}
-	mem := arena.NewArena()
-	defer mem.Free()
 
 	// Ranks doesn't start at 0 but at 1
 	start++
 
-	var result []User
-	result = arena.MakeSlice[User](mem, limit, limit)
-
 	i := 0
 	for ; rows.Next() && i < limit; i++ {
-		err = rows.Scan(&result[i].Id, &result[i].Name, &result[i].Guesses, &result[i].Points, &result[i].Latest)
+		err = rows.Scan(&buffer[i].Id, &buffer[i].Name, &buffer[i].Guesses, &buffer[i].Points, &buffer[i].Latest)
 		if err != nil {
-			rows.Close()
+			_ = rows.Close()
 			return err
 		}
-		result[i].Rank = start + i
+		buffer[i].Rank = start + i
 	}
 
 	userCount, err := database.GetUserCount()
@@ -68,7 +63,7 @@ func get(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(map[string]any{
-		"data": result[0:i],
+		"data": buffer[0:i],
 		"meta": meta{userCount},
 	})
 }

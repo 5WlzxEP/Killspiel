@@ -31,8 +31,6 @@ tasks:
 
 
   backend:
-    env:
-      GOEXPERIMENT: arenas
     cmds:
       - go build main.go
     dir: backend
