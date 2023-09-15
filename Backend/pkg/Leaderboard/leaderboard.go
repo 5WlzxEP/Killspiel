@@ -56,6 +56,7 @@ func get(ctx *fiber.Ctx) error {
 		}
 		buffer[i].Rank = start + i
 	}
+	_ = rows.Close()
 
 	userCount, err := database.GetUserCount()
 	if err != nil {

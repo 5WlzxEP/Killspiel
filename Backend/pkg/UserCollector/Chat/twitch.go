@@ -74,6 +74,7 @@ func New(configPath string, r fiber.Router) (*TwitchChat, string) {
 	}
 
 	tc.client = twitch.NewClient(tc.ChannelSender, tc.ApiKey)
+	tc.client.Capabilities = []string{twitch.TagsCapability}
 
 	tc.ready.changed = true
 	tc.Ready()
@@ -118,7 +119,6 @@ func (tc *TwitchChat) AnnounceResult(winners []string, correctGuess float64) {
 	tc.Lock()
 	defer tc.Unlock()
 
-	// TODO Remove block
 	tc.client.OnConnect(func() {
 		tc.client.Say(tc.Channel, msg)
 		time.Sleep(50 * time.Millisecond)
@@ -147,6 +147,7 @@ func (tc *TwitchChat) CollectGuesses(ctx context.Context, collect func(id int, u
 		id, err := strconv.Atoi(m.User.ID)
 		if err != nil {
 			log.Printf("Error parsing %s user id (%s): %v", m.User.Name, m.User.ID, err)
+			return
 		}
 
 		collect(id, strings.ToLower(m.User.Name), strings.TrimLeft(m.Message, tc.Prefix))
@@ -223,6 +224,7 @@ func (tc *TwitchChat) post(ctx *fiber.Ctx) error {
 	if client != tc.ChannelSender || auth != tc.ApiKey {
 		tc.ready.changed = true
 		tc.client = twitch.NewClient(tc.ChannelSender, tc.ApiKey)
+		tc.client.Capabilities = []string{twitch.TagsCapability}
 	}
 
 	err = tc.saveConfig()
