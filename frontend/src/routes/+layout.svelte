@@ -20,8 +20,10 @@
 	import { get } from "svelte/store"
 	import { themeStore } from "@stores/theme"
 	import Modal from "@components/Modal.svelte"
-
+	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
+	import { storePopup } from '@skeletonlabs/skeleton';
 	initializeStores()
+	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
 	type crumb = {
 		path: string
@@ -92,7 +94,8 @@
 				<a
 					href="/leaderboard"
 					class="btn items-center variant-ghost"
-					data-sveltekit-preload-code="viewport"
+					data-sveltekit-preload-code="eager"
+					data-sveltekit-preload-data
 				>
 					<IconBadges />
 					<p>Leaderboard</p>

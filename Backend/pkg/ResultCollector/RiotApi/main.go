@@ -2,7 +2,9 @@ package RiotApi
 
 import (
 	"Killspiel/pkg/config"
+	"context"
 	"errors"
+	"fmt"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/valyala/fasthttp"
@@ -21,12 +23,46 @@ type ready struct {
 }
 
 type Api struct {
-	Key    string
-	Server string
-	region string
-	client *fasthttp.Client
+	Key    string `json:"key"`
+	Server string `json:"server"`
+	// Intervall is in seconds
+	Intervall    time.Duration `json:"interval"`
+	SummonerName string
+	region       string
+	client       *fasthttp.Client
 	ready
-	summoner *Summoner
+	summoner    *Summoner
+	currentGame *CurrentGameInfo
+}
+
+func (a *Api) Begin(ctx context.Context, cancelFunc context.CancelFunc, dbInfo chan<- string) {
+	done := ctx.Done()
+
+	for ; ; time.Sleep(a.Intervall * time.Second) {
+		select {
+		case <-done:
+			return
+		default:
+			if a.checkInGame() {
+				dbInfo <- fmt.Sprintf("LoL,%s,%d", a.summoner.Name, a.currentGame.GameId)
+				cancelFunc()
+				return
+			}
+		}
+	}
+}
+
+func (a *Api) checkInGame() bool {
+	game, err := a.getActiveGameById(a.summoner.Id)
+	if err != nil {
+		return false
+	}
+	a.currentGame = game
+	return true
+}
+
+func (a *Api) Result(ctx context.Context, c chan float64) {
+
 }
 
 var (
@@ -36,6 +72,10 @@ var (
 
 func New(configPath string, r fiber.Router) (*Api, string) {
 	api := getApi(configPath)
+
+	r.Get("/", func(ctx *fiber.Ctx) error {
+		return ctx.SendStatus(404)
+	})
 
 	return api, "RiotApi"
 }
@@ -71,7 +111,7 @@ func getApi(cp string) *Api {
 	return api
 }
 
-func (a Api) setRegion() {
+func (a *Api) setRegion() {
 	switch a.Server {
 	case "NA", "BR", "LAN", "LAS":
 		a.region = "AMERICAS"
@@ -84,20 +124,21 @@ func (a Api) setRegion() {
 	}
 }
 
-func (a Api) Ready() bool {
+func (a *Api) Ready() bool {
 	if !a.changed {
 		return a.val
 	}
 	a.val = slices.Contains(servers, a.Server) &&
 		slices.Contains(regions, a.region) &&
-		a.ValidKey()
+		a.validKey() &&
+		a.validSummoner()
 
 	return a.val
 }
 
-func (a Api) ValidKey() bool {
+func (a *Api) validKey() bool {
 	req := fasthttp.AcquireRequest()
-	req.SetRequestURI("https://euw1.api.riotgames.com/lol/status/v4/platform-data\n")
+	req.SetRequestURI("https://euw1.api.riotgames.com/lol/status/v4/platform-data")
 
 	req.Header.Set("X-Riot-Token", a.Key)
 	req.Header.SetMethod(http.MethodGet)
@@ -111,4 +152,13 @@ func (a Api) ValidKey() bool {
 	}
 
 	return !(res.StatusCode() > 300 || res.StatusCode() < 200)
+}
+
+func (a *Api) validSummoner() bool {
+	summoner, err := a.getSummonerByName(a.SummonerName)
+	if err != nil {
+		return false
+	}
+	a.summoner = summoner
+	return true
 }

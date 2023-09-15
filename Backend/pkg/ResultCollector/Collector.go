@@ -1,14 +1,20 @@
 package ResultCollector
 
 import (
+	"Killspiel/pkg/ResultCollector/RiotApi"
 	"context"
 	"github.com/gofiber/fiber/v2"
 )
 
+type collector struct {
+	Collector `json:"-"`
+	Name      string `json:"name"`
+}
+
 type Collector interface {
 	Ready() bool
 	// Begin blocks until the Condition for the Collector to realize the voting event should start
-	Begin(ctx context.Context, cancelFunc context.CancelFunc)
+	Begin(ctx context.Context, cancelFunc context.CancelFunc, dbInfo chan<- string)
 	// Result blocks until a result is present and returns it
 	Result(ctx context.Context, c chan float64)
 }
@@ -20,10 +26,12 @@ type state struct {
 }
 
 var (
-	State           state
-	beginCancelFunc context.CancelFunc
-	resultChan      = make(chan float64)
-	collector       Collector
+	State            state
+	beginCancelFunc  context.CancelFunc
+	resultChan       = make(chan float64)
+	currentCollector Collector
+	collectors       []*collector
+	dbInfo           = make(chan string, 5)
 )
 
 const (
@@ -33,26 +41,46 @@ const (
 	result
 )
 
-func Init(r fiber.Router) {
+func Init(conf string, r fiber.Router) {
 	r.Get("/", get)
 	r.Post("/", post)
+
+	c, n := RiotApi.New(conf, r.Group("/riot"))
+	collectors = append(collectors, &collector{
+		Collector: c,
+		Name:      n,
+	})
 }
 
 func get(ctx *fiber.Ctx) error {
 	return ctx.JSON(State)
 }
 
-func Begin() {
-	var ctx context.Context
-	ctx, beginCancelFunc = context.WithCancel(context.Background())
-	State.States = none
-	if collector != nil && collector.Ready() {
-		collector.Begin(ctx, beginCancelFunc)
+func Begin() string {
+	// clear dbInfo
+	for len(dbInfo) > 0 {
+		<-dbInfo
 	}
 
-	// still blocks if no collector exists, which is ok, because the user can manually override it
+	var ctx context.Context
+	ctx, beginCancelFunc = context.WithCancel(context.Background())
+
+	State.States = none
+
+	if currentCollector != nil && currentCollector.Ready() {
+		go currentCollector.Begin(ctx, beginCancelFunc, dbInfo)
+	}
+
+	// still blocks if no currentCollector exists, which is ok, because the user can manually override it
 	<-ctx.Done()
 	State.States = begin
+
+	select {
+	case x := <-dbInfo:
+		return x
+	default:
+		return "manual"
+	}
 }
 
 func Result() float64 {
@@ -63,8 +91,8 @@ func Result() float64 {
 	State.States = running
 
 	ctx, cancel := context.WithCancel(context.Background())
-	if collector != nil && collector.Ready() {
-		collector.Result(ctx, resultChan)
+	if currentCollector != nil && currentCollector.Ready() {
+		go currentCollector.Result(ctx, resultChan)
 	}
 	res := <-resultChan
 	cancel()

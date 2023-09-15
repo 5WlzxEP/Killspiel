@@ -2,6 +2,7 @@
 	import { IconBrandTwitch } from "@tabler/icons-svelte"
 	import { onMount } from "svelte"
 	import { getToastStore, type ToastSettings } from "@skeletonlabs/skeleton"
+
 	const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 	const toastStore = getToastStore()
 
@@ -97,11 +98,13 @@
 
 <div class="container grid grid-cols-2 mx-auto gap-4">
 	<a href="/settings/collector/twitchchat" class="card p-2">
-		<div class="flex gap-2">
-			<IconBrandTwitch />
-			<h1>Twitchchat</h1>
+		<div class="p-1">
+			<div class="flex gap-2">
+				<IconBrandTwitch />
+				<h1 class="text-lg font-bold">Twitchchat</h1>
+			</div>
+			Lass die Teilnehmer über den Twitchchat abstimmen.
 		</div>
-		Lass die Teilnehmer über den Twitchchat abstimmen.
 	</a>
 </div>
 
@@ -132,7 +135,8 @@
 			</label>
 			<div class="flex mt-4">
 				<button class="btn variant-ghost-success ms-auto" type="submit" on:click={send}
-					>Speichern</button
+				>Speichern
+				</button
 				>
 			</div>
 		</form>

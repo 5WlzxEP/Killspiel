@@ -9,7 +9,7 @@ import (
 )
 
 // workaround generic method
-func get[T any](a Api, url string) (*T, error) {
+func get[T any](a *Api, url string) (*T, error) {
 	req := fasthttp.AcquireRequest()
 	req.SetRequestURI(url)
 
