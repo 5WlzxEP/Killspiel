@@ -131,25 +131,21 @@ func saveGuesses(dbinfo string) (gameId int64, err error) {
 	}
 
 	for id, guess := range guesses {
-		var exists bool
-		err = tx.Stmt(database.UserExist).QueryRow(id).Scan(&exists)
+		res, err := tx.Stmt(database.UpdateUserGuesses).Exec(id)
 		if err != nil {
-			log.Printf("Error occurd checking if player exists player %d: %v\n", id, err)
+			log.Printf("Error occurd getting player %d: %v\n", id, err)
 			continue
 		}
-
-		if !exists {
+		if n, err := res.RowsAffected(); n == 0 && err == nil {
+			log.Println(err)
 			_, err = tx.Stmt(database.CreateUser).Exec(id, guess.Name)
 			if err != nil {
 				log.Printf("Error occurd creating player %d: %v\n", id, err)
 				continue
 			}
-		} else {
-			_, err = tx.Stmt(database.UpdateUserGuesses).Exec(id)
-			if err != nil {
-				log.Printf("Error occurd getting player %d: %v\n", id, err)
-				continue
-			}
+		} else if err != nil {
+			log.Printf("Error occurd checking if player exists player %d: %v\n", id, err)
+			continue
 		}
 
 		_, err = tx.Stmt(database.CreateVote).Exec(gameId, id, guess.Guess)
