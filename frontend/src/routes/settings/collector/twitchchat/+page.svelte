@@ -3,7 +3,8 @@
 	import { onMount } from "svelte"
 	import InputText from "@components/InputText.svelte"
 	import InputArea from "@components/InputArea.svelte"
-	import { IconBrandTwitch, IconCheck, IconX } from "@tabler/icons-svelte"
+	import { IconCheck, IconX } from "@tabler/icons-svelte"
+	import InputPassword from "@components/InputPassword.svelte"
 
 	const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
@@ -122,11 +123,10 @@
 					}}
 				/>
 
-				<InputText
+				<InputPassword
 					bind:value={d.apiKey}
 					label="Twitch Api Key"
 					placeholder="oauth:bcgf6ogc8swu329nmnqprwgdodizgw"
-					required={true}
 					modal={{
 						title: "Twitch Api Key",
 						body:
