@@ -19,11 +19,19 @@
 	export let limit = 25
 	export let sortedBy: "p" | "n" | "g" = "p"
 	let order: { p: ascDesc; n: ascDesc; g: ascDesc } = {
-		p: "desc",
+		p: "asc",
 		n: "asc",
-		g: "desc"
+		g: "asc"
 	}
-	let currentOrder: ascDesc = "desc"
+	const orderDefault = {
+		p: "asc",
+		n: "desc",
+		g: "asc"
+	} as const
+
+	let currentOrder: ascDesc = "asc"
+
+	$: console.log(order)
 
 	let meta: PaginationSettings = {
 		page: page,
@@ -49,7 +57,7 @@
 	async function fetchLeaderboard(): Promise<Array<Leaderboard>> {
 		const url = `${BACKEND_URL}/api/leaderboard?p=${meta.page * meta.limit}&l=${
 			meta.limit
-		}&s=${sortedBy}&o=${currentOrder === "desc" ? "0" : "1"}`
+		}&s=${sortedBy}&o=${currentOrder === orderDefault[sortedBy] ? "0" : "1"}`
 		try {
 			const resp = await fetch(url)
 			const ob: result = await resp.json()
@@ -94,8 +102,8 @@
 
 	let latest: HTMLTableCellElement
 
-	function changeSorting(s: "g" | "p" | "n", event: Event & { target: HTMLTableCellElement }) {
-		const target: HTMLTableCellElement = event.target
+	function changeSorting(s: "g" | "p" | "n", event: MouseEvent & { currentTarget: EventTarget & HTMLTableCellElement; }) {
+		const target: HTMLTableCellElement = event.currentTarget
 		if (sortedBy === s) {
 			order[s] = toggleAscDesc(order[s], target)
 		} else {
@@ -149,7 +157,7 @@
 				<tr>
 					<td>{row.rank}</td>
 					<td
-						><a href="/user/{row.id}" class="w-full p-4" data-sveltekit-preload-data="mousedown"
+						><a href="/user/{row.id}" class="w-full p-4" data-sveltekit-preload-data="tap"
 							>{row.name}</a
 						></td
 					>
