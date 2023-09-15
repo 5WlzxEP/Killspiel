@@ -31,8 +31,6 @@
 
 	let currentOrder: ascDesc = "asc"
 
-	$: console.log(order)
-
 	let meta: PaginationSettings = {
 		page: page,
 		limit: limit,
