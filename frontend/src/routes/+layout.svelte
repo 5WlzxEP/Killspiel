@@ -22,51 +22,9 @@
 	import Modal from "@components/Modal.svelte"
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
+	import Breadcrumbs from "@components/Breadcrumbs.svelte"
 	initializeStores()
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
-
-	type crumb = {
-		path: string
-		name: string
-		icon: SvelteComponentTyped | undefined
-	}
-
-	let crumbs: Array<crumb> = []
-	afterUpdate(() => {
-		let location = window.location.pathname
-		crumbs = new Array<crumb>()
-		let cs = location.split("/").slice(1)
-		let base = ""
-
-		for (let crumb of cs) {
-			if (crumb === "") {
-				continue
-			}
-			base = `${base}/${crumb}`
-			const name = crumb.charAt(0).toUpperCase() + crumb.slice(1)
-			let icon: SvelteComponentTyped | undefined = undefined
-			switch (name) {
-				case "Leaderboard":
-					icon = IconBadges
-					break
-				case "Settings":
-					icon = IconSettings
-					break
-				case "Twitchchat":
-					icon = IconBrandTwitch
-					break
-				case "User":
-					icon = IconUser
-					break
-			}
-
-			crumbs.push({
-				icon: icon,
-				path: base,
-				name: name
-			})
-		}
-	})
 
 	// set theme
 	onMount(() => {
@@ -111,28 +69,7 @@
 		</AppBar>
 	</svelte:fragment>
 	<!-- Page Route Content -->
-	<div class="mx-auto container justify-center items-center p-2">
-		<ol class="breadcrumb btn">
-			<li class="crumb">
-				<a class="anchor" title="Home" href="/">
-					<IconHome />
-				</a>
-			</li>
-			{#each crumbs as crumb}
-				<li class="crumb-separator" aria-hidden="true">&rsaquo;</li>
-
-				{#if crumb.icon}
-					<li class="crumb">
-						<a class="anchor" title={crumb.name} href={crumb.path}>
-							<svelte:component this={crumb.icon} />
-						</a>
-					</li>
-				{:else}
-					<li class="crumb"><a class="anchor" href={crumb.path}>{crumb.name}</a></li>
-				{/if}
-			{/each}
-		</ol>
-	</div>
+		<Breadcrumbs />
 
 	<div class="mb-2">
 		<slot />
