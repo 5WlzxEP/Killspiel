@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { getModalStore, type ModalSettings } from "@skeletonlabs/skeleton"
 	import { IconHelp } from "@tabler/icons-svelte"
-	import { onMount } from "svelte"
 
 	const modalStore = getModalStore()
 
@@ -42,11 +41,11 @@
 		{/if}
 	</span>
 	<div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
-		{#if prefix === -1}
+		{#if prefix === -1 || !Number.isInteger(prefix)}
 			<div class="input-group-shim"></div>
 		{:else }
 			<div class="input-group-shim">
-			<img src="{`https://ddragon.leagueoflegends.com/cdn/13.18.1/img/profileicon/${prefix}.png`}" alt="Profile icon" class="w-10 rounded-2xl">
+			<img src="{`https://ddragon.leagueoflegends.com/cdn/13.18.1/img/profileicon/${prefix}.png`}" alt="Profile icon" class="w-10 rounded-full">
 			</div>
 		{/if}
 		<input type="text" bind:value tabindex="0" {placeholder} required />

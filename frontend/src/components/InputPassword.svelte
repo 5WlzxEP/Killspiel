@@ -51,7 +51,7 @@
 	</span>
 	<div class="input-group input-group-divider grid-cols-[1fr_auto]">
 
-		<input type="password" bind:this={input} bind:value tabindex="0" {placeholder} required />
+		<input type="password" autocomplete="off" bind:this={input} bind:value tabindex="0" {placeholder} required />
 		<div class="input-group-shim">
 		<button on:click|preventDefault={() => hidden = !hidden}>
 		{#if (hidden)}
