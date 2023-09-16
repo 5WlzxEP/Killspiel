@@ -2,6 +2,7 @@ package RiotApi
 
 import (
 	"fmt"
+	"github.com/valyala/fasthttp"
 	"strings"
 )
 
@@ -15,10 +16,17 @@ type Summoner struct {
 	SummonerLevel int    `json:"summonerLevel"`
 }
 
-func (a *Api) getSummonerByName(name string) (*Summoner, error) {
-	url := fmt.Sprintf("https://%s.api.riotgames.com/lol/summoner/v4/summoners/by-name/%s", a.Server, name)
+func getLoLSummonerByName(name, server, apiKey string, client *fasthttp.Client) (*Summoner, error) {
+	url := fmt.Sprintf("https://%s.api.riotgames.com/lol/summoner/v4/summoners/by-name/%s", server, name)
 
-	s, err := get[Summoner](a, url)
+	s, err := get[Summoner](url, apiKey, client)
+	return s, err
+}
+
+func (a *Api) getLoLSummonerByName(name string) (*Summoner, error) {
+	url := fmt.Sprintf("https://%s.api.riotgames.com/lol/summoner/v4/summoners/by-name/%s", a.LoL.Server, name)
+
+	s, err := getWithApi[Summoner](a, url)
 	return s, err
 }
 
@@ -47,13 +55,13 @@ type CurrentGameInfo struct {
 func (a *Api) getActiveGameById(encryptedSummonerId string) (*CurrentGameInfo, error) {
 	url := fmt.Sprintf("https://%s.api.riotgames.com/lol/spectator/v4/active-games/by-summoner/%s", a.Server, encryptedSummonerId)
 
-	return get[CurrentGameInfo](a, url)
+	return getWithApi[CurrentGameInfo](a, url)
 }
 
-func (a *Api) getMatchById(matchId string) (*MatchDto, error) {
+func (a *Api) getMatchById(matchId int64) (*MatchDto, error) {
 	url := fmt.Sprintf("https://%s.api.riotgames.com/lol/match/v5/matches/%s_%d", strings.ToLower(a.region), a.Server, matchId)
 
-	return get[MatchDto](a, url)
+	return getWithApi[MatchDto](a, url)
 }
 
 type MatchDto struct {
