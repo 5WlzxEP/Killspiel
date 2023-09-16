@@ -27,8 +27,6 @@ tasks:
       - frontend/build/*
     generates:
       - backend/frontend_build/*
-    internal: true
-
 
   backend:
     cmds:
