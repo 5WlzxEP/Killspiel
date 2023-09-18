@@ -63,9 +63,14 @@ func CreateTables() error {
     	player int,
     	vote float,
     	PRIMARY KEY (game, player),
-    	foreign key (game) REFERENCES Game(id),
+    	foreign key (game) REFERENCES Game(id) ON DELETE CASCADE,
     	foreign key (player) REFERENCES Users(id) ON DELETE CASCADE 
  	)`)
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec("CREATE INDEX IF NOT EXISTS Votesplayers ON Votes(player)")
 	if err != nil {
 		return err
 	}
