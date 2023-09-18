@@ -68,7 +68,13 @@ func (a *Api) getValueFloat(game *MatchDto) float64 {
 }
 
 func (a *Api) getValue(game *MatchDto) any {
-	player := game.Info.Participants[3]
+	idx := slices.Index(game.Metadata.Participants, a.summoner.Puuid)
+	if idx == -1 {
+		return nil
+	}
+
+	player := game.Info.Participants[idx]
+
 	switch a.LoL.Kategorie {
 	case "AllInPings":
 		return player.AllInPings

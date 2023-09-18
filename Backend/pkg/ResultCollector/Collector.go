@@ -50,6 +50,8 @@ func Init(conf string, r fiber.Router) {
 		Collector: c,
 		Name:      n,
 	})
+
+	currentCollector = c
 }
 
 func get(ctx *fiber.Ctx) error {

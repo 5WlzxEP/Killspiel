@@ -129,7 +129,7 @@ func (a *Api) Begin(ctx context.Context, cancelFunc context.CancelFunc, dbInfo c
 
 func (a *Api) checkInGame() bool {
 	game, err := a.getActiveGameById(a.summoner.Id)
-	if err != nil && game.GameId != a.currentGame.GameId {
+	if err != nil && (a.currentGame == nil || game.GameId != a.currentGame.GameId) {
 		return false
 	}
 	a.currentGame = game

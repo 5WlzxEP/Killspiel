@@ -59,7 +59,7 @@ func (a *Api) getActiveGameById(encryptedSummonerId string) (*CurrentGameInfo, e
 }
 
 func (a *Api) getMatchById(matchId int64) (*MatchDto, error) {
-	url := fmt.Sprintf("https://%s.api.riotgames.com/lol/match/v5/matches/%s_%d", strings.ToLower(a.region), a.Server, matchId)
+	url := fmt.Sprintf("https://%s.api.riotgames.com/lol/match/v5/matches/%s_%d", a.region, strings.ToUpper(a.Server), matchId)
 
 	return getWithApi[MatchDto](a, url)
 }
