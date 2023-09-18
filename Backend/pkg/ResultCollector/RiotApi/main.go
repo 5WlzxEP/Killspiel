@@ -89,7 +89,7 @@ func createFile(configPath string, api *Api) {
 		return
 	}
 	defer file.Close()
-	data, err := json.Marshal(api)
+	data, err := json.MarshalIndent(api, "", "  ")
 	if err != nil {
 		return
 	}
@@ -162,7 +162,7 @@ func (a *Api) save() {
 		return
 	}
 	defer f.Close()
-	bytes, err := json.Marshal(a)
+	bytes, err := json.MarshalIndent(a, "", "  ")
 	if err != nil {
 		return
 	}

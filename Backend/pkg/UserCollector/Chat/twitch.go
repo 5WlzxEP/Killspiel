@@ -192,7 +192,13 @@ func (tc *TwitchChat) saveConfig() error {
 		return err
 	}
 	defer file.Close()
-	return json.NewEncoder(file).Encode(tc)
+
+	data, err := json.MarshalIndent(tc, "", "  ")
+	if err != nil {
+		return err
+	}
+	_, err = file.Write(data)
+	return err
 }
 
 // get returns the current config json encoded

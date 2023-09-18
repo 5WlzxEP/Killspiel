@@ -37,7 +37,11 @@ func (c *Config) Save() error {
 		return err
 	}
 
-	err = json.NewEncoder(file).Encode(c)
+	data, err := json.MarshalIndent(c, "", "  ")
+	if err != nil {
+		return err
+	}
+	_, err = file.Write(data)
 	return err
 }
 
