@@ -4,6 +4,7 @@ import (
 	"Killspiel/pkg/database"
 	"database/sql"
 	"github.com/gofiber/fiber/v2"
+	"sync"
 )
 
 type User struct {
@@ -19,7 +20,12 @@ type meta struct {
 	Size int `json:"size"`
 }
 
-var buffer = [100]User{}
+type leaderboard struct {
+	meta `json:"meta"`
+	Data []User `json:"data"`
+}
+
+var leaderboardBuffer = sync.Pool{New: func() any { return leaderboard{Data: make([]User, 100)} }}
 
 func get(ctx *fiber.Ctx) error {
 
@@ -44,29 +50,31 @@ func get(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	// Ranks doesn't start at 0 but at 1
+	board := leaderboardBuffer.Get().(leaderboard)
+	defer leaderboardBuffer.Put(board)
+
+	// Ranks don't start at 0 but at 1
 	start++
 
 	i := 0
 	for ; rows.Next() && i < limit; i++ {
-		err = rows.Scan(&buffer[i].Id, &buffer[i].Name, &buffer[i].Guesses, &buffer[i].Points, &buffer[i].Latest)
+		err = rows.Scan(&board.Data[i].Id, &board.Data[i].Name, &board.Data[i].Guesses, &board.Data[i].Points, &board.Data[i].Latest)
 		if err != nil {
 			_ = rows.Close()
 			return err
 		}
-		buffer[i].Rank = start + i
+		board.Data[i].Rank = start + i
 	}
 	_ = rows.Close()
 
-	userCount, err := database.GetUserCount()
+	board.Data = board.Data[:i]
+
+	board.Size, err = database.GetUserCount()
 	if err != nil {
 		return err
 	}
 
-	return ctx.JSON(map[string]any{
-		"data": buffer[0:i],
-		"meta": meta{userCount},
-	})
+	return ctx.JSON(board)
 }
 
 func Init(router fiber.Router) {
