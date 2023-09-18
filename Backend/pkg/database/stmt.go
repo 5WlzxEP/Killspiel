@@ -76,7 +76,8 @@ func prepareStmts() (err error) {
 		return
 	}
 
-	GetUserGames, err = DB.Prepare("SELECT id, correct, vote FROM Game JOIN (SELECT game, vote FROM Votes WHERE player = ? ORDER BY game desc LIMIT 50) V on Game.id = V.game")
+	// DO NOT CHANGE LIMIT, or when changed also change historyPool size in User/user.go
+	GetUserGames, err = DB.Prepare("SELECT id, correct, vote, time FROM Game JOIN (SELECT game, vote FROM Votes WHERE player = ? ORDER BY game desc LIMIT 25) V on Game.id = V.game")
 	if err != nil {
 		return
 	}

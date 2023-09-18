@@ -9,6 +9,8 @@ import (
 	"github.com/google/uuid"
 	"log"
 	"net/http"
+	"sync"
+	"time"
 )
 
 type key struct {
@@ -17,6 +19,9 @@ type key struct {
 }
 
 var buf = helper.Buffer[key]{}
+
+// DO NOT CHANGE BUFFER SIZE, or only accordingly to database.GetUserVotes
+var historyPool = sync.Pool{New: func() any { return User{History: make([]Game, 25)} }}
 
 func Init(r fiber.Router) {
 	r.Get("/:id/", get)
@@ -34,9 +39,10 @@ type User struct {
 }
 
 type Game struct {
-	Id      int     `json:"id"`
-	Guess   float64 `json:"guess"`
-	Correct float64 `json:"correct"`
+	Id      int       `json:"id"`
+	Guess   float64   `json:"guess"`
+	Correct float64   `json:"correct"`
+	Time    time.Time `json:"time"`
 }
 
 func get(ctx *fiber.Ctx) error {
@@ -45,7 +51,9 @@ func get(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	user := User{Id: id, History: make([]Game, 0, 50)}
+	user := historyPool.Get().(User)
+	defer historyPool.Put(user)
+	user.Id = id
 
 	err = database.GetUser.QueryRow(id).Scan(&user.Name, &user.Points, &user.Guesses, &user.Latest)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -59,15 +67,18 @@ func get(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	for rows.Next() {
-		g := Game{}
-		err = rows.Scan(&g.Id, &g.Correct, &g.Guess)
+
+	i := 0
+	for ; rows.Next(); i++ {
+		err = rows.Scan(&user.History[i].Id, &user.History[i].Correct, &user.History[i].Guess, &user.History[i].Time)
 		if err != nil {
+			i--
 			continue
 		}
-
-		user.History = append(user.History, g)
 	}
+
+	user.History = user.History[:i]
+
 	return ctx.JSON(user)
 }
 
