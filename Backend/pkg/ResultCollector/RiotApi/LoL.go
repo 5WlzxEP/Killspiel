@@ -68,7 +68,7 @@ func (a *Api) getValueFloat(game *MatchDto) float64 {
 }
 
 func (a *Api) getValue(game *MatchDto) any {
-	idx := slices.Index(game.Metadata.Participants, a.summoner.Puuid)
+	idx := slices.Index(game.Metadata.Participants, a.currentSummoner.Puuid)
 	if idx == -1 {
 		return nil
 	}

@@ -27,13 +27,14 @@ type General struct {
 }
 
 type Api struct {
-	LoL         `json:"lol"`
-	General     `json:"general"`
-	client      *fasthttp.Client
-	ready       bool
-	summoner    *Summoner
-	currentGame *CurrentGameInfo
-	configPath  string
+	LoL             `json:"lol"`
+	General         `json:"general"`
+	client          *fasthttp.Client
+	ready           bool
+	summoner        *Summoner
+	currentSummoner *Summoner
+	currentGame     *CurrentGameInfo
+	configPath      string
 }
 
 func New(configPath string, r fiber.Router) (*Api, string) {
@@ -119,7 +120,8 @@ func (a *Api) Begin(ctx context.Context, cancelFunc context.CancelFunc, dbInfo c
 			return
 		default:
 			if a.checkInGame() {
-				dbInfo <- fmt.Sprintf("LoL,%s,%d", a.summoner.Name, a.currentGame.GameId)
+				a.currentSummoner = a.summoner
+				dbInfo <- fmt.Sprintf("LoL,%s,%d", a.currentSummoner.Name, a.currentGame.GameId)
 				cancelFunc()
 				return
 			}
