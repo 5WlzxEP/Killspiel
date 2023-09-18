@@ -39,10 +39,11 @@ type User struct {
 }
 
 type Game struct {
-	Id      int       `json:"id"`
-	Guess   float64   `json:"guess"`
-	Correct float64   `json:"correct"`
-	Time    time.Time `json:"time"`
+	Id        int       `json:"id"`
+	Guess     float64   `json:"guess"`
+	Correct   float64   `json:"correct"`
+	Precision float64   `json:"precision"`
+	Time      time.Time `json:"time"`
 }
 
 func get(ctx *fiber.Ctx) error {
@@ -70,7 +71,7 @@ func get(ctx *fiber.Ctx) error {
 
 	i := 0
 	for ; rows.Next(); i++ {
-		err = rows.Scan(&user.History[i].Id, &user.History[i].Correct, &user.History[i].Guess, &user.History[i].Time)
+		err = rows.Scan(&user.History[i].Id, &user.History[i].Correct, &user.History[i].Guess, &user.History[i].Time, &user.History[i].Precision)
 		if err != nil {
 			i--
 			continue

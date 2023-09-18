@@ -49,6 +49,7 @@ func CreateTables() error {
 	_, err = tx.Exec(`CREATE TABLE IF NOT EXISTS Game (
     	id integer primary key AUTOINCREMENT,
     	correct float default null,
+    	"precision" float default 0.01,
     	time timestamp default CURRENT_TIMESTAMP,
     	info text 
  	)`)

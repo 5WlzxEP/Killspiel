@@ -23,7 +23,8 @@ type Config struct {
 	// <br>
 	// is unexported to prevent json serialization
 	// and I'm too lazy to implementMarshalJSON and maintain it
-	location string
+	location  string
+	Precision float64 `json:"precision"`
 }
 
 func (c *Config) GetLocation() string {
@@ -84,6 +85,7 @@ func GetConfig(p string) (*Config, error) {
 		return nil, err
 	}
 
+	config.Precision = max(config.Precision, 0.01)
 	config.location = loc
 	return &config, nil
 }
@@ -112,7 +114,7 @@ func Default() (string, error) {
 	}
 	defer f.Close()
 
-	err = json.NewEncoder(f).Encode(&Config{})
+	err = json.NewEncoder(f).Encode(&Config{Precision: 0.01})
 	if err != nil {
 		return "", err
 	}

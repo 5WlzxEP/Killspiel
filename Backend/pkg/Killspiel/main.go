@@ -16,9 +16,8 @@ import (
 	"time"
 )
 
-const float64EqualityThreshold = 1e-3
-
 var guesses = map[int]UserCollector.Guess{}
+var conf *config.Config
 
 func Init(app *fiber.App) {
 	path, err := config.FindConfOrDefault()
@@ -26,7 +25,7 @@ func Init(app *fiber.App) {
 		log.Fatal(err)
 	}
 
-	conf, err := config.GetConfig(path)
+	conf, err = config.GetConfig(path)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -37,6 +36,10 @@ func Init(app *fiber.App) {
 	}
 
 	api := router.CreateApiGroup(app)
+
+	api.Get("/", get)
+	api.Post("/", post)
+
 	UserCollector.Init(path, conf, api.Group("/collector"))
 	ResultCollector.Init(path, api.Group("/data"))
 
@@ -90,7 +93,7 @@ func getWinners(correctGuess float64, gameId int64) []string {
 	}
 	defer tx.Rollback()
 
-	_, err = database.SetGameCorrect.Exec(correctGuess, gameId)
+	_, err = database.SetGameCorrect.Exec(correctGuess, conf.Precision, gameId)
 	if err != nil {
 		log.Printf("Error starting db transaction: %v\n", err)
 		return nil
@@ -98,7 +101,7 @@ func getWinners(correctGuess float64, gameId int64) []string {
 
 	for id, user := range guesses {
 		add := 0
-		if math.Abs(user.Guess-correctGuess) < float64EqualityThreshold {
+		if math.Abs(user.Guess-correctGuess) < conf.Precision {
 			add = 1
 			winners = append(winners, user.Name)
 		}
@@ -137,7 +140,6 @@ func saveGuesses(dbinfo string) (gameId int64, err error) {
 			continue
 		}
 		if n, err := res.RowsAffected(); n == 0 && err == nil {
-			log.Println(err)
 			_, err = tx.Stmt(database.CreateUser).Exec(id, guess.Name)
 			if err != nil {
 				log.Printf("Error occurd creating player %d: %v\n", id, err)
