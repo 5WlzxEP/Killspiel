@@ -18,7 +18,7 @@
 	export let data: User
 
 	data.history.forEach((h) => {
-		h.icon = h.guess === h.correct ? Check : X
+		h.icon = Math.abs(h.guess - h.correct) < h.precision ? Check : X
 	})
 
 	async function deleteConfirmed(key: string) {
@@ -109,6 +109,7 @@
 						<th>Schätzung</th>
 						<th>Ergebnis</th>
 						<th>Treffer</th>
+						<th class="w-[15%]">Zeit</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -120,6 +121,7 @@
 							<td>
 								<svelte:component this={row.icon} />
 							</td>
+							<td class="text-right">{new Date(Date.parse(row.time)).toLocaleString()}</td>
 						</tr>
 					{/each}
 				</tbody>

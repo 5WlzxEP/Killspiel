@@ -13,9 +13,11 @@ export type User = {
 	points: number
 	latest: number
 	history: Array<{
-		game: number
+		id: number
 		guess: number
 		correct: number
+		precision: number
+		time: string
 		icon?: SvelteComponentTyped
 	}>
 }

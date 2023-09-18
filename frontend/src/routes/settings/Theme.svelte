@@ -30,7 +30,7 @@
 	})
 </script>
 
-<div class="p-4 w-1/2">
+<div class="p-4">
 	<label class="label">
 		<span>Theme</span>
 		<select class="select" bind:value={selected} on:change={() => change(selected)}>
