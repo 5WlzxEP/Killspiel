@@ -1,13 +1,12 @@
 <script lang="ts">
-	import { onMount, type SvelteComponentTyped } from "svelte"
+	import { onMount } from "svelte"
 	import {
 		getToastStore,
 		type ToastSettings,
 		type PaginationSettings,
 		Paginator
 	} from "@skeletonlabs/skeleton"
-	import Check from "@components/Check.svelte"
-	import X from "@components/X.svelte"
+	import { IconCheck, IconX } from "@tabler/icons-svelte"
 
 	const toastStore = getToastStore()
 
@@ -123,13 +122,6 @@
 		currentOrder = order[s]
 		update()
 	}
-
-	function* generateLatest(n: number): Generator<SvelteComponentTyped> {
-		for (let i = 0; i < 8; i++) {
-			yield n % 2 === 1 ? Check : X
-			n = n >> 1
-		}
-	}
 </script>
 
 <div class="table-container mx-auto w-full m-1">
@@ -168,8 +160,12 @@
 						>{((row.guesses > 0 ? row.points / row.guesses : 0) * 100).toFixed(2)} %
 					</td>
 					<td class="grid-cols-8 grid">
-						{#each [...generateLatest(row.latest)] as icon}
-							<svelte:component this={icon} />
+						{#each row.latest.toString(2).padStart(8, "0") as n}
+							{#if n === "0"}
+								<IconX color="red" />
+							{:else}
+								<IconCheck color="lime" />
+							{/if}
 						{/each}
 					</td>
 				</tr>
