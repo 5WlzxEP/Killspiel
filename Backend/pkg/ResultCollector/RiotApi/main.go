@@ -59,9 +59,6 @@ func getApi(cp string) *Api {
 		if err == nil {
 			err = json.NewDecoder(f).Decode(api)
 		}
-
-		api.isServerOrDefault()
-		api.setRegion()
 	} else {
 		createFile(configPath, api)
 	}
@@ -77,7 +74,8 @@ func getApi(cp string) *Api {
 	}
 
 	api.configPath = configPath
-
+	api.isServerOrDefault()
+	api.setRegion()
 	api.ready = api.initReady()
 
 	return api
@@ -131,7 +129,7 @@ func (a *Api) Begin(ctx context.Context, cancelFunc context.CancelFunc, dbInfo c
 
 func (a *Api) checkInGame() bool {
 	game, err := a.getActiveGameById(a.summoner.Id)
-	if err != nil && (a.currentGame == nil || game.GameId != a.currentGame.GameId) {
+	if err != nil || (a.currentGame != nil && game.GameId != a.currentGame.GameId) {
 		return false
 	}
 	a.currentGame = game

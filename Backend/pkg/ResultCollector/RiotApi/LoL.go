@@ -35,7 +35,10 @@ func (a *Api) postLoL(ctx *fiber.Ctx) error {
 	if err != nil || summoner == nil {
 		return ctx.Status(http.StatusBadRequest).SendString("Beschwörername nicht valide.")
 	}
+
 	a.LoL = lol
+	a.setRegion()
+
 	a.summoner = summoner
 	a.ready = true
 	a.save()
