@@ -45,6 +45,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Spieler suche | Killspiel</title>
+</svelte:head>
+
 <div class="container mx-auto w-2/5">
 	<form>
 		<label class="m-2">

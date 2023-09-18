@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { afterUpdate, SvelteComponentTyped } from "svelte"
-	import { IconBadges, IconBrandTwitch, IconHome, IconSettings, IconUser } from "@tabler/icons-svelte"
+	import {
+		IconBadges,
+		IconBrandTwitch,
+		IconHome,
+		IconSettings,
+		IconUser
+	} from "@tabler/icons-svelte"
 	import { page } from "$app/stores"
 
 	type crumb = {

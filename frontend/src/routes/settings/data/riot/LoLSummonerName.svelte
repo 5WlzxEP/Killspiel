@@ -27,7 +27,7 @@
 
 <label class="label">
 	<span
-	>{label}
+		>{label}
 		{#if modal}
 			<button
 				on:click={() => {
@@ -42,10 +42,14 @@
 	</span>
 	<div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
 		{#if prefix === -1 || !Number.isInteger(prefix)}
-			<div class="input-group-shim"></div>
-		{:else }
+			<div class="input-group-shim" />
+		{:else}
 			<div class="input-group-shim">
-			<img src="{`https://ddragon.leagueoflegends.com/cdn/13.18.1/img/profileicon/${prefix}.png`}" alt="Profile icon" class="w-10 rounded-full">
+				<img
+					src={`https://ddragon.leagueoflegends.com/cdn/13.18.1/img/profileicon/${prefix}.png`}
+					alt="Profile icon"
+					class="w-10 rounded-full"
+				/>
 			</div>
 		{/if}
 		<input type="text" bind:value tabindex="0" {placeholder} required />

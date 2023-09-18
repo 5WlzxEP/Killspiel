@@ -10,21 +10,18 @@
 	} from "@skeletonlabs/skeleton"
 	import {
 		IconBadges,
-		IconBrandTwitch,
-		IconHome,
 		IconSettings,
-		IconUser,
 		IconUserSearch
 	} from "@tabler/icons-svelte"
-	import { afterUpdate, onMount, SvelteComponentTyped } from "svelte"
+	import { onMount } from "svelte"
 	import { get } from "svelte/store"
 	import { themeStore } from "@stores/theme"
 	import Modal from "@components/Modal.svelte"
-	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
-	import { storePopup } from '@skeletonlabs/skeleton';
+	import { computePosition, autoUpdate, offset, shift, flip, arrow } from "@floating-ui/dom"
+	import { storePopup } from "@skeletonlabs/skeleton"
 	import Breadcrumbs from "@components/Breadcrumbs.svelte"
 	initializeStores()
-	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
+	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow })
 
 	// set theme
 	onMount(() => {
@@ -69,7 +66,7 @@
 		</AppBar>
 	</svelte:fragment>
 	<!-- Page Route Content -->
-		<Breadcrumbs />
+	<Breadcrumbs />
 
 	<div class="mb-2">
 		<slot />

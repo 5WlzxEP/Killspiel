@@ -1,5 +1,11 @@
 <script lang="ts">
-	import { getToastStore, localStorageStore, Tab, TabGroup, type ToastSettings } from "@skeletonlabs/skeleton"
+	import {
+		getToastStore,
+		localStorageStore,
+		Tab,
+		TabGroup,
+		type ToastSettings
+	} from "@skeletonlabs/skeleton"
 	import { onMount } from "svelte"
 	import { IconCheck, IconX } from "@tabler/icons-svelte"
 	import type { Writable } from "svelte/store"
@@ -23,11 +29,9 @@
 			apiKey: ""
 		},
 		general: {
-			intervall: 20,
+			intervall: 20
 		}
 	}
-
-
 
 	onMount(async () => {
 		const url = `${BACKEND_URL}/api/data/riot/`
@@ -47,7 +51,6 @@
 		}
 	})
 
-
 	async function submit() {
 		try {
 			const res = await fetch(`${BACKEND_URL}/api/data/riot/`, {
@@ -64,8 +67,7 @@
 					background: "variant-filled-success"
 				}
 				toastStore.trigger(t)
-			}
-			else {
+			} else {
 				const t: ToastSettings = {
 					message: await res.text(),
 					timeout: 5000,
@@ -86,7 +88,6 @@
 			toastStore.trigger(t)
 		}
 	}
-
 </script>
 
 <svelte:head>
@@ -119,11 +120,15 @@
 							<label class="label m-2">
 								<span>Dauer</span>
 								<div class="input-group input-group-divider grid-cols-[1fr_auto]">
-									<input title="20" type="number" placeholder="20" bind:value={data.general.intervall} />
+									<input
+										title="20"
+										type="number"
+										placeholder="20"
+										bind:value={data.general.intervall}
+									/>
 									<div>s</div>
 								</div>
 							</label>
-
 						</div>
 						<div class="flex mt-5">
 							Mit * markierte Felder sind Pflicht

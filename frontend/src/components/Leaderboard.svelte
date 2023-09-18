@@ -100,7 +100,10 @@
 
 	let latest: HTMLTableCellElement
 
-	function changeSorting(s: "g" | "p" | "n", event: MouseEvent & { currentTarget: EventTarget & HTMLTableCellElement; }) {
+	function changeSorting(
+		s: "g" | "p" | "n",
+		event: MouseEvent & { currentTarget: EventTarget & HTMLTableCellElement }
+	) {
 		const target: HTMLTableCellElement = event.currentTarget
 		if (sortedBy === s) {
 			order[s] = toggleAscDesc(order[s], target)

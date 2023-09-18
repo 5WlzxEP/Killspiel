@@ -81,8 +81,11 @@
 			toastStore.trigger(t)
 		}
 	})
-
 </script>
+
+<svelte:head>
+	<title>Twitchchat | Killspiel</title>
+</svelte:head>
 
 <div class="container mx-auto">
 	<div class="card w-full">

@@ -96,6 +96,10 @@
 	})
 </script>
 
+<svelte:head>
+	<title>Guess Collector | Killspiel</title>
+</svelte:head>
+
 <div class="container grid grid-cols-2 mx-auto gap-4">
 	<a href="/settings/collector/twitchchat" class="card p-2">
 		<div class="p-1">
@@ -135,9 +139,8 @@
 			</label>
 			<div class="flex mt-4">
 				<button class="btn variant-ghost-success ms-auto" type="submit" on:click={send}
-				>Speichern
-				</button
-				>
+					>Speichern
+				</button>
 			</div>
 		</form>
 	</div>

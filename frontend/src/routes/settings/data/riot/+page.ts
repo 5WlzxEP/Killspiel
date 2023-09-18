@@ -4,7 +4,7 @@ import type { Writable } from "svelte/store"
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 export type Server =
-	"br1"
+	| "br1"
 	| "eun1"
 	| "euw1"
 	| "jp1"
@@ -22,16 +22,15 @@ export type Server =
 	| "vn2"
 
 export type LoL = {
-	summonerName: string,
-	profileIcon: number,
-	kategorie: string,
-	server: Server,
-	apiKey: string,
+	summonerName: string
+	profileIcon: number
+	kategorie: string
+	server: Server
+	apiKey: string
 }
 
-
 export type General = {
-	intervall: number,
+	intervall: number
 }
 
 export type Resp = {
@@ -41,9 +40,8 @@ export type Resp = {
 
 export const _ready: Writable<boolean> = localStorageStore("Riot-Ready", false)
 
-export async function _isReady()  {
+export async function _isReady() {
 	const url = `${BACKEND_URL}/api/data/riot/ready`
 	const res = await fetch(url)
 	_ready.set((await res.text()) === "true")
 }
-

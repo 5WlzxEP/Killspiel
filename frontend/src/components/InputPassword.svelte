@@ -28,15 +28,13 @@
 	let hidden = true
 
 	$: {
-		if (input)
-			input.type = hidden ? "password" : "text"
+		if (input) input.type = hidden ? "password" : "text"
 	}
-
 </script>
 
 <label class="label">
 	<span
-	>{label}
+		>{label}
 		{#if modal}
 			<button
 				on:click={() => {
@@ -50,16 +48,23 @@
 		{/if}
 	</span>
 	<div class="input-group input-group-divider grid-cols-[1fr_auto]">
-
-		<input type="password" autocomplete="off" bind:this={input} bind:value tabindex="0" {placeholder} required />
+		<input
+			type="password"
+			autocomplete="off"
+			bind:this={input}
+			bind:value
+			tabindex="0"
+			{placeholder}
+			required
+		/>
 		<div class="input-group-shim">
-		<button on:click|preventDefault={() => hidden = !hidden}>
-		{#if (hidden)}
-			<IconEyeOff />
-		{:else }
-			<IconEye />
-		{/if}
-		</button>*
+			<button on:click|preventDefault={() => (hidden = !hidden)}>
+				{#if hidden}
+					<IconEyeOff />
+				{:else}
+					<IconEye />
+				{/if}
+			</button>*
 		</div>
 	</div>
 </label>

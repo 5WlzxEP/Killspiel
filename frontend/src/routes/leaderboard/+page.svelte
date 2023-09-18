@@ -5,6 +5,7 @@
 <svelte:head>
 	<title>Leaderboard | Killspiel</title>
 </svelte:head>
+
 <div class="container mx-auto">
 	<Leaderboard />
 </div>

@@ -1,3 +1,7 @@
+<svelte:head>
+	<title>Daten Collector | Killspiel</title>
+</svelte:head>
+
 <div class="container grid grid-cols-2 mx-auto gap-4">
 	<a href="/settings/data/riot" class="card p-2">
 		<div class="p-1">

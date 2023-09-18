@@ -96,6 +96,10 @@
 	$: printSt = printState(state)
 </script>
 
+<svelte:head>
+	<title>Daten Collector - Manuel | Killspiel</title>
+</svelte:head>
+
 <div class="container mx-auto">
 	<div class="card w-full">
 		<h1 class="text-center text-2xl p-3">Manuell</h1>
