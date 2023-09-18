@@ -25,9 +25,9 @@ func getWithApi[T any](a *Api, url string) (*T, error) {
 	}
 
 	if res.StatusCode() > 300 || res.StatusCode() < 200 {
-		if res.StatusCode() == 401 {
+		if res.StatusCode() == http.StatusUnauthorized || res.StatusCode() == http.StatusForbidden {
 			// if unauthorized do complete check next time
-			a.ready = true
+			a.ready = false
 		}
 
 		return nil, errors.New(fmt.Sprintf("not a 200 status code: %d", res.StatusCode()))
