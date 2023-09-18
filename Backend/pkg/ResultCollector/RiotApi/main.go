@@ -113,7 +113,7 @@ func (a *Api) initReady() bool {
 func (a *Api) Begin(ctx context.Context, cancelFunc context.CancelFunc, dbInfo chan<- string) {
 	done := ctx.Done()
 
-	for ; ; time.Sleep(a.Intervall * time.Second) {
+	for ; ; time.Sleep(a.Intervall) {
 		select {
 		case <-done:
 			return
@@ -139,7 +139,7 @@ func (a *Api) checkInGame() bool {
 func (a *Api) Result(ctx context.Context, c chan float64) {
 	done := ctx.Done()
 
-	for ; ; time.Sleep(a.Intervall * time.Second) {
+	for ; ; time.Sleep(a.Intervall) {
 		select {
 		case <-done:
 			return
