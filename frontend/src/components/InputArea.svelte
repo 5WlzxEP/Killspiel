@@ -16,29 +16,29 @@
 		  }
 		| undefined = undefined
 
-	if (modal) {
-		ModalSett = {
-			type: "alert",
-			title: modal.title,
-			body: modal.body,
-			buttonTextCancel: "Schließen"
+	$: {
+		if (modal) {
+			ModalSett = {
+				type: "alert",
+				title: modal.title,
+				body: modal.body,
+				buttonTextCancel: "Schließen"
+			}
 		}
+	}
+
+	function trigger() {
+		modalStore.trigger(ModalSett)
 	}
 </script>
 
 <label class="label">
-	<span
-		>{label}
+	<span>
+		{label}
 		{#if modal}
-			<button
-				on:click={() => {
-					modalStore.trigger(ModalSett)
-				}}
-				class="inline-block p-1"
-				type="button"
-			>
+			<div on:keypress={trigger} on:click={trigger} class="inline-block p-1 cursor-pointer">
 				<IconHelp class="inline-block" />
-			</button>
+			</div>
 		{/if}
 	</span>
 

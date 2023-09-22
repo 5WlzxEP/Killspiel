@@ -29,15 +29,15 @@
 	<span
 		>{label}
 		{#if modal}
-			<button
+			<div
+				on:keypress
 				on:click={() => {
 					modalStore.trigger(ModalSett)
 				}}
-				class="inline-block p-1"
-				type="button"
+				class="inline-block p-1 cursor-pointer"
 			>
 				<IconHelp class="inline-block" />
-			</button>
+			</div>
 		{/if}
 	</span>
 	<div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">

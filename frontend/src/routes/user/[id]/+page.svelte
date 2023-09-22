@@ -105,21 +105,25 @@
 			<table class="table table-hover">
 				<thead>
 					<tr>
-						<th>Game</th>
-						<th>Schätzung</th>
-						<th>Ergebnis</th>
-						<th>Treffer</th>
-						<th class="w-[15%]">Zeit</th>
+						<th class="w-[10%] text-center">Game</th>
+						<th class="text-right">Schätzung</th>
+						<th class="text-right">Ergebnis</th>
+						<th class="text-right">Toleranz</th>
+						<th class="text-right">Treffer</th>
+						<th class="w-[15%] text-right">Zeit</th>
 					</tr>
 				</thead>
 				<tbody>
 					{#each data.history as row}
 						<tr>
-							<td>{row.id}</td>
-							<td>{row.guess}</td>
-							<td>{row.correct}</td>
-							<td>
-								<svelte:component this={row.icon} />
+							<td class="text-right">{row.id}</td>
+							<td class="text-right">{row.guess.toFixed(2)}</td>
+							<td class="text-right">{row.correct.toFixed(2)}</td>
+							<td class="text-right">{row.precision.toFixed(2)}</td>
+							<td class="flex">
+								<div class="ms-auto">
+									<svelte:component this={row.icon} />
+								</div>
 							</td>
 							<td class="text-right">{new Date(Date.parse(row.time)).toLocaleString()}</td>
 						</tr>

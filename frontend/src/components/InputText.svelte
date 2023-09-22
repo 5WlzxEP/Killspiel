@@ -28,24 +28,26 @@
 
 	let div: HTMLDivElement
 
+	function triggerModal() {
+		modalStore.trigger(ModalSett)
+	}
+
 	onMount(() => {
 		div.classList.add(prefix ? "grid-cols-[auto_1fr_auto]" : "grid-cols-[1fr_auto]")
 	})
 </script>
 
 <label class="label">
-	<span
-		>{label}
+	<span>
+		{label}
 		{#if modal}
-			<button
-				on:click={() => {
-					modalStore.trigger(ModalSett)
-				}}
-				class="inline-block p-1"
-				type="button"
+			<div
+				on:keypress={triggerModal}
+				on:click={triggerModal}
+				class="inline-block p-1 cursor-pointer"
 			>
 				<IconHelp class="inline-block" />
-			</button>
+			</div>
 		{/if}
 	</span>
 	<div bind:this={div} class="input-group input-group-divider">

@@ -27,6 +27,10 @@
 
 	let hidden = true
 
+	function trigger() {
+		modalStore.trigger(ModalSett)
+	}
+
 	$: {
 		if (input) input.type = hidden ? "password" : "text"
 	}
@@ -36,15 +40,9 @@
 	<span
 		>{label}
 		{#if modal}
-			<button
-				on:click={() => {
-					modalStore.trigger(ModalSett)
-				}}
-				class="inline-block p-1"
-				type="button"
-			>
+			<div on:keypress={trigger} on:click={trigger} class="inline-block p-1 cursor-pointer">
 				<IconHelp class="inline-block" />
-			</button>
+			</div>
 		{/if}
 	</span>
 	<div class="input-group input-group-divider grid-cols-[1fr_auto]">

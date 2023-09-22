@@ -46,7 +46,7 @@
 </script>
 
 <svelte:head>
-	<title>Spieler suche | Killspiel</title>
+	<title>Spieler Suche | Killspiel</title>
 </svelte:head>
 
 <div class="container mx-auto w-2/5">

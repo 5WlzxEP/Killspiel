@@ -282,15 +282,15 @@
 <label class="label">
 	<span
 		>Kategorie zum Auswerten
-		<button
+		<div
+			on:keypress
 			on:click={() => {
 				modalStore.trigger(modal)
 			}}
-			class="p-1"
-			type="button"
+			class="p-1 cursor-pointer inline-block"
 		>
 			<IconHelp class="inline-block" />
-		</button>
+		</div>
 	</span>
 	<div class="input-group input-group-divider grid-cols-[1fr_auto]">
 		<input

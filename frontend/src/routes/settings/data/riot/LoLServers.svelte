@@ -36,15 +36,15 @@
 <label class="label">
 	<span>
 		Server
-		<button
+		<div
+			on:keypress
 			on:click={() => {
 				modalStore.trigger(ModalSett)
 			}}
-			class="inline-block p-1"
-			type="button"
+			class="inline-block p-1 cursor-pointer"
 		>
 			<IconHelp class="inline-block" />
-		</button>
+		</div>
 	</span>
 	<div class="input-group input-group-divider grid-cols-[1fr_auto]">
 		<select class="select" bind:value>

@@ -8,11 +8,7 @@
 		LightSwitch,
 		Toast
 	} from "@skeletonlabs/skeleton"
-	import {
-		IconBadges,
-		IconSettings,
-		IconUserSearch
-	} from "@tabler/icons-svelte"
+	import { IconBadges, IconSettings, IconUserSearch } from "@tabler/icons-svelte"
 	import { onMount } from "svelte"
 	import { get } from "svelte/store"
 	import { themeStore } from "@stores/theme"
