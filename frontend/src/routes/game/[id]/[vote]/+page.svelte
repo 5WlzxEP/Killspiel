@@ -3,11 +3,11 @@
 	import type { User } from "./+page"
 
 	/** @type {import("./$types").PageData} */
-	export let data: { data: Array<User> }
+	export let data: { data: Array<User>, params: {id: number, vote: number} }
 </script>
 
 <svelte:head>
-	<title>Spieler Suche | Killspiel</title>
+	<title>Spieler mit Schätzung {data.params.vote} in Game {data.params.id} | Killspiel</title>
 </svelte:head>
 
 <div class="container mx-auto w-2/5">
@@ -17,15 +17,15 @@
 				<table class="table table-hover">
 					<thead>
 						<tr>
-							<th>Id</th>
-							<th class="text-right">Name</th>
+							<th>Name</th>
+							<th class="text-right">Vote</th>
 						</tr>
 					</thead>
 					<tbody class="cursor-pointer">
 						{#each data.data as row}
 							<tr on:click={() => goto("/user/" + row.id.toString())}>
-								<td>{row.id}</td>
-								<td class="text-right">{row.name}</td>
+								<td>{row.name}</td>
+								<td class="text-right">{row.vote.toFixed(2)}</td>
 							</tr>
 						{/each}
 					</tbody>

@@ -37,8 +37,9 @@ func get(ctx *fiber.Ctx) error {
 }
 
 type User struct {
-	Name string `json:"name"`
-	Id   int    `json:"id"`
+	Name string  `json:"name"`
+	Id   int     `json:"id"`
+	Vote float64 `json:"vote"`
 }
 
 func getVotes(ctx *fiber.Ctx) error {
@@ -60,7 +61,7 @@ func getVotes(ctx *fiber.Ctx) error {
 
 	for rows.Next() {
 		var res User
-		err = rows.Scan(&res.Id, &res.Name)
+		err = rows.Scan(&res.Id, &res.Name, &res.Vote)
 		if err != nil {
 			continue
 		}

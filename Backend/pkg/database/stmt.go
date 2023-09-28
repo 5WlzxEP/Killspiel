@@ -111,7 +111,7 @@ func prepareStmts() (err error) {
 		return err
 	}
 
-	GetPlayersByVote, err = DB.Prepare("SELECT id, name FROM Users JOIN (SELECT player FROM Votes WHERE game = ? and vote between ? and ? + 0.99) as Vp on Users.id = Vp.player")
+	GetPlayersByVote, err = DB.Prepare("SELECT id, name, vote FROM Users JOIN (SELECT player, vote FROM Votes WHERE game = ? and vote between ? and ? + 0.99) as Vp on Users.id = Vp.player")
 	if err != nil {
 		return err
 	}
