@@ -116,7 +116,11 @@
 				<tbody>
 					{#each data.history as row}
 						<tr>
-							<td class="text-right">{row.id}</td>
+							<td class="text-right">
+								<a href="/game/{row.id}" class="w-full p-4" data-sveltekit-preload-data="tap">
+									{row.id}
+								</a>
+							</td>
 							<td class="text-right">{row.guess.toFixed(2)}</td>
 							<td class="text-right">{row.correct.toFixed(2)}</td>
 							<td class="text-right">{row.precision.toFixed(2)}</td>

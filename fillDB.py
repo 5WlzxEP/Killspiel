@@ -1,4 +1,5 @@
 import dataclasses
+import json
 import random
 import sqlite3
 from faker import Faker
@@ -8,6 +9,32 @@ from faker import Faker
 class Vote:
     game: int
     vote: float
+
+
+class Game:
+    def __init__(self, _id: int, correct: int):
+        self._id = _id
+        self._correct = correct
+        self._count = 0
+        self._winners = 0
+        self._vert = {}
+
+    @property
+    def id(self):
+        return self._id
+
+    def addVote(self, vote: int):
+        self._count += 1
+        if vote == self._correct:
+            self._winners += 1
+        try:
+            self._vert[vote] += 1
+        except KeyError:
+            self._vert[vote] = 1
+
+    def updateGame(self, cursor: sqlite3.Cursor):
+        cursor.execute(f"UPDATE Game SET userCount = {self._count}, correctCount = {self._winners},"
+                       f" verteilung = '{json.dumps(self._vert)}' WHERE id = {self._id}")
 
 
 class User:
@@ -27,14 +54,15 @@ class User:
         for vote in self._votes:
             cursor.execute(f"INSERT INTO Votes VALUES ({vote.game}, {self._id}, {vote.vote})")
 
-    def add_vote(self, game: int, correct: int):
+    def add_vote(self, game: Game, correct: int):
         vote = random.randint(0, 15)
-        self._votes.append(Vote(game=game, vote=vote))
+        self._votes.append(Vote(game=game.id, vote=vote))
         self._guesses += 1
         self._latest <<= 1
         self._latest += 1 if vote == correct else 0
         self._points += 1 if vote == correct else 0
         self._latest %= 256
+        game.addVote(vote)
 
 
 faker = Faker(use_weighting=False)
@@ -45,7 +73,7 @@ while True:
 
             users = []
             print("Generating Users")
-            for _ in range(2_000):
+            for _ in range(1_000):
                 users.append(User())
 
             for i in range(6_000):
@@ -54,11 +82,13 @@ while True:
                 correct = random.randint(0, 15)
                 cursor.execute(f"INSERT INTO Game (correct, info) VALUES ({float(correct)}, 'generated test data');")
                 cursor.execute("SELECT last_insert_rowid()")
-                game = cursor.fetchone()[0]
+                game = Game(cursor.fetchone()[0], correct)
 
                 for user in users:
                     if random.randint(0, 10) < 5:
                         user.add_vote(game, correct)
+
+                game.updateGame(cursor)
 
             for i, user in enumerate(users):
                 if i % 10 == 0:

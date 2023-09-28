@@ -1,6 +1,7 @@
 package Killspiel
 
 import (
+	"Killspiel/pkg/Game"
 	"Killspiel/pkg/Leaderboard"
 	"Killspiel/pkg/ResultCollector"
 	"Killspiel/pkg/User"
@@ -9,6 +10,7 @@ import (
 	"Killspiel/pkg/database"
 	"Killspiel/pkg/router"
 	"fmt"
+	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"log"
 	"math"
@@ -17,6 +19,7 @@ import (
 )
 
 var guesses = map[int]UserCollector.Guess{}
+var verteilung = map[int]int{}
 var conf *config.Config
 
 func Init(app *fiber.App) {
@@ -45,6 +48,7 @@ func Init(app *fiber.App) {
 
 	Leaderboard.Init(api.Group("/leaderboard"))
 	User.Init(api.Group("/user"))
+	Game.Init(api.Group("/game"))
 
 	// Redirecting user access per link, because /user/:id is routed through svelte
 	app.Get("/user/:id/", func(ctx *fiber.Ctx) error {
@@ -93,12 +97,6 @@ func getWinners(correctGuess float64, gameId int64) []string {
 	}
 	defer tx.Rollback()
 
-	_, err = database.SetGameCorrect.Exec(correctGuess, conf.Precision, gameId)
-	if err != nil {
-		log.Printf("Error starting db transaction: %v\n", err)
-		return nil
-	}
-
 	for id, user := range guesses {
 		add := 0
 		if math.Abs(user.Guess-correctGuess) < conf.Precision {
@@ -111,6 +109,13 @@ func getWinners(correctGuess float64, gameId int64) []string {
 			continue
 		}
 	}
+
+	_, err = database.SetGameCorrect.Exec(correctGuess, conf.Precision, len(winners), gameId)
+	if err != nil {
+		log.Printf("Error starting db transaction: %v\n", err)
+		return nil
+	}
+
 	_ = tx.Commit()
 	return winners
 }
@@ -122,7 +127,7 @@ func saveGuesses(dbinfo string) (gameId int64, err error) {
 	}
 	defer tx.Rollback()
 
-	result, err := tx.Stmt(database.CreateGame).Exec(dbinfo)
+	result, err := tx.Stmt(database.CreateGame).Exec(len(guesses), dbinfo)
 	if err != nil {
 		return
 	}
@@ -133,7 +138,10 @@ func saveGuesses(dbinfo string) (gameId int64, err error) {
 		}
 	}
 
+	clear(verteilung)
+
 	for id, guess := range guesses {
+		verteilung[int(math.Floor(guess.Guess))]++
 		res, err := tx.Stmt(database.UpdateUserGuesses).Exec(id)
 		if err != nil {
 			log.Printf("Error occurd getting player %d: %v\n", id, err)
@@ -158,10 +166,19 @@ func saveGuesses(dbinfo string) (gameId int64, err error) {
 
 	}
 
+	bytes, err := json.Marshal(verteilung)
+	if err != nil {
+		log.Printf("An error occurred marshaling verteilung: %v\n", err)
+	} else {
+		_, err = tx.Stmt(database.SetGameVerteilung).Exec(string(bytes), gameId)
+		if err != nil {
+			log.Printf("An error occured saving Verteilung to DB: %v\n", err)
+		}
+	}
+
 	err = tx.Commit()
 	if err != nil {
 		log.Printf("Error occured commiting game %d: %v\n", gameId, err)
-		return
 	}
 
 	return

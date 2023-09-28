@@ -34,7 +34,7 @@ func CreateTables() error {
  		name varchar(255) unique,
  		guesses int default 1,
  		points int default 0,
- 		latest tinyint unsigned default 0
+ 		latest smallint default 0
  	)`)
 	if err != nil {
 		return err
@@ -50,8 +50,11 @@ func CreateTables() error {
     	id integer primary key AUTOINCREMENT,
     	correct float default null,
     	"precision" float default 0.01,
+    	userCount integer default 0,
+    	correctCount integer default 0,
     	time timestamp default CURRENT_TIMESTAMP,
-    	info text 
+    	info text,
+    	verteilung text
  	)`)
 	if err != nil {
 		return err
@@ -71,6 +74,11 @@ func CreateTables() error {
 	}
 
 	_, err = tx.Exec("CREATE INDEX IF NOT EXISTS Votesplayers ON Votes(player)")
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec("CREATE INDEX IF NOT EXISTS Votesgame ON Votes(game)")
 	if err != nil {
 		return err
 	}

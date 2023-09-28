@@ -21,12 +21,22 @@ var (
 	// Leaderboard
 	LeaderboardAsc  *sql.Stmt
 	LeaderboardDesc *sql.Stmt
+
+	// Game
+	GetGame           *sql.Stmt
+	SetGameVerteilung *sql.Stmt
+	GetPlayersByVote  *sql.Stmt
 )
 
 func prepareStmts() (err error) {
-	CreateGame, err = DB.Prepare("INSERT INTO Game (info) VALUES (?)")
+	CreateGame, err = DB.Prepare("INSERT INTO Game (userCount, info) VALUES (?, ?)")
 	if err != nil {
 		return
+	}
+
+	SetGameVerteilung, err = DB.Prepare("UPDATE Game SET verteilung = ? WHERE id = ?")
+	if err != nil {
+		return err
 	}
 
 	UserExist, err = DB.Prepare("SELECT EXISTS(SELECT id FROM Users WHERE id = ?)")
@@ -97,7 +107,17 @@ func prepareStmts() (err error) {
 		return err
 	}
 
-	SetGameCorrect, err = DB.Prepare("UPDATE Game SET correct = ?, precision = ? WHERE id = ?;")
+	SetGameCorrect, err = DB.Prepare("UPDATE Game SET correct = ?, precision = ?, correctCount = ? WHERE id = ?;")
+	if err != nil {
+		return err
+	}
+
+	GetGame, err = DB.Prepare("SELECT correct, time, correctCount, userCount, game.precision, verteilung FROM Game WHERE id = ?")
+	if err != nil {
+		return err
+	}
+
+	GetPlayersByVote, err = DB.Prepare("SELECT id, name FROM Users JOIN (SELECT player FROM Votes WHERE game = ? and vote = ?) as Vp on Users.id = Vp.player")
 	if err != nil {
 		return err
 	}
