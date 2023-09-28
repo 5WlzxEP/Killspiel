@@ -53,7 +53,7 @@ func getVotes(ctx *fiber.Ctx) error {
 
 	var result []User
 
-	rows, err := database.GetPlayersByVote.Query(id, vote)
+	rows, err := database.GetPlayersByVote.Query(id, vote, vote)
 	if err != nil {
 		return err
 	}

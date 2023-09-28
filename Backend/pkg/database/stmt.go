@@ -4,7 +4,6 @@ import "database/sql"
 
 var (
 	CreateGame        *sql.Stmt
-	UserExist         *sql.Stmt
 	CreateUser        *sql.Stmt
 	UpdateUserGuesses *sql.Stmt
 	CreateVote        *sql.Stmt
@@ -37,11 +36,6 @@ func prepareStmts() (err error) {
 	SetGameVerteilung, err = DB.Prepare("UPDATE Game SET verteilung = ? WHERE id = ?")
 	if err != nil {
 		return err
-	}
-
-	UserExist, err = DB.Prepare("SELECT EXISTS(SELECT id FROM Users WHERE id = ?)")
-	if err != nil {
-		return
 	}
 
 	CreateUser, err = DB.Prepare("INSERT INTO Users (id, name) VALUES (?, ?)")
@@ -117,7 +111,7 @@ func prepareStmts() (err error) {
 		return err
 	}
 
-	GetPlayersByVote, err = DB.Prepare("SELECT id, name FROM Users JOIN (SELECT player FROM Votes WHERE game = ? and vote = ?) as Vp on Users.id = Vp.player")
+	GetPlayersByVote, err = DB.Prepare("SELECT id, name FROM Users JOIN (SELECT player FROM Votes WHERE game = ? and vote between ? and ? + 0.99) as Vp on Users.id = Vp.player")
 	if err != nil {
 		return err
 	}

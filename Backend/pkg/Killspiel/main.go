@@ -105,15 +105,14 @@ func getWinners(correctGuess float64, gameId int64) []string {
 		}
 		_, err = tx.Stmt(database.UpdateUser).Exec(add, add, id)
 		if err != nil {
-			log.Printf("Error starting db transaction: %v\n", err)
+			log.Printf("Error updating User %d: %v\n", id, err)
 			continue
 		}
 	}
 
-	_, err = database.SetGameCorrect.Exec(correctGuess, conf.Precision, len(winners), gameId)
+	_, err = tx.Stmt(database.SetGameCorrect).Exec(correctGuess, conf.Precision, len(winners), gameId)
 	if err != nil {
-		log.Printf("Error starting db transaction: %v\n", err)
-		return nil
+		log.Printf("Error updating game %d: %v\n", gameId, err)
 	}
 
 	_ = tx.Commit()
@@ -123,6 +122,7 @@ func getWinners(correctGuess float64, gameId int64) []string {
 func saveGuesses(dbinfo string) (gameId int64, err error) {
 	tx, err := database.DB.Begin()
 	if err != nil {
+		log.Printf("Error starting db transaction: %v\n", err)
 		return
 	}
 	defer tx.Rollback()
