@@ -3,7 +3,7 @@
 	import type { User } from "./+page"
 
 	/** @type {import("./$types").PageData} */
-	export let data: { data: Array<User>, params: {id: number, vote: number} }
+	export let data: { data: Array<User>; params: { id: number; vote: number } }
 </script>
 
 <svelte:head>
