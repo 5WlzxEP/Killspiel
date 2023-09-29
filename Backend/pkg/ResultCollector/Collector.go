@@ -26,6 +26,11 @@ type state struct {
 	States `json:"state"`
 }
 
+func setState(state States) {
+	State.States = state
+	Websocket.Broadcast([]byte{'S', 't', 'a', 't', 'e', ':', ' ', '0' + uint8(state)})
+}
+
 var (
 	State            state
 	beginCancelFunc  context.CancelFunc
