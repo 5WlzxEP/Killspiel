@@ -19,7 +19,7 @@ const configName = "RiotApi.json"
 
 var (
 	servers = []string{"br1", "eun1", "euw1", "jp1", "kr", "la1", "la2", "na1", "oc1", "ph2", "ru", "sg2", "th2", "tr1", "tw2", "vn2"}
-	regions = []string{"americas", "asia", "europe", "sea"}
+	//regions = []string{"americas", "asia", "europe", "sea"}
 )
 
 type General struct {
@@ -115,6 +115,7 @@ func (a *Api) Begin(ctx context.Context, cancelFunc context.CancelFunc, dbInfo c
 	for ; ; time.Sleep(a.Intervall) {
 		select {
 		case <-done:
+			a.currentGame = nil
 			return
 		default:
 			if a.checkInGame() {
@@ -138,6 +139,11 @@ func (a *Api) checkInGame() bool {
 
 func (a *Api) Result(ctx context.Context, c chan float64) {
 	done := ctx.Done()
+
+	// started manual must be stop manual
+	if a.currentGame == nil {
+		return
+	}
 
 	for ; ; time.Sleep(a.Intervall) {
 		select {
