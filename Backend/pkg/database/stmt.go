@@ -22,6 +22,7 @@ var (
 	LeaderboardDesc *sql.Stmt
 
 	// Game
+	GetLatestGames    *sql.Stmt
 	GetGame           *sql.Stmt
 	SetGameVerteilung *sql.Stmt
 	GetPlayersByVote  *sql.Stmt
@@ -112,6 +113,11 @@ func prepareStmts() (err error) {
 	}
 
 	GetPlayersByVote, err = DB.Prepare("SELECT id, name, vote FROM Users JOIN (SELECT player, vote FROM Votes WHERE game = ? and vote between ? and ? + 0.99) as Vp on Users.id = Vp.player")
+	if err != nil {
+		return err
+	}
+
+	GetLatestGames, err = DB.Prepare("SELECT id, correct, userCount, correctCount, precision, time FROM Game ORDER BY id DESC LIMIT 50")
 	if err != nil {
 		return err
 	}

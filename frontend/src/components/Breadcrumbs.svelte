@@ -5,7 +5,8 @@
 		IconBrandTwitch,
 		IconHome,
 		IconSettings,
-		IconUser
+		IconUser,
+		IconDeviceGamepad2
 	} from "@tabler/icons-svelte"
 	import { page } from "$app/stores"
 
@@ -42,6 +43,8 @@
 				case "User":
 					icon = IconUser
 					break
+				case "Game":
+					icon = IconDeviceGamepad2
 			}
 
 			crumbs.push({
