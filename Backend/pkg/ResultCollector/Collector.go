@@ -2,6 +2,7 @@ package ResultCollector
 
 import (
 	"Killspiel/pkg/ResultCollector/RiotApi"
+	"Killspiel/pkg/Websocket"
 	"context"
 	"github.com/gofiber/fiber/v2"
 )
@@ -67,7 +68,7 @@ func Begin() string {
 	var ctx context.Context
 	ctx, beginCancelFunc = context.WithCancel(context.Background())
 
-	State.States = none
+	setState(none)
 
 	if currentCollector != nil && currentCollector.Ready() {
 		go currentCollector.Begin(ctx, beginCancelFunc, dbInfo)
@@ -75,7 +76,8 @@ func Begin() string {
 
 	// still blocks if no currentCollector exists, which is ok, because the user can manually override it
 	<-ctx.Done()
-	State.States = begin
+
+	setState(begin)
 
 	select {
 	case x := <-dbInfo:
@@ -90,7 +92,7 @@ func Result() float64 {
 		<-resultChan
 	}
 
-	State.States = running
+	setState(running)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	if currentCollector != nil && currentCollector.Ready() {
@@ -99,6 +101,7 @@ func Result() float64 {
 	res := <-resultChan
 	cancel()
 
-	State.States = result
+	setState(result)
+
 	return res
 }

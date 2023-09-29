@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { type ToastSettings, getToastStore } from "@skeletonlabs/skeleton"
-	import { onDestroy, onMount } from "svelte"
+	import { onMount } from "svelte"
+	import { state } from "@stores/state"
 
 	const toastStore = getToastStore()
 	const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
-	let state = 0
 	let dissolve: boolean
 
 	let r: number | string | null
@@ -15,7 +15,7 @@
 		else if (r !== null) r = 0
 	}
 
-	$: dissolve = state !== 2 || typeof r !== "number"
+	$: dissolve = $state !== 2 || typeof r !== "number"
 
 	async function change() {
 		try {
@@ -25,7 +25,7 @@
 				},
 				method: "POST",
 				body: JSON.stringify({
-					state: state,
+					state: $state,
 					result: r
 				})
 			})
@@ -74,26 +74,18 @@
 		try {
 			const res = await fetch(url)
 			const val = await res.json()
-			state = val.state
+			$state = val.state
 		} catch (e) {
 			console.error(e)
 		}
 	}
 
-	// eslint-disable-next-line no-undef
-	let interval: NodeJS.Timeout
-
 	onMount(async () => {
 		await update()
-		interval = setInterval(update, 10_000)
-	})
-
-	onDestroy(() => {
-		clearInterval(interval)
 	})
 
 	let printSt: string
-	$: printSt = printState(state)
+	$: printSt = printState($state)
 </script>
 
 <svelte:head>
@@ -106,10 +98,10 @@
 		<hr />
 		<div class="grid gap-10 w-full m-2 grid-cols-[2fr_auto_1fr_auto_2fr] p-2">
 			<div class="p-2 grid gap-2 h-3">
-				<button class="btn variant-ghost" type="button" disabled={state !== 0} on:click={change}>
+				<button class="btn variant-ghost" type="button" disabled={$state !== 0} on:click={change}>
 					Starten
 				</button>
-				<button class="btn variant-ghost" type="button" disabled={state !== 1} on:click={change}>
+				<button class="btn variant-ghost" type="button" disabled={$state !== 1} on:click={change}>
 					Beenden
 				</button>
 			</div>
@@ -117,7 +109,6 @@
 			<span class="divider-vertical h-full" />
 
 			<div class="p-2 grid gap-2 h-3 text-center">
-				<!--				Current State:-->
 				{printSt}
 			</div>
 

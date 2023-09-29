@@ -16,6 +16,7 @@
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from "@floating-ui/dom"
 	import { storePopup } from "@skeletonlabs/skeleton"
 	import Breadcrumbs from "@components/Breadcrumbs.svelte"
+	import Websocket from "./Websocket.svelte"
 	initializeStores()
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow })
 
@@ -25,9 +26,9 @@
 	})
 </script>
 
-<svelte:head
-	>{@html `<script>${autoModeWatcher.toString()} autoModeWatcher();</script>`}</svelte:head
->
+<svelte:head>
+	{@html `<script>${autoModeWatcher.toString()} autoModeWatcher();</script>`}
+</svelte:head>
 <!-- App Shell -->
 <AppShell>
 	<svelte:fragment slot="pageHeader">
@@ -89,3 +90,4 @@
 </AppShell>
 <Modal />
 <Toast />
+<Websocket />
