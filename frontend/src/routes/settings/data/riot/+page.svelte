@@ -103,14 +103,16 @@
 				</div>
 			{/if}
 		</div>
-		<hr class="mb-2" />
 		<TabGroup>
-			<Tab bind:group={$tabSet} name="allgemein" value={0}>
-				<span>Allgemein</span>
-			</Tab>
-			<Tab bind:group={$tabSet} name="LoL" value={1}>
-				<span>LoL</span>
-			</Tab>
+			<div class="flex mx-auto">
+				<Tab bind:group={$tabSet} name="allgemein" value={0}>
+					<span>Allgemein</span>
+				</Tab>
+				<Tab bind:group={$tabSet} name="LoL" value={1}>
+					<span>LoL</span>
+				</Tab>
+			</div>
+
 			<svelte:fragment slot="panel">
 				{#if $tabSet === 0}
 					<form class="p-5 pt-0" on:submit|preventDefault={submit}>

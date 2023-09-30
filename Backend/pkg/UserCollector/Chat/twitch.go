@@ -20,6 +20,11 @@ import (
 
 const ConfigName = "Twitch.json"
 
+type ready struct {
+	ready   bool
+	changed bool
+}
+
 type TwitchChat struct {
 	client        *twitch.Client
 	Channel       string `json:"channel"`
@@ -30,11 +35,10 @@ type TwitchChat struct {
 	EndMsg        string `json:"msgEnd"`
 	FinalMsg      string `json:"msgFinal"`
 	configPath    string
+
+	OAuth OAuth `json:"oauth"`
 	// Caches Ready data
-	ready struct {
-		ready   bool
-		changed bool
-	}
+	ready
 	sync.Mutex
 }
 
@@ -47,6 +51,10 @@ func (tc *TwitchChat) Ready() bool {
 
 	tc.ready.changed = false
 	tc.ready.ready = false
+
+	if tc.ApiKey == "" {
+		return false
+	}
 
 	var err2 error
 	tc.client.OnConnect(func() {
@@ -83,6 +91,10 @@ func New(configPath string, r fiber.Router) (*TwitchChat, string) {
 
 	r.Post("/", tc.post)
 	r.Get("/ready/", tc.isReady)
+	r.Get("/oauth/", tc.getOAuth)
+	r.Get("/std-oauth/", tc.setOAuthStandard)
+	r.Get("/adv/", tc.getAdv)
+	r.Post("/adv", tc.postAdv)
 
 	return tc, "Twitchchat"
 }
@@ -116,6 +128,14 @@ func newConfig(configPath string) *TwitchChat {
 func (tc *TwitchChat) AnnounceResult(winners []string, correctGuess float64) {
 	msg := tc.formatFinalMessage(winners, correctGuess)
 
+	if tc.OAuth.Color != 0 && tc.OAuth.ready {
+		err := tc.announce(msg)
+		if err != nil {
+			log.Println(err)
+		}
+		return
+	}
+
 	tc.Lock()
 	defer tc.Unlock()
 
@@ -135,9 +155,16 @@ func (tc *TwitchChat) CollectGuesses(ctx context.Context, collect func(id int, u
 
 	client.Join(tc.Channel)
 
-	client.OnConnect(func() {
-		client.Say(tc.Channel, tc.StartMsg)
-	})
+	if tc.OAuth.Color != 0 && tc.OAuth.ready {
+		err := tc.announce(tc.StartMsg)
+		if err != nil {
+			log.Println(err)
+		}
+	} else {
+		client.OnConnect(func() {
+			client.Say(tc.Channel, tc.StartMsg)
+		})
+	}
 
 	tc.client.OnPrivateMessage(func(m twitch.PrivateMessage) {
 		if !strings.HasPrefix(m.Message, tc.Prefix) {
@@ -168,7 +195,15 @@ func (tc *TwitchChat) CollectGuesses(ctx context.Context, collect func(id int, u
 		log.Println(ctx.Err())
 	}
 
-	client.Say(tc.Channel, tc.EndMsg)
+	if tc.OAuth.Color != 0 && tc.OAuth.ready {
+		err := tc.announce(tc.EndMsg)
+		if err != nil {
+			log.Println(err)
+		}
+	} else {
+		client.Say(tc.Channel, tc.EndMsg)
+	}
+
 	// make sure, a message is sent before the client is closed
 	time.Sleep(50 * time.Millisecond)
 	client.Disconnect()

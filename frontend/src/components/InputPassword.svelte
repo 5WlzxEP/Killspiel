@@ -1,12 +1,16 @@
 <script lang="ts">
 	import { getModalStore, type ModalSettings } from "@skeletonlabs/skeleton"
 	import { IconHelp, IconEye, IconEyeOff } from "@tabler/icons-svelte"
+	import { onMount } from "svelte"
 
 	const modalStore = getModalStore()
 
 	let ModalSett: ModalSettings
 
 	export let value: string
+	export let prefix = ""
+
+	export let required = true
 	export let placeholder = ""
 	export let label: string
 	export let modal: {
@@ -26,6 +30,7 @@
 	let input: HTMLInputElement
 
 	let hidden = true
+	let div: HTMLDivElement
 
 	function trigger() {
 		modalStore.trigger(ModalSett)
@@ -34,6 +39,10 @@
 	$: {
 		if (input) input.type = hidden ? "password" : "text"
 	}
+
+	onMount(() => {
+		div.classList.add(prefix ? "grid-cols-[auto_1fr_auto]" : "grid-cols-[1fr_auto]")
+	})
 </script>
 
 <label class="label">
@@ -45,7 +54,10 @@
 			</div>
 		{/if}
 	</span>
-	<div class="input-group input-group-divider grid-cols-[1fr_auto]">
+	<div bind:this={div} class="input-group input-group-divider">
+		{#if prefix}
+			<div class="input-group-shim">{prefix}</div>
+		{/if}
 		<input
 			type="password"
 			autocomplete="off"
@@ -53,7 +65,7 @@
 			bind:value
 			tabindex="0"
 			{placeholder}
-			required
+			{required}
 		/>
 		<div class="input-group-shim">
 			<button on:click|preventDefault={() => (hidden = !hidden)} type="button">
@@ -62,7 +74,7 @@
 				{:else}
 					<IconEye />
 				{/if}
-			</button>*
+			</button>{required ? "*" : ""}
 		</div>
 	</div>
 </label>
