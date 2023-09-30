@@ -1,5 +1,5 @@
-import type {PageLoad} from "../../../../../.svelte-kit/types/src/routes/game/[id]/[vote]/$types"
-import {error} from "@sveltejs/kit"
+import type { PageLoad } from "../../../../../.svelte-kit/types/src/routes/game/[id]/[vote]/$types"
+import { error } from "@sveltejs/kit"
 
 export const prerender = false
 
@@ -15,7 +15,7 @@ export const load: PageLoad = async ({ fetch, params }) => {
 	try {
 		const url = `${BACKEND_URL}/api/game/${params.id}/${params.vote}`
 		const res = await fetch(url)
-		return {data: await res.json(), params: params}
+		return { data: await res.json(), params: params }
 	} catch (e) {
 		console.error(e)
 

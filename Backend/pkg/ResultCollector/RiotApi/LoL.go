@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"slices"
+	"strconv"
 )
 
 type LoL struct {
@@ -43,7 +44,7 @@ func (a *Api) postLoL(ctx *fiber.Ctx) error {
 	a.ready = true
 	a.save()
 
-	return ctx.SendStatus(http.StatusNoContent)
+	return ctx.SendString(strconv.Itoa(a.summoner.ProfileIconId))
 }
 
 // isLoLKategorie returns if something (first value) is a valid lolKategorie. If no value is given checks if LoL.Kategorie is a lolKategorie

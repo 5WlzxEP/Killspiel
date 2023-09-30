@@ -22,6 +22,8 @@
 				body: JSON.stringify(lol)
 			})
 			if (res.ok) {
+				lol.profileIcon = parseInt(await res.text())
+
 				const t: ToastSettings = {
 					message: "Einstellungen erfolgreich gespeichert.",
 					timeout: 5000,

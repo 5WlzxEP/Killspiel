@@ -10,9 +10,7 @@
 	import { IconCheck, IconX } from "@tabler/icons-svelte"
 	import type { Writable } from "svelte/store"
 	import LoL from "./LoL.svelte"
-	import type { Resp } from "./+page"
-	import { _isReady } from "./+page"
-	import { _ready } from "./+page"
+	import { _isReady, _ready, type Resp } from "./+page"
 
 	const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
