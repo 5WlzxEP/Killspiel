@@ -56,7 +56,7 @@
 			required
 		/>
 		<div class="input-group-shim">
-			<button on:click|preventDefault={() => (hidden = !hidden)}>
+			<button on:click|preventDefault={() => (hidden = !hidden)} type="button">
 				{#if hidden}
 					<IconEyeOff />
 				{:else}
