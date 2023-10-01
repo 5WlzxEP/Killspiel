@@ -253,16 +253,34 @@ func (tc *TwitchChat) post(ctx *fiber.Ctx) error {
 	}
 	defer tc.Unlock()
 
-	client, auth := tc.ChannelSender, tc.ApiKey
-	err := ctx.BodyParser(tc)
+	var client struct {
+		Channel       string `json:"channel"`
+		Prefix        string `json:"prefix"`
+		ApiKey        string `json:"apiKey"`
+		ChannelSender string `json:"channelSender"`
+		MsgBegin      string `json:"msgBegin"`
+		MsgEnd        string `json:"msgEnd"`
+		MsgFinal      string `json:"msgFinal"`
+	}
+	err := ctx.BodyParser(&client)
 	if err != nil {
 		return err
 	}
 
+	sender, key := tc.ChannelSender, tc.ApiKey
+
+	tc.Channel = client.Channel
+	tc.Prefix = client.Prefix
+	tc.ApiKey = client.ApiKey
+	tc.ChannelSender = client.ChannelSender
+	tc.StartMsg = client.MsgBegin
+	tc.FinalMsg = client.MsgFinal
+	tc.EndMsg = client.MsgEnd
+
 	tc.checkEmptySender()
 
 	// recreate the client if credentials change
-	if client != tc.ChannelSender || auth != tc.ApiKey {
+	if sender != tc.ChannelSender || key != tc.ApiKey {
 		tc.ready.changed = true
 		tc.client = twitch.NewClient(tc.ChannelSender, tc.ApiKey)
 		tc.client.Capabilities = []string{twitch.TagsCapability}
