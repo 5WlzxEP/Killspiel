@@ -52,7 +52,11 @@ func Init(app *fiber.App) {
 
 	// Redirecting user access per link, because /user/:id is routed through svelte
 	app.Get("/user/:id/", func(ctx *fiber.Ctx) error {
-		ctx.Status(http.StatusFound).Location(fmt.Sprintf("/Redirect/?%s", ctx.OriginalURL()))
+		ctx.Status(http.StatusMovedPermanently).Location(fmt.Sprintf("/Redirect/?%s", ctx.OriginalURL()))
+		return nil
+	})
+	app.Get("/game/:id/*", func(ctx *fiber.Ctx) error {
+		ctx.Status(http.StatusMovedPermanently).Location(fmt.Sprintf("/Redirect/?%s", ctx.OriginalURL()))
 		return nil
 	})
 }
