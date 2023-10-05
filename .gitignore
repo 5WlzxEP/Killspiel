@@ -75,7 +75,7 @@ frontend/build
 **/.svelte-kit
 **/build
 
-backend/frontend_build
+Backend/frontend_build
 
 **/*.exe
 
