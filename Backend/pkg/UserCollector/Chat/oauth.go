@@ -2,7 +2,6 @@ package Chat
 
 import (
 	"errors"
-	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
 )
@@ -78,5 +77,5 @@ func (tc *TwitchChat) getOAuth(ctx *fiber.Ctx) error {
 func (tc *TwitchChat) setOAuthStandard(ctx *fiber.Ctx) error {
 	tc.OAuth.ClientId = "6yqxsptsgw5bffjno9b1q9dtr2nlf8"
 
-	return ctx.Redirect(fmt.Sprintf("https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=6yqxsptsgw5bffjno9b1q9dtr2nlf8&redirect_uri=%s/oauth/&scope=chat:read+chat:edit+channel:moderate+whispers:read+whispers:edit+moderator:manage:announcements+moderation:read", ctx.BaseURL()), http.StatusTemporaryRedirect)
+	return ctx.Redirect("https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=6yqxsptsgw5bffjno9b1q9dtr2nlf8&redirect_uri=http://localhost:8088/oauth/&scope=chat:read+chat:edit+channel:moderate+whispers:read+whispers:edit+moderator:manage:announcements+moderation:read", http.StatusTemporaryRedirect)
 }
