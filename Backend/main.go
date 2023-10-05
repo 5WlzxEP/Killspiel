@@ -39,6 +39,6 @@ func main() {
 
 	go Killspiel.Run()
 
-	panic(app.Listen(helper.EnvOrDefault("Address", ":8088")))
+	panic(app.Listen(helper.EnvOrDefault("KILLSPIEL_PORT", ":8088")))
 
 }

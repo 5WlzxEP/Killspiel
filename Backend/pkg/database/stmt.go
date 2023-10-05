@@ -117,7 +117,7 @@ func prepareStmts() (err error) {
 		return err
 	}
 
-	GetLatestGames, err = DB.Prepare("SELECT id, correct, userCount, correctCount, precision, time FROM Game ORDER BY id DESC LIMIT 50")
+	GetLatestGames, err = DB.Prepare("SELECT id, correct, userCount, correctCount, precision, time FROM Game ORDER BY id DESC LIMIT ?")
 	if err != nil {
 		return err
 	}

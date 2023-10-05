@@ -124,85 +124,87 @@
 	}
 </script>
 
-<div class="table-container mx-auto w-full m-1">
-	<table class="table table-hover table-cell-fit mx-auto w-full m-1">
-		<thead>
-			<tr>
-				<th class="p-1 m-1 w-[10%]">Rank</th>
-				<th class="text-center w-[15%] cursor-pointer" on:click={(e) => changeSorting("n", e)}
-					>Name
-				</th>
-				<th
-					class="text-center table-sort-asc w-[10%] cursor-pointer"
-					bind:this={first}
-					on:click={(e) => changeSorting("p", e)}
-					>Punkte
-				</th>
-				<th class="text-center w-[10%] cursor-pointer" on:click={(e) => changeSorting("g", e)}
-					>Teilnahmen
-				</th>
-				<th class="text-center w-[10%]">Rate</th>
-				<th class="text-right w-[15%] min-w-[200px]">letzten 8 Versuche</th>
-			</tr>
-		</thead>
-		<tbody>
-			{#each data as row}
+<div class="container">
+	<div class="table-container mx-auto w-full m-1">
+		<table class="table table-hover table-cell-fit mx-auto w-full m-1">
+			<thead>
 				<tr>
-					<td>{row.rank}</td>
-					<td
-						><a href="/user/{row.id}" class="w-full p-4" data-sveltekit-preload-data="tap"
-							>{row.name}</a
-						></td
-					>
-					<td class="text-right">{row.points}</td>
-					<td class="text-right">{row.guesses}</td>
-					<td class="text-right"
-						>{((row.guesses > 0 ? row.points / row.guesses : 0) * 100).toFixed(2)} %
-					</td>
-					<td class="grid-cols-8 grid">
-						{#each row.latest.toString(2).padStart(8, "0") as n}
-							{#if n === "0"}
-								<IconX color="red" />
-							{:else}
-								<IconCheck color="lime" />
-							{/if}
-						{/each}
-					</td>
+					<th class="p-1 m-1 w-[10%]">Rank</th>
+					<th class="text-center w-[15%] cursor-pointer" on:click={(e) => changeSorting("n", e)}
+						>Name
+					</th>
+					<th
+						class="text-center table-sort-asc w-[10%] cursor-pointer"
+						bind:this={first}
+						on:click={(e) => changeSorting("p", e)}
+						>Punkte
+					</th>
+					<th class="text-center w-[10%] cursor-pointer" on:click={(e) => changeSorting("g", e)}
+						>Teilnahmen
+					</th>
+					<th class="text-center w-[10%]">Rate</th>
+					<th class="text-right w-[15%] min-w-[200px]">letzten 8 Versuche</th>
 				</tr>
-			{:else}
-				{#each { length: meta.size } as _}
+			</thead>
+			<tbody>
+				{#each data as row}
 					<tr>
-						<td>
-							<div class="placeholder animate-pulse" />
+						<td>{row.rank}</td>
+						<td
+							><a href="/user/{row.id}" class="w-full p-4" data-sveltekit-preload-data="tap"
+								>{row.name}</a
+							></td
+						>
+						<td class="text-right">{row.points}</td>
+						<td class="text-right">{row.guesses}</td>
+						<td class="text-right"
+							>{((row.guesses > 0 ? row.points / row.guesses : 0) * 100).toFixed(2)} %
 						</td>
-						<td>
-							<div class="placeholder animate-pulse" />
-						</td>
-						<td>
-							<div class="placeholder animate-pulse" />
-						</td>
-						<td>
-							<div class="placeholder animate-pulse" />
-						</td>
-						<td>
-							<div class="placeholder animate-pulse" />
-						</td>
-						<td>
-							<div class="placeholder animate-pulse" />
+						<td class="grid-cols-8 grid">
+							{#each row.latest.toString(2).padStart(8, "0") as n}
+								{#if n === "0"}
+									<IconX color="red" />
+								{:else}
+									<IconCheck color="lime" />
+								{/if}
+							{/each}
 						</td>
 					</tr>
+				{:else}
+					{#each { length: meta.size } as _}
+						<tr>
+							<td>
+								<div class="placeholder animate-pulse" />
+							</td>
+							<td>
+								<div class="placeholder animate-pulse" />
+							</td>
+							<td>
+								<div class="placeholder animate-pulse" />
+							</td>
+							<td>
+								<div class="placeholder animate-pulse" />
+							</td>
+							<td>
+								<div class="placeholder animate-pulse" />
+							</td>
+							<td>
+								<div class="placeholder animate-pulse" />
+							</td>
+						</tr>
+					{/each}
 				{/each}
-			{/each}
-		</tbody>
-	</table>
-	<div class="mt-2">
-		<Paginator
-			bind:settings={meta}
-			showFirstLastButtons={true}
-			showPreviousNextButtons={true}
-			showNumerals={true}
-			on:page={update}
-			on:amount={update}
-		/>
+			</tbody>
+		</table>
+		<div class="mt-2">
+			<Paginator
+				bind:settings={meta}
+				showFirstLastButtons={true}
+				showPreviousNextButtons={true}
+				showNumerals={true}
+				on:page={update}
+				on:amount={update}
+			/>
+		</div>
 	</div>
 </div>
