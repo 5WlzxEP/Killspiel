@@ -86,6 +86,7 @@ func New(configPath string, r fiber.Router) (*TwitchChat, string) {
 
 	tc.ready.changed = true
 	tc.Ready()
+	go tc.getIds()
 
 	r.Get("/", tc.get)
 

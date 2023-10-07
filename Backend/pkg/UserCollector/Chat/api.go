@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/goccy/go-json"
 	"github.com/valyala/fasthttp"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -22,6 +23,7 @@ func (tc *TwitchChat) announce(msg string) error {
 	defer fasthttp.ReleaseRequest(req)
 
 	req.SetRequestURI(fmt.Sprintf("https://api.twitch.tv/helix/chat/announcements?broadcaster_id=%d&moderator_id=%d", tc.OAuth.broadcasterId, tc.OAuth.moderatorId))
+	req.Header.SetMethod(http.MethodPost)
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", tc.OAuth.AccessToken))
 	req.Header.Set("Client-Id", tc.OAuth.ClientId)
 	req.Header.Set("content-type", "application/json")
@@ -60,10 +62,9 @@ func (tc *TwitchChat) getIds() {
 	defer fasthttp.ReleaseRequest(req)
 
 	req.SetRequestURI(fmt.Sprintf("https://api.twitch.tv/helix/users?login=%s&login=%s", tc.ChannelSender, tc.Channel))
-	req.Header.SetMethod("POST")
+	req.Header.SetMethod(http.MethodGet)
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", tc.OAuth.AccessToken))
 	req.Header.Set("Client-Id", tc.OAuth.ClientId)
-	req.Header.Set("content-type", "application/json")
 
 	resp := fasthttp.AcquireResponse()
 	err := httpClient.Do(req, resp)
@@ -93,7 +94,8 @@ func (tc *TwitchChat) getIds() {
 				continue
 			}
 			tc.OAuth.broadcasterId = id
-		} else if user.Login == strings.ToLower(tc.ChannelSender) {
+		}
+		if user.Login == strings.ToLower(tc.ChannelSender) {
 			id, err := strconv.Atoi(user.Id)
 			if err != nil {
 				tc.OAuth.ready = false
@@ -103,7 +105,7 @@ func (tc *TwitchChat) getIds() {
 		}
 	}
 
-	if tc.OAuth.ready == false {
+	if !tc.OAuth.ready {
 		return
 	}
 
@@ -111,7 +113,7 @@ func (tc *TwitchChat) getIds() {
 	req.Reset()
 
 	req.SetRequestURI(fmt.Sprintf("https://api.twitch.tv/helix/moderation/blocked_terms?broadcaster_id=%d&moderator_id=%d", tc.OAuth.broadcasterId, tc.OAuth.moderatorId))
-	req.Header.SetMethod("GET")
+	req.Header.SetMethod(http.MethodGet)
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", tc.OAuth.AccessToken))
 	req.Header.Set("Client-Id", tc.OAuth.ClientId)
 
