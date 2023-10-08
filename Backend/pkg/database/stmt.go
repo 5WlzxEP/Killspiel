@@ -26,6 +26,7 @@ var (
 	GetGame           *sql.Stmt
 	SetGameVerteilung *sql.Stmt
 	GetPlayersByVote  *sql.Stmt
+	GetLastGame       *sql.Stmt
 )
 
 func prepareStmts() (err error) {
@@ -118,6 +119,11 @@ func prepareStmts() (err error) {
 	}
 
 	GetLatestGames, err = DB.Prepare("SELECT id, correct, userCount, correctCount, precision, time FROM Game ORDER BY id DESC LIMIT ?")
+	if err != nil {
+		return err
+	}
+
+	GetLastGame, err = DB.Prepare("SELECT id, correct, userCount, correctCount, precision, time, verteilung FROM Game ORDER BY id DESC LIMIT 1")
 	if err != nil {
 		return err
 	}

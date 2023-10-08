@@ -22,6 +22,7 @@ type Game struct {
 
 func Init(r fiber.Router) {
 	r.Get("/", get)
+	r.Get("/latest/", latest)
 	r.Get("/:id/", getId)
 	r.Get("/:id/:vote/", getVotes)
 }
@@ -98,4 +99,15 @@ func getVotes(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(result)
+}
+
+func latest(ctx *fiber.Ctx) error {
+	var g Game
+
+	err := database.GetLastGame.QueryRow().Scan(&g.Id, &g.Correct, &g.UserCount, &g.CorrectCount, &g.Precision, &g.Time, &g.Verteilung)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(g)
 }
