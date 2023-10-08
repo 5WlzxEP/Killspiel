@@ -11,19 +11,22 @@
 		CategoryScale
 	} from "chart.js"
 	import { goto } from "$app/navigation"
+	import type { Writable } from "svelte/store"
 
 	ChartJS.register(Title, Legend, Tooltip, BarElement, LinearScale, CategoryScale)
-	export let verteilung
+	export let verteilung: Writable<any>
+	export let gameid: string | number
 
-	let data = {
-		labels: Object.keys(verteilung),
+	let data: { labels: Array<string>; datasets: Array<any> }
+	$: data = {
+		labels: Object.keys($verteilung),
 		datasets: [
 			{
 				type: "bar",
 				label: "Verteilung der Votes",
 				backgroundColor: color(),
 				borderWidth: 1,
-				data: Object.values(verteilung)
+				data: Object.values($verteilung)
 			}
 		]
 	}
@@ -44,7 +47,7 @@
 	}
 
 	function onClick(e: PointerEvent) {
-		goto(data.labels[getElementAtEvent(chart, e)[0].index].toString())
+		goto(`/game/${gameid}/` + data.labels[getElementAtEvent(chart, e)[0].index].toString())
 	}
 </script>
 

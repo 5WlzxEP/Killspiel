@@ -175,11 +175,11 @@
 			<span class="">/announce Farbe oder deaktivieren</span>
 			<select class="select" bind:value={selectValue} on:change={setSelected}>
 				<option value="0" selected>Deaktivieren</option>
-				<option value="1">primary</option>
-				<option value="2">blue</option>
-				<option value="3">green</option>
-				<option value="4">orange</option>
-				<option value="5">purple</option>
+				<option value="1" class="capitalize">primary</option>
+				<option value="2" class="capitalize">blue</option>
+				<option value="3" class="capitalize">green</option>
+				<option value="4" class="capitalize">orange</option>
+				<option value="5" class="capitalize">purple</option>
 			</select>
 		</label>
 	</div>
@@ -191,4 +191,14 @@
 <hr />
 <div class="p-5">
 	<h1 class="text-lg underline">Erklärung der Berechtigungen</h1>
+	<p>
+		<i>chat:read</i>,
+		<i>chat:edit</i>,
+		<i>channel:moderate</i>,
+		<i>whispers:read</i>,
+		<i>whispers:edit</i>: Für den Client benötigt, um Nachrichten zu lesen und zu schreiben. <br />
+		<i>moderator:manage:announcements</i>: Wird benötigt, um /annouce zu nutzen. <br />
+		<i>moderator:read:blocked_terms</i>: Wird genutzt um zu überprüfen, das /announce genutzt werden
+		kann ohne eine Nachricht schreiben zu müssen. <br />
+	</p>
 </div>

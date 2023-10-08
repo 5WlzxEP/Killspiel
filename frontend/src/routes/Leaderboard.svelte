@@ -76,6 +76,10 @@
 		latest = first
 	})
 
+	$: {
+		if ($state === 0) update()
+	}
+
 	function toggleAscDesc(s: ascDesc, target: HTMLTableCellElement): ascDesc {
 		if (s === "asc") {
 			target.classList.remove("table-sort-asc")

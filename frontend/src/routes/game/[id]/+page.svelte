@@ -1,12 +1,14 @@
 <script lang="ts">
 	import type { Game } from "./+page"
 	import GameChart from "@components/GameChart.svelte"
+	import { writable } from "svelte/store"
 
 	/** @type {import("./$types").PageData} */
 	export let data: Game
+
+	let vert = writable(JSON.parse(data.verteilung))
 </script>
 
-<!--<Modal buttonPositive="variant-ghost-error" />-->
 <svelte:head>
 	<title>Game {data.id} | Killspiel</title>
 </svelte:head>
@@ -47,6 +49,6 @@
 	</div>
 
 	<div class="p-2 card mt-2">
-		<GameChart verteilung={JSON.parse(data.verteilung)} />
+		<GameChart verteilung={vert} gameid={data.id} />
 	</div>
 </div>

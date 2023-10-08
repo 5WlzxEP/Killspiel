@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { type ToastSettings, getToastStore } from "@skeletonlabs/skeleton"
 	import { onMount } from "svelte"
-	import { state } from "@stores/state"
+	import { state, printState } from "@stores/state"
 
 	const toastStore = getToastStore()
 	const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
@@ -53,20 +53,6 @@
 			}
 			toastStore.trigger(t)
 		}
-	}
-
-	function printState(state: number): string {
-		switch (state) {
-			case 0:
-				return "Ready"
-			case 1:
-				return "Sammle Schätzungen"
-			case 2:
-				return "Warte auf Auflösung"
-			case 3:
-				return "Verkünde Ergebnis"
-		}
-		return "Unbekannter Status"
 	}
 
 	async function update() {
