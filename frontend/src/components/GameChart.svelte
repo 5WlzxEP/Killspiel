@@ -21,15 +21,27 @@
 			{
 				type: "bar",
 				label: "Verteilung der Votes",
-				borderColor: "#5B0888",
-				backgroundColor: "#713ABE",
+				backgroundColor: color(),
 				borderWidth: 1,
 				data: Object.values(verteilung)
 			}
 		]
 	}
 
-	let chart
+	let chart: any
+
+	function color() {
+		const c = getComputedStyle(document.body)
+			.getPropertyValue("--color-primary-500")
+			.split(" ")
+			.map((v) => toHex(v))
+		return "#" + c.join("")
+	}
+
+	function toHex(i: string): string {
+		let str = Number(i).toString(16)
+		return str.length == 1 ? "0" + str : str
+	}
 
 	function onClick(e: PointerEvent) {
 		goto(data.labels[getElementAtEvent(chart, e)[0].index].toString())
