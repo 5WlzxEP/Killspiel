@@ -157,6 +157,7 @@ func (tc *TwitchChat) CollectGuesses(ctx context.Context, collect func(id int, u
 	client.Join(tc.Channel)
 
 	if tc.OAuth.Color != 0 && tc.OAuth.ready {
+		client.OnConnect(func() {})
 		err := tc.announce(tc.StartMsg)
 		if err != nil {
 			log.Println(err)
