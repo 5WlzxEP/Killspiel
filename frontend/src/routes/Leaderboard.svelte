@@ -5,6 +5,8 @@
 		type ToastSettings,
 		type PaginationSettings
 	} from "@skeletonlabs/skeleton"
+	import { goto } from "$app/navigation"
+	import { state } from "@stores/state"
 
 	const toastStore = getToastStore()
 
@@ -151,13 +153,9 @@
 				</tr>
 			{:then res}
 				{#each res.data as row}
-					<tr>
+					<tr on:click={() => goto(`/user/${row.id}`)} class="cursor-pointer">
 						<td>{row.rank}</td>
-						<td
-							><a href="/user/{row.id}" class="w-full p-4" data-sveltekit-preload-data="tap"
-								>{row.name}</a
-							></td
-						>
+						<td>{row.name}</td>
 						<td class="text-right">{row.points}</td>
 						<td class="text-right">{row.guesses}</td>
 						<td class="text-right"
