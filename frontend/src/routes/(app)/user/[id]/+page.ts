@@ -1,4 +1,4 @@
-import type { PageLoad } from "../../../../.svelte-kit/types/src/routes/user/[id]/$types"
+import type { PageLoad } from "../../../../../.svelte-kit/types/src/routes/(app)/user/[id]/$types"
 import { error } from "@sveltejs/kit"
 import type { SvelteComponentTyped } from "svelte"
 

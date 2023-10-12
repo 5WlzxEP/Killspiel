@@ -1,4 +1,4 @@
-import type { PageLoad } from "../../../../.svelte-kit/types/src/routes/game/[id]/$types"
+import type { PageLoad } from "../../../../../.svelte-kit/types/src/routes/(app)/game/[id]/$types"
 import { error } from "@sveltejs/kit"
 
 export const prerender = false

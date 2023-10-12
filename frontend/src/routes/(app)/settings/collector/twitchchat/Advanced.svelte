@@ -90,6 +90,7 @@
 	}
 
 	let selectValue: string
+
 	function setSelected() {
 		oauth.color = parseInt(selectValue)
 	}
@@ -191,14 +192,31 @@
 <hr />
 <div class="p-5">
 	<h1 class="text-lg underline">Erklärung der Berechtigungen</h1>
-	<p>
-		<i>chat:read</i>,
-		<i>chat:edit</i>,
-		<i>channel:moderate</i>,
-		<i>whispers:read</i>,
-		<i>whispers:edit</i>: Für den Client benötigt, um Nachrichten zu lesen und zu schreiben. <br />
-		<i>moderator:manage:announcements</i>: Wird benötigt, um /annouce zu nutzen. <br />
-		<i>moderator:read:blocked_terms</i>: Wird genutzt um zu überprüfen, das /announce genutzt werden
-		kann ohne eine Nachricht schreiben zu müssen. <br />
-	</p>
+	<table class="table rounded-none">
+		<tr>
+			<td>
+				<i>chat:read</i>,
+				<i>chat:edit</i>,
+				<i>channel:moderate</i>,
+				<i>whispers:read</i>,
+				<i>whispers:edit</i></td
+			>
+			<td> Für den Client benötigt, um Nachrichten zu lesen und zu schreiben.</td>
+		</tr>
+		<tr>
+			<td>
+				<i>moderator:manage:announcements</i>
+			</td>
+			<td> Wird benötigt, um /announce zu nutzen. </td>
+		</tr>
+		<tr>
+			<td>
+				<i>moderator:read:blocked_terms</i>
+			</td>
+			<td>
+				Wird genutzt um zu überprüfen, das /announce genutzt werden kann ohne eine Nachricht
+				schreiben zu müssen.
+			</td>
+		</tr>
+	</table>
 </div>

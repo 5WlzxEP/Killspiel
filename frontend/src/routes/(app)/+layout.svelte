@@ -1,5 +1,5 @@
 <script lang="ts">
-	import "../app.postcss"
+	import "../../app.postcss"
 	import {
 		AppBar,
 		AppShell,
@@ -16,7 +16,7 @@
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from "@floating-ui/dom"
 	import { storePopup } from "@skeletonlabs/skeleton"
 	import Breadcrumbs from "@components/Breadcrumbs.svelte"
-	import Websocket from "./Websocket.svelte"
+	import Websocket from "../Websocket.svelte"
 	initializeStores()
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow })
 

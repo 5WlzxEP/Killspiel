@@ -108,6 +108,7 @@
 					type="number"
 					required
 					min="0"
+					step="0.1"
 				/>
 				<button class="btn variant-ghost" disabled={dissolve} on:click={change} type="submit">
 					Ergebnis speichern

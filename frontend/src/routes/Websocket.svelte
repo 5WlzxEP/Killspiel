@@ -5,11 +5,14 @@
 	const BACKEND_URL: string = import.meta.env.VITE_BACKEND_URL
 
 	// case Release
-	let url = `ws://${window.location.host}/ws`
-	// case local testing
-	if (BACKEND_URL.startsWith("http://")) url = `${BACKEND_URL.replace("http", "ws")}/ws`
+	let url: string
 
-	onMount(ws)
+	onMount(() => {
+		url = `ws://${window.location.host}/ws`
+		// case local testing
+		if (BACKEND_URL.startsWith("http://")) url = `${BACKEND_URL.replace("http", "ws")}/ws`
+		ws()
+	})
 
 	let websocket: WebSocket
 
