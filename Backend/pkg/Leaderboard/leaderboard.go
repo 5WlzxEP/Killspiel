@@ -42,9 +42,9 @@ func get(ctx *fiber.Ctx) error {
 		rows *sql.Rows
 	)
 	if order == 0 {
-		rows, err = database.LeaderboardDesc.Query(sort, limit, start)
+		rows, err = database.LeaderboardDesc.QueryContext(ctx.Context(), sort, limit, start)
 	} else {
-		rows, err = database.LeaderboardAsc.Query(sort, limit, start)
+		rows, err = database.LeaderboardAsc.QueryContext(ctx.Context(), sort, limit, start)
 	}
 	if err != nil {
 		return err

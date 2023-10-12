@@ -103,7 +103,7 @@ func prepareStmts() (err error) {
 		return err
 	}
 
-	SetGameCorrect, err = DB.Prepare("UPDATE Game SET correct = ?, precision = ?, correctCount = ? WHERE id = ?;")
+	SetGameCorrect, err = DB.Prepare("UPDATE Game SET correct = ?, game.precision = ?, correctCount = ? WHERE id = ?;")
 	if err != nil {
 		return err
 	}
@@ -118,12 +118,12 @@ func prepareStmts() (err error) {
 		return err
 	}
 
-	GetLatestGames, err = DB.Prepare("SELECT id, correct, userCount, correctCount, precision, time FROM Game ORDER BY id DESC LIMIT ?")
+	GetLatestGames, err = DB.Prepare("SELECT id, correct, userCount, correctCount, game.precision, time FROM Game ORDER BY id DESC LIMIT ?")
 	if err != nil {
 		return err
 	}
 
-	GetLastGame, err = DB.Prepare("SELECT id, correct, userCount, correctCount, precision, time, verteilung FROM Game ORDER BY id DESC LIMIT 1")
+	GetLastGame, err = DB.Prepare("SELECT id, correct, userCount, correctCount, game.precision, time, verteilung FROM Game ORDER BY id DESC LIMIT 1")
 	if err != nil {
 		return err
 	}

@@ -32,7 +32,7 @@ func get(ctx *fiber.Ctx) error {
 
 	res := pool.Get().([]Game)
 
-	rows, err := database.GetLatestGames.Query(limit)
+	rows, err := database.GetLatestGames.QueryContext(ctx.Context(), limit)
 	if err != nil {
 		return err
 	}
@@ -58,7 +58,7 @@ func getId(ctx *fiber.Ctx) error {
 	}
 
 	g := Game{Id: id}
-	err = database.GetGame.QueryRow(id).Scan(&g.Correct, &g.Time, &g.CorrectCount, &g.UserCount, &g.Precision, &g.Verteilung)
+	err = database.GetGame.QueryRowContext(ctx.Context(), id).Scan(&g.Correct, &g.Time, &g.CorrectCount, &g.UserCount, &g.Precision, &g.Verteilung)
 	if err != nil {
 		return err
 	}
@@ -84,7 +84,7 @@ func getVotes(ctx *fiber.Ctx) error {
 
 	var result []User
 
-	rows, err := database.GetPlayersByVote.Query(id, vote, vote)
+	rows, err := database.GetPlayersByVote.QueryContext(ctx.Context(), id, vote, vote)
 	if err != nil {
 		return err
 	}
@@ -104,7 +104,7 @@ func getVotes(ctx *fiber.Ctx) error {
 func latest(ctx *fiber.Ctx) error {
 	var g Game
 
-	err := database.GetLastGame.QueryRow().Scan(&g.Id, &g.Correct, &g.UserCount, &g.CorrectCount, &g.Precision, &g.Time, &g.Verteilung)
+	err := database.GetLastGame.QueryRowContext(ctx.Context()).Scan(&g.Id, &g.Correct, &g.UserCount, &g.CorrectCount, &g.Precision, &g.Time, &g.Verteilung)
 	if err != nil {
 		return err
 	}

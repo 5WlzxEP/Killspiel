@@ -56,7 +56,7 @@ func get(ctx *fiber.Ctx) error {
 	defer historyPool.Put(user)
 	user.Id = id
 
-	err = database.GetUser.QueryRow(id).Scan(&user.Name, &user.Points, &user.Guesses, &user.Latest)
+	err = database.GetUser.QueryRowContext(ctx.Context(), id).Scan(&user.Name, &user.Points, &user.Guesses, &user.Latest)
 	if errors.Is(err, sql.ErrNoRows) {
 		return ctx.SendStatus(404)
 	}
@@ -64,7 +64,7 @@ func get(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	rows, err := database.GetUserGames.Query(id)
+	rows, err := database.GetUserGames.QueryContext(ctx.Context(), id)
 	if err != nil {
 		return err
 	}
@@ -137,7 +137,7 @@ func search(ctx *fiber.Ctx) error {
 
 	var result []searchResult
 
-	rows, err := database.SearchUser.Query("%" + name.Name + "%")
+	rows, err := database.SearchUser.QueryContext(ctx.Context(), "%"+name.Name+"%")
 	if err != nil {
 		return err
 	}
