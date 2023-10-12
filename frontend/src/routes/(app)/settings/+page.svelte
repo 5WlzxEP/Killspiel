@@ -85,6 +85,10 @@
 			<h2 class="text-xl">Allgemeine Einstellungen</h2>
 		</section>
 		<Theme />
+
+		<div class="p-4 w-full">
+			<a class="btn w-full variant-ghost" href="/overlay">Overlays</a>
+		</div>
 		<hr class="mt-2 mb-2" />
 		<form class="p-4" on:submit|preventDefault={submit}>
 			<label class="label m-2">
