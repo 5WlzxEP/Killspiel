@@ -69,7 +69,7 @@ func get(ctx *fiber.Ctx) error {
 
 	board.Data = board.Data[:i]
 
-	board.Size, err = database.GetUserCount()
+	board.Size, err = database.GetUserCount(ctx.Context())
 	if err != nil {
 		return err
 	}
