@@ -32,7 +32,7 @@
 
 		// darkmode
 		const dark = params.get("dark")
-		setModeCurrent(<boolean>(dark && dark === "0"))
+		setModeCurrent(<boolean>(dark && dark === "false"))
 	})
 </script>
 
