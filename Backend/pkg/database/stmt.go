@@ -103,7 +103,7 @@ func prepareStmts() (err error) {
 		return err
 	}
 
-	SetGameCorrect, err = DB.Prepare("UPDATE Game SET correct = ?, game.precision = ?, correctCount = ? WHERE id = ?;")
+	SetGameCorrect, err = DB.Prepare("UPDATE Game SET correct = ?, precision = ?, correctCount = ? WHERE id = ?;")
 	if err != nil {
 		return err
 	}
