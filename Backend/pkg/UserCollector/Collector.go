@@ -5,9 +5,7 @@ import (
 	"Killspiel/pkg/config"
 	"context"
 	"github.com/gofiber/fiber/v2"
-	"log"
 	"net/http"
-	"slices"
 	"time"
 )
 
@@ -41,20 +39,23 @@ func Init(configPath string, config *config.Config, r fiber.Router) {
 		Name:      name,
 		Collector: twitchChat,
 	})
+	currentCollector = collectors[0]
 
 	collectTime = config.UserCollector.Duration * time.Second
 	conf = config
 
-	i := slices.IndexFunc(collectors, func(c *cols) bool {
-		return c.Name == config.UserCollector.Collector
-	})
-	if i == -1 {
-		return
-	}
+	// Simplifying frontend because only 1 option exist at the moment
+	//i := slices.IndexFunc(collectors, func(c *cols) bool {
+	//	return c.Name == config.UserCollector.Collector
+	//})
+	//if i == -1 {
+	//	return
+	//}
+	//
+	//if col := collectors[i]; col.Collector.Ready() {
+	//	currentCollector = col
+	//}
 
-	if col := collectors[i]; col.Collector.Ready() {
-		currentCollector = col
-	}
 }
 
 func get(ctx *fiber.Ctx) error {
@@ -70,50 +71,56 @@ func get(ctx *fiber.Ctx) error {
 }
 
 func post(ctx *fiber.Ctx) error {
-	var con config.UserCollect
+	var duration time.Duration
 
-	err := ctx.BodyParser(&con)
-	if err != nil {
+	if err := ctx.BodyParser(&duration); err != nil {
 		return err
 	}
 
-	if con.Duration <= 1 {
+	//	var con config.UserCollect
+	//
+	//	err := ctx.BodyParser(&con)
+	//	if err != nil {
+	//		return err
+	//	}
+	//
+	if duration <= 1 {
 		return ctx.Status(http.StatusBadRequest).SendString("Duration must be at least 1 second.")
 	}
-
-	index := slices.IndexFunc(collectors, func(c *cols) bool {
-		return c.Name == con.Collector
-	})
-
-	var col *cols
-	if index == -1 {
-		goto noCollector
-	}
-	if col = collectors[index]; !col.Collector.Ready() {
-		goto noCollector
-	}
-
-	conf.UserCollector.Duration = con.Duration
-	conf.UserCollector.Collector = col.Name
-
-	collectTime = con.Duration * time.Second
-	currentCollector = col
-
-	err = conf.Save()
+	//
+	//	index := slices.IndexFunc(collectors, func(c *cols) bool {
+	//		return c.Name == con.Collector
+	//	})
+	//
+	//	var col *cols
+	//	if index == -1 {
+	//		goto noCollector
+	//	}
+	//	if col = collectors[index]; !col.Collector.Ready() {
+	//		goto noCollector
+	//	}
+	//
+	conf.UserCollector.Duration = duration
+	//	conf.UserCollector.Collector = col.Name
+	//
+	collectTime = duration * time.Second
+	//	currentCollector = col
+	//
+	err := conf.Save()
 	if err != nil {
 		return err
 	}
 
 	return ctx.SendStatus(http.StatusNoContent)
-
-noCollector:
-	conf.UserCollector.Duration = con.Duration
-	collectTime = con.Duration * time.Second
-
-	err = conf.Save()
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	return ctx.Status(299).SendString("Collector invalid, not saved but rest saved")
+	//
+	//noCollector:
+	//	conf.UserCollector.Duration = con.Duration
+	//	collectTime = con.Duration * time.Second
+	//
+	//	err = conf.Save()
+	//	if err != nil {
+	//		log.Println(err)
+	//		return err
+	//	}
+	//	return ctx.Status(299).SendString("Collector invalid, not saved but rest saved")
 }
