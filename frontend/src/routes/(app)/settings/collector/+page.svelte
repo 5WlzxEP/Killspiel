@@ -6,13 +6,9 @@
 	const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 	const toastStore = getToastStore()
 
-	let scale: number
+	let scale = 60
 	let time: number
-	// let options: Array<{ name: string; ready: boolean }> = []
 	let select: HTMLSelectElement
-	// let selectCollector: HTMLSelectElement
-
-	$: scale = select?.value as number
 
 	async function send() {
 		try {
@@ -22,7 +18,6 @@
 					"content-type": "application/json"
 				},
 				body: JSON.stringify({
-					// collector: selectCollector.value,
 					duration: scale * time
 				})
 			})
@@ -61,11 +56,6 @@
 					collector: { name: string }
 					time: number
 				} = await res.json()
-				// options = j.all
-				// options.push({ name: "", ready: true })
-
-				// if (j.collector !== undefined) selectCollector.value = j.collector.name
-				// else selectCollector.value = ""
 
 				if (j.time % 60 === 0) {
 					time = Math.floor(j.time / 60)
@@ -94,6 +84,18 @@
 			toastStore.trigger(t)
 		}
 	})
+
+	function changeUnit() {
+		if (select.value === "1") {
+			time = time * 60
+			scale = 1
+		} else if (select.value === "60") {
+			time = Math.floor(time / 60)
+			scale = 60
+		}
+
+		console.log(select.value)
+	}
 </script>
 
 <svelte:head>
@@ -123,20 +125,12 @@
 				<span>Dauer, die die Zuschauer zum Abstimmen haben</span>
 				<div class="input-group input-group-divider grid-cols-[1fr_auto]">
 					<input title="3" type="number" placeholder="3" bind:value={time} />
-					<select bind:this={select}>
+					<select bind:this={select} on:change={changeUnit}>
 						<option value="60">min</option>
 						<option value="1">s</option>
 					</select>
 				</div>
 			</label>
-<!--			<label class="label m-2">-->
-<!--				<span>Aktiver Collector</span>-->
-<!--				<select bind:this={selectCollector} class="input select">-->
-<!--					{#each options as option}-->
-<!--						<option value={option.name} disabled={!option.ready}>{option.name}</option>-->
-<!--					{/each}-->
-<!--				</select>-->
-<!--			</label>-->
 			<div class="flex mt-4">
 				<button class="btn variant-ghost-success ms-auto" type="submit" on:click={send}
 					>Speichern
