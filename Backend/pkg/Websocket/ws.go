@@ -9,6 +9,7 @@ import (
 //type Websockets DoubleLinkedList[*websocket.Conn]
 
 var ws = map[*websocket.Conn]chan struct{}{}
+var sendCh = make(chan []byte)
 
 func Init(r fiber.Router) {
 	r.Use("/", func(c *fiber.Ctx) error {
@@ -30,18 +31,28 @@ func Init(r fiber.Router) {
 		<-ch
 	}))
 
-	go func() {
-		for ; ; time.Sleep(1 * time.Minute) {
-			broadcast(9, nil)
-		}
-	}()
+	go broadcast()
+
 }
 
 func Broadcast(msg []byte) {
-	broadcast(1, msg)
+	sendCh <- msg
 }
 
-func broadcast(msgType int, msg []byte) {
+func broadcast() {
+	ticker := time.NewTicker(1 * time.Minute)
+
+	for {
+		select {
+		case msg := <-sendCh:
+			send(1, msg)
+		case <-ticker.C:
+			send(9, nil)
+		}
+	}
+}
+
+func send(msgType int, msg []byte) {
 	for conn, ch := range ws {
 		err := conn.WriteMessage(msgType, msg)
 		if err != nil {
