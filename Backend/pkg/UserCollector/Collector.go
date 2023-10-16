@@ -59,15 +59,9 @@ func Init(configPath string, config *config.Config, r fiber.Router) {
 }
 
 func get(ctx *fiber.Ctx) error {
-	for _, col := range collectors {
-		col.Ready = col.Collector.Ready()
-	}
-
-	return ctx.JSON(map[string]any{
-		"current": currentCollector,
-		"all":     collectors,
-		"time":    conf.UserCollector.Duration,
-	})
+	return ctx.JSON(struct {
+		Time time.Duration `json:"time"`
+	}{conf.UserCollector.Duration})
 }
 
 func post(ctx *fiber.Ctx) error {
