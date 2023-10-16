@@ -50,6 +50,11 @@ func Init(app *fiber.App) {
 	User.Init(api.Group("/user"))
 	Game.Init(api.Group("/game"))
 
+	games := ResultCollector.CheckUnfinishedGames()
+	for _, v := range games {
+		getWinners(v.Correct, v.GameId)
+	}
+
 	// Redirecting user access per link, because /user/:id is routed through svelte
 	app.Get("/user/:id/", func(ctx *fiber.Ctx) error {
 		ctx.Status(http.StatusMovedPermanently).Location(fmt.Sprintf("/Redirect/?%s", ctx.OriginalURL()))

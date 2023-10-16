@@ -18,6 +18,11 @@ type Collector interface {
 	Begin(ctx context.Context, cancelFunc context.CancelFunc, dbInfo chan<- string)
 	// Result blocks until a result is present and returns it
 	Result(ctx context.Context, c chan float64)
+
+	// Prefix returns the prefix of the info dbInfo sends in Begin
+	Prefix() string
+	// Resolve is called during startup if Prefix matches with the dbinfo string from Begin
+	Resolve(dbinfo string) (float64, error)
 }
 
 type States uint8

@@ -55,8 +55,8 @@ func (a *Api) isLoLKategorie(kategorie ...string) bool {
 	return slices.Contains(lolKategorien, a.LoL.Kategorie)
 }
 
-func (a *Api) getValueFloat(game *MatchDto) float64 {
-	v := a.getValue(game)
+func (a *Api) getValueFloat(game *MatchDto, kategorie string) float64 {
+	v := a.getValue(game, kategorie)
 	switch v.(type) {
 	case int:
 		return float64(v.(int))
@@ -71,7 +71,7 @@ func (a *Api) getValueFloat(game *MatchDto) float64 {
 	return 0
 }
 
-func (a *Api) getValue(game *MatchDto) any {
+func (a *Api) getValue(game *MatchDto, kategorie string) any {
 	idx := slices.Index(game.Metadata.Participants, a.currentSummoner.Puuid)
 	if idx == -1 {
 		return nil
@@ -79,7 +79,7 @@ func (a *Api) getValue(game *MatchDto) any {
 
 	player := game.Info.Participants[idx]
 
-	switch a.LoL.Kategorie {
+	switch kategorie {
 	case "AllInPings":
 		return player.AllInPings
 	case "AssistMePings":

@@ -3,6 +3,7 @@ package RiotApi
 import (
 	"Killspiel/pkg/config"
 	"context"
+	"errors"
 	"fmt"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
@@ -12,6 +13,8 @@ import (
 	"os"
 	"path"
 	"slices"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -120,12 +123,42 @@ func (a *Api) Begin(ctx context.Context, cancelFunc context.CancelFunc, dbInfo c
 		default:
 			if a.checkInGame() {
 				a.currentSummoner = a.summoner
-				dbInfo <- fmt.Sprintf("LoL,%s,%d", a.currentSummoner.Name, a.currentGame.GameId)
+				dbInfo <- fmt.Sprintf("LoL,%s,%d,%s", a.currentSummoner.Name, a.currentGame.GameId, a.LoL.Kategorie)
 				cancelFunc()
 				return
 			}
 		}
 	}
+}
+
+func (a *Api) Prefix() string {
+	return "LoL"
+}
+
+func (a *Api) Resolve(dbinfo string) (float64, error) {
+	parts := strings.Split(dbinfo, ",")
+	if len(parts) != 4 {
+		return 0, errors.New("dbinfo not a valid LoL info")
+	}
+
+	summoner, err := getLoLSummonerByName(parts[1], a.Server, a.ApiKey, a.client)
+	if err != nil {
+		return 0, err
+	}
+
+	a.currentSummoner = summoner
+
+	matchId, err := strconv.ParseInt(parts[2], 10, 64)
+	if err != nil {
+		return 0, err
+	}
+
+	match, err := a.getMatchById(matchId)
+	if err != nil {
+		return 0, err
+	}
+
+	return a.getValueFloat(match, parts[3]), nil
 }
 
 func (a *Api) checkInGame() bool {
@@ -154,7 +187,7 @@ func (a *Api) Result(ctx context.Context, c chan float64) {
 			if err != nil {
 				continue
 			}
-			c <- a.getValueFloat(match)
+			c <- a.getValueFloat(match, a.LoL.Kategorie)
 			break
 		}
 	}
