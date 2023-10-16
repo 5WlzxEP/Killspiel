@@ -65,7 +65,9 @@ func get(ctx *fiber.Ctx) error {
 }
 
 func post(ctx *fiber.Ctx) error {
-	var duration time.Duration
+	var duration struct {
+		time.Duration `json:"Duration"`
+	}
 
 	if err := ctx.BodyParser(&duration); err != nil {
 		return err
@@ -78,7 +80,7 @@ func post(ctx *fiber.Ctx) error {
 	//		return err
 	//	}
 	//
-	if duration <= 1 {
+	if duration.Duration <= 1 {
 		return ctx.Status(http.StatusBadRequest).SendString("Duration must be at least 1 second.")
 	}
 	//
@@ -94,10 +96,10 @@ func post(ctx *fiber.Ctx) error {
 	//		goto noCollector
 	//	}
 	//
-	conf.UserCollector.Duration = duration
+	conf.UserCollector.Duration = duration.Duration
 	//	conf.UserCollector.Collector = col.Name
 	//
-	collectTime = duration * time.Second
+	collectTime = duration.Duration * time.Second
 	//	currentCollector = col
 	//
 	err := conf.Save()
