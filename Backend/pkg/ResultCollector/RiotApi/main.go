@@ -78,7 +78,7 @@ func getApi(cp string) *Api {
 
 	api.configPath = configPath
 	api.isServerOrDefault()
-	api.setRegion()
+	api.region = getRegion(api.Server)
 	api.ready = api.initReady()
 
 	return api
@@ -104,7 +104,7 @@ func (a *Api) initReady() bool {
 	if !validKey(a.ApiKey, a.client) {
 		return false
 	}
-	summoner, err := getLoLSummonerByName(a.SummonerName, a.Server, a.ApiKey, a.client)
+	summoner, err := getLoLSummonerByAccount(a.Name, a.Tag, a.region, a.Server, a.ApiKey, a.client)
 	if err != nil || summoner == nil {
 		return false
 	}
@@ -141,7 +141,12 @@ func (a *Api) Resolve(dbinfo string) (float64, error) {
 		return 0, errors.New("dbinfo not a valid LoL info")
 	}
 
-	summoner, err := getLoLSummonerByName(parts[1], a.Server, a.ApiKey, a.client)
+	nameTag := strings.Split(parts[1], "#")
+	if len(nameTag) != 2 {
+		return 0, errors.New("nameTag must contain a hashtag")
+	}
+	summoner, err := getLoLSummonerByAccount(nameTag[0], nameTag[1], a.region, a.Server, a.ApiKey, a.client)
+
 	if err != nil {
 		return 0, err
 	}
@@ -210,17 +215,18 @@ func (a *Api) save() {
 	}
 }
 
-func (a *Api) setRegion() {
-	switch a.Server {
+func getRegion(server string) string {
+	switch server {
 	case "na1", "br1", "la1", "la2":
-		a.region = "americas"
+		return "americas"
 	case "kr", "jp1":
-		a.region = "asia"
+		return "asia"
 	case "eun1", "euw1", "tr1", "ru":
-		a.region = "europe"
+		return "europe"
 	case "oc1", "ph2", "sg2", "th2", "tw2", "vn2":
-		a.region = "sea"
+		return "sea"
 	}
+	return "europe"
 }
 
 func (a *Api) Ready() bool {
@@ -243,15 +249,6 @@ func validKey(apiKey string, client *fasthttp.Client) bool {
 	}
 
 	return !(res.StatusCode() > 300 || res.StatusCode() < 200)
-}
-
-func (a *Api) validLoLSummoner() bool {
-	summoner, err := a.getLoLSummonerByName(a.SummonerName)
-	if err != nil {
-		return false
-	}
-	a.summoner = summoner
-	return true
 }
 
 // isServerOrDefault checks Api.Server is a Server or sets it to the first default, which is a server or to euw1

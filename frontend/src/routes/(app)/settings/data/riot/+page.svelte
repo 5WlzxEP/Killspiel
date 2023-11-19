@@ -20,7 +20,8 @@
 
 	let data: Resp = {
 		lol: {
-			summonerName: "",
+			name: "",
+			tag: "",
 			profileIcon: -1,
 			kategorie: "",
 			server: "euw1",
@@ -118,7 +119,7 @@
 					<form class="p-5 pt-0" on:submit|preventDefault={submit}>
 						<div class="grid lg:!grid-cols-2 gap-10 w-full m-2">
 							<label class="label m-2">
-								<span>Frequenz der Api-Abfrage</span>
+								<span>Häufigkeit der Api-Abfrage</span>
 								<div class="input-group input-group-divider grid-cols-[1fr_auto]">
 									<input
 										title="20"

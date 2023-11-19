@@ -9,12 +9,13 @@ import (
 )
 
 type LoL struct {
-	ApiKey       string `json:"apiKey"`
-	ProfileIcon  int    `json:"profileIcon"`
-	Kategorie    string `json:"kategorie"`
-	Server       string `json:"server"`
-	SummonerName string `json:"summonerName"`
-	region       string
+	ApiKey      string `json:"apiKey"`
+	ProfileIcon int    `json:"profileIcon"`
+	Kategorie   string `json:"kategorie"`
+	Server      string `json:"server"`
+	Name        string `json:"name"`
+	Tag         string `json:"tag"`
+	region      string
 }
 
 var lolKategorien = []string{"AllInPings", "AssistMePings", "Assists", "BaitPings", "BaronKills", "BasicPings", "BountyLevel", "AssistStreakCount", "AbilityUses", "AcesBefore15Minutes", "AlliedJungleMonsterKills", "BaronTakedowns", "BlastConeOppositeOpponentCount", "BountyGold", "BuffsStolen", "CompleteSupportQuestInTime", "ControlWardsPlaced", "DamagePerMinute", "DamageTakenOnTeamPercentage", "DancedWithRiftHerald", "DeathsByEnemyChamps", "DodgeSkillShotsSmallWindow", "DoubleAces", "DragonTakedowns", "EarlyLaningPhaseGoldExpAdvantage", "EffectiveHealAndShielding", "ElderDragonKillsWithOpposingSoul", "ElderDragonMultikills", "EnemyChampionImmobilizations", "EnemyJungleMonsterKills", "EpicMonsterKillsNearEnemyJungler", "EpicMonsterKillsWithin30SecondsOfSpawn", "EpicMonsterSteals", "EpicMonsterStolenWithoutSmite", "FirstTurretKilled", "FlawlessAces", "FullTeamTakedown", "GameLength", "GetTakedownsInAllLanesEarlyJungleAsLaner", "GoldPerMinute", "HadOpenNexus", "ImmobilizeAndKillWithAlly", "InitialBuffCount", "InitialCrabCount", "JungleCsBefore10Minutes", "JunglerTakedownsNearDamagedEpicMonster", "KTurretsDestroyedBeforePlatesFall", "Kda", "KillAfterHiddenWithAlly", "KillParticipation", "KilledChampTookFullTeamDamageSurvived", "KillingSprees", "KillsNearEnemyTurret", "KillsOnOtherLanesEarlyJungleAsLaner", "KillsOnRecentlyHealedByAramPack", "KillsUnderOwnTurret", "KillsWithHelpFromEpicMonster", "KnockEnemyIntoTeamAndKill", "LandSkillShotsEarlyGame", "LaneMinionsFirst10Minutes", "LaningPhaseGoldExpAdvantage", "LegendaryCount", "LostAnInhibitor", "MaxCsAdvantageOnLaneOpponent", "MaxKillDeficit", "MaxLevelLeadLaneOpponent", "MejaisFullStackInTime", "MoreEnemyJungleThanOpponent", "MultiKillOneSpell", "MultiTurretRiftHeraldCount", "Multikills", "MultikillsAfterAggressiveFlash", "OuterTurretExecutesBefore10Minutes", "OutnumberedKills", "OutnumberedNexusKill", "PerfectDragonSoulsTaken", "PerfectGame", "PickKillWithAlly", "PlayedChampSelectPosition", "PoroExplosions", "QuickCleanse", "QuickFirstTurret", "QuickSoloKills", "RiftHeraldTakedowns", "SaveAllyFromDeath", "ScuttleCrabKills", "SkillshotsDodged", "SkillshotsHit", "SnowballsHit", "SoloBaronKills", "SoloKills", "SoloTurretsLategame", "StealthWardsPlaced", "SurvivedSingleDigitHpCount", "SurvivedThreeImmobilizesInFight", "TakedownOnFirstTurret", "Takedowns", "TakedownsAfterGainingLevelAdvantage", "TakedownsBeforeJungleMinionSpawn", "TakedownsFirstXMinutes", "TakedownsInAlcove", "TakedownsInEnemyFountain", "TeamBaronKills", "TeamDamagePercentage", "TeamElderDragonKills", "TeamRiftHeraldKills", "TookLargeDamageSurvived", "TurretPlatesTaken", "TurretTakedowns", "TurretsTakenWithRiftHerald", "TwentyMinionsIn3SecondsCount", "TwoWardsOneSweeperCount", "UnseenRecalls", "VisionScoreAdvantageLaneOpponent", "VisionScorePerMinute", "WardTakedowns", "WardTakedownsBefore20M", "WardsGuarded", "ControlWardTimeCoverageInRiverOrEnemyHalf", "HighestWardKills", "JunglerKillsEarlyJungle", "KillsOnLanersEarlyJungleAsJungler", "MythicItemUsed", "FirstTurretKilledTime", "EarliestDragonTakedown", "FastestLegendary", "HighestChampionDamage", "FasterSupportQuestCompletion", "HighestCrowdControlScore", "ChampExperience", "ChampLevel", "CommandPings", "ConsumablesPurchased", "DamageDealtToBuildings", "DamageDealtToObjectives", "DamageDealtToTurrets", "DamageSelfMitigated", "DangerPings", "Deaths", "DetectorWardsPlaced", "DoubleKills", "DragonKills", "EligibleForProgression", "EnemyMissingPings", "EnemyVisionPings", "FirstBloodAssist", "FirstBloodKill", "FirstTowerAssist", "FirstTowerKill", "GameEndedInEarlySurrender", "GameEndedInSurrender", "GetBackPings", "GoldEarned", "GoldSpent", "HoldPings", "InhibitorKills", "InhibitorTakedowns", "InhibitorsLost", "ItemsPurchased", "KillingSprees", "Kills", "LargestCriticalStrike", "LargestKillingSpree", "LargestMultiKill", "LongestTimeSpentLiving", "MagicDamageDealt", "MagicDamageDealtToChampions", "MagicDamageTaken", "NeedVisionPings", "NeutralMinionsKilled", "NexusKills", "NexusLost", "NexusTakedowns", "ObjectivesStolen", "ObjectivesStolenAssists", "OnMyWayPings", "ParticipantId", "PentaKills", "PhysicalDamageDealt", "PhysicalDamageDealtToChampions", "PhysicalDamageTaken", "Placement", "PlayerAugment1", "PlayerAugment2", "PlayerAugment3", "PlayerAugment4", "PlayerSubteamId", "ProfileIcon", "PushPings", "QuadraKills", "SightWardsBoughtInGame", "Spell1Casts", "Spell2Casts", "Spell3Casts", "Spell4Casts", "SubteamPlacement", "Summoner1Casts", "Summoner1Id", "Summoner2Casts", "Summoner2Id", "SummonerLevel", "TeamEarlySurrendered", "TeamId", "TimeCCingOthers", "TimePlayed", "TotalAllyJungleMinionsKilled", "TotalDamageDealt", "TotalDamageDealtToChampions", "TotalDamageShieldedOnTeammates", "TotalDamageTaken", "TotalEnemyJungleMinionsKilled", "TotalHeal", "TotalHealsOnTeammates", "TotalMinionsKilled", "TotalTimeCCDealt", "TotalTimeSpentDead", "TotalUnitsHealed", "TripleKills", "TrueDamageDealt", "TrueDamageDealtToChampions", "TrueDamageTaken", "TurretKills", "TurretTakedowns", "TurretsLost", "UnrealKills", "VisionClearedPings", "VisionScore", "VisionWardsBoughtInGame", "WardsKilled", "WardsPlaced", "Win"}
@@ -29,16 +30,16 @@ func (a *Api) postLoL(ctx *fiber.Ctx) error {
 	if !isServer(lol.Server) {
 		return ctx.Status(http.StatusBadRequest).SendString("Server ist nicht valide.")
 	}
+	lol.region = getRegion(lol.Server)
 	if !validKey(lol.ApiKey, a.client) {
 		return ctx.Status(http.StatusBadRequest).SendString("Api Key nicht valide.")
 	}
-	summoner, err := getLoLSummonerByName(lol.SummonerName, lol.Server, lol.ApiKey, a.client)
+	summoner, err := getLoLSummonerByAccount(lol.Name, lol.Tag, lol.region, lol.Server, lol.ApiKey, a.client)
 	if err != nil || summoner == nil {
 		return ctx.Status(http.StatusBadRequest).SendString("Beschwörername nicht valide.")
 	}
 
 	a.LoL = lol
-	a.setRegion()
 
 	a.summoner = summoner
 	a.ready = true

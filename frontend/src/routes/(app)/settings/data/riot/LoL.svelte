@@ -1,11 +1,11 @@
 <script lang="ts">
 	import InputPassword from "@components/InputPassword.svelte"
-	import LoLSummonerName from "./LoLSummonerName.svelte"
 	import LoLCategorie from "./LoLCategorie.svelte"
 	import { getToastStore, type ToastSettings } from "@skeletonlabs/skeleton"
 	import type { LoL } from "./+page"
 	import LoLServers from "./LoLServers.svelte"
 	import { _isReady } from "./+page"
+	import LoLRiotId from "./LoLRiotId.svelte"
 
 	const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
@@ -13,6 +13,16 @@
 	export let lol: LoL
 
 	async function submit() {
+		if (!lol.tag) {
+			const t: ToastSettings = {
+				message: "Die RiotID muss ein # und danach den Tag beinhalten.",
+				timeout: 5000,
+				background: "variant-filled-error"
+			}
+			toastStore.trigger(t)
+			return
+		}
+
 		try {
 			const res = await fetch(`${BACKEND_URL}/api/data/riot/lol`, {
 				headers: {
@@ -67,14 +77,15 @@
 			}}
 		/>
 
-		<LoLSummonerName
-			bind:value={lol.summonerName}
-			label="Beschwörername"
-			placeholder="5WlzxEp"
+		<LoLRiotId
+			bind:name={lol.name}
+			bind:tag={lol.tag}
+			label="RiotID"
+			placeholder="5WlzxEp#EUW"
 			prefix={lol.profileIcon}
 			modal={{
 				title: "Beschwörername",
-				body: 'Der Beschwörername des Accounts, dessen Spiele "überwacht" werden sollen.'
+				body: 'Die RiotID des Accounts, dessen Spiele "überwacht" werden sollen. Name und Tag werden durch ein # getrennt.'
 			}}
 		/>
 		<LoLCategorie bind:value={lol.kategorie} />

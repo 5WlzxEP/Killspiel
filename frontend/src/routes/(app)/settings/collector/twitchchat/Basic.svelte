@@ -80,6 +80,11 @@
 			toastStore.trigger(t)
 		}
 	})
+
+	const placeholdersPrefix = ["!💀", "!Killspiel", "#☠"]
+	function placholderPrefix(): string {
+		return placeholdersPrefix[Math.floor(Math.random() * placeholdersPrefix.length)]
+	}
 </script>
 
 <svelte:head>
@@ -103,12 +108,12 @@
 		<InputText
 			bind:value={d.prefix}
 			label="Prefix"
-			placeholder="!💀"
+			placeholder={placholderPrefix()}
 			modal={{
 				title: "Prefix",
 				body:
 					"Der Prefix gibt an, womit eine Nachricht beginnen muss, damit sie als Guess registriert wird. " +
-					"Der Prefix kann auch leer sein, dann wird jede Nachricht, die nur eine Zahl darstellt ausgewertet."
+					"Der Prefix kann auch leer sein, dann wird jede Nachricht, die nur eine Zahl darstellt, ausgewertet."
 			}}
 		/>
 

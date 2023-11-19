@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { getModalStore, type ModalSettings } from "@skeletonlabs/skeleton"
 	import { IconHelp } from "@tabler/icons-svelte"
+	import { onMount } from "svelte"
 
 	const modalStore = getModalStore()
 
 	let ModalSett: ModalSettings
 
-	export let value: string
+	export let name: string
+	export let tag: string
 	export let prefix = -1
 	export let placeholder = ""
 	export let label: string
@@ -23,6 +25,12 @@
 			buttonTextCancel: "Schließen"
 		}
 	}
+
+	onMount(() => {value = `${name}#${tag}`})
+
+	let value: string
+
+	$: if (value) [name, tag] = value.split("#", 2)
 </script>
 
 <label class="label">

@@ -16,11 +16,24 @@ type Summoner struct {
 	SummonerLevel int    `json:"summonerLevel"`
 }
 
-func getLoLSummonerByName(name, server, apiKey string, client *fasthttp.Client) (*Summoner, error) {
-	url := fmt.Sprintf("https://%s.api.riotgames.com/lol/summoner/v4/summoners/by-name/%s", server, name)
+type Account struct {
+	Puuid    string `json:"puuid"`
+	GameName string `json:"gameName"`
+	TagLine  string `json:"tagLine"`
+}
 
-	s, err := get[Summoner](url, apiKey, client)
-	return s, err
+func getLoLSummonerByAccount(name, tag, region, server, apiKey string, client *fasthttp.Client) (*Summoner, error) {
+	url := fmt.Sprintf("https://%s.api.riotgames.com/riot/account/v1/accounts/by-riot-id/%s/%s", region, name, tag)
+
+	a, err := get[Account](url, apiKey, client)
+	if err != nil {
+		return nil, err
+	}
+
+	url = fmt.Sprintf("https://%s.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/%s", server, a.Puuid)
+
+	return get[Summoner](url, apiKey, client)
+
 }
 
 func (a *Api) getLoLSummonerByName(name string) (*Summoner, error) {

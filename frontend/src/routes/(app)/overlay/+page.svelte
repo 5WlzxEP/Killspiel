@@ -56,7 +56,10 @@
 		{/if}
 	{/each}
 
-	<table class="mt-1 card p-2" style="border-spacing: 10px 0; border-collapse: separate;">
+	<table
+		class="mt-1 card p-2 cursor-default"
+		style="border-spacing: 10px 0; border-collapse: separate;"
+	>
 		<thead>
 			<tr>
 				<th colspan="5">Parameter</th>
@@ -90,7 +93,7 @@
 
 <div class="grid-cols-1 grid mx-auto container gap-2">
 	<div>
-		<h1 class="text-2xl text-center">Letzte Spiele</h1>
+		<h1 class="text-2xl m-3 text-center">Letzte Spiele</h1>
 		<div class="underline">
 			{window.location}games?theme=<x style="color: rgb({value.color})">{value.name}</x
 			>&dark={value.dark}
@@ -104,9 +107,9 @@
 		/>
 	</div>
 	<div>
-		<h1 class="text-2xl text-center">Leaderboard</h1>
+		<h1 class="text-2xl m-3 text-center">Leaderboard</h1>
 
-		<table class="card p-2" style="border-spacing: 10px 0; border-collapse: separate;">
+		<table class="card m-1 p-2" style="border-spacing: 10px 0; border-collapse: separate;">
 			<thead>
 				<tr>
 					<th colspan="5">Parameter</th>
@@ -166,7 +169,7 @@
 			<div>
 				<div class="underline">
 					{window.location}leaderboard?theme=<x style="color: rgb({value.color})">{value.name}</x
-					>&dark={value.dark}
+					>&dark={value.dark}<br /><br />
 				</div>
 				Width: 595, Height: 615
 				<iframe
