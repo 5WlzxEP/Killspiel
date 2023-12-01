@@ -283,6 +283,8 @@
 	<span
 		>Kategorie zum Auswerten
 		<div
+			role="button"
+			tabindex="-1"
 			on:keypress
 			on:click={() => {
 				modalStore.trigger(modal)

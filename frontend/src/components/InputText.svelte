@@ -42,6 +42,8 @@
 		{label}
 		{#if modal}
 			<div
+				role="button"
+				tabindex="-1"
 				on:keypress={triggerModal}
 				on:click={triggerModal}
 				class="inline-block p-1 cursor-pointer"

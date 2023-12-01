@@ -1,6 +1,6 @@
-import type { PageLoad } from "../../../../../.svelte-kit/types/src/routes/(app)/user/[id]/$types"
-import { error } from "@sveltejs/kit"
-import type { SvelteComponentTyped } from "svelte"
+import type {PageLoad} from "../../../../../.svelte-kit/types/src/routes/(app)/user/[id]/$types"
+import {error} from "@sveltejs/kit"
+import type {SvelteComponent} from "svelte"
 
 export const prerender = false
 
@@ -18,7 +18,7 @@ export type User = {
 		correct: number
 		precision: number
 		time: string
-		icon?: SvelteComponentTyped
+		icon?: SvelteComponent
 	}>
 }
 

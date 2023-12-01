@@ -25,7 +25,7 @@
 			if (e.data.startsWith("State: ")) handleState(e.data.substring(7))
 		}
 
-		websocket.onerror = (e) => {
+		websocket.onerror = () => {
 			// console.error(e)
 		}
 

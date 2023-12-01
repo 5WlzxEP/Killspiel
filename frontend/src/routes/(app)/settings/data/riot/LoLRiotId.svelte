@@ -26,7 +26,9 @@
 		}
 	}
 
-	onMount(() => {value = `${name}#${tag}`})
+	onMount(() => {
+		value = `${name}#${tag}`
+	})
 
 	let value: string
 
@@ -38,6 +40,8 @@
 		>{label}
 		{#if modal}
 			<div
+				role="button"
+				tabindex="-1"
 				on:keypress
 				on:click={() => {
 					modalStore.trigger(ModalSett)

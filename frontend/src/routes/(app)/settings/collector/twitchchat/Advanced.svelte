@@ -111,8 +111,9 @@
 		oder <a class="anchor" href="http://127.0.0.1:8088">http://127.0.0.1:8088</a> läuft,
 
 		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-		{@html host === "http://localhost:8088" ? "was er tut" : "was er <u>nicht</u> tut"}, kannst du
-		die einfache Variante nutzen.
+		{@html host === "http://localhost:8088"
+			? "was er tut"
+			: "was er <u class='text-error-500'>nicht</u> tut"}, kannst du die einfache Variante nutzen.
 	</p>
 	<br />
 	<h1 class="text-lg underline">Leichte Variante</h1>

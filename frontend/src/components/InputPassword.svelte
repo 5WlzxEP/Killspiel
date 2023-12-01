@@ -49,7 +49,13 @@
 	<span
 		>{label}
 		{#if modal}
-			<div on:keypress={trigger} on:click={trigger} class="inline-block p-1 cursor-pointer">
+			<div
+				on:keypress={trigger}
+				on:click={trigger}
+				role="button"
+				tabindex="-1"
+				class="inline-block p-1 cursor-pointer"
+			>
 				<IconHelp class="inline-block" />
 			</div>
 		{/if}
