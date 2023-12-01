@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { printState, state } from "@stores/state"
+	import { onMount } from "svelte"
 	const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 	async function start() {
@@ -51,6 +52,17 @@
 			console.error(e)
 		}
 	}
+
+	onMount(async () => {
+		const url = `${BACKEND_URL}/api/data/`
+		try {
+			const res = await fetch(url)
+			const val = await res.json()
+			$state = val.state
+		} catch (e) {
+			console.error(e)
+		}
+	})
 </script>
 
 <div class=" w-full h-full p-2">
