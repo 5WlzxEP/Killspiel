@@ -1,8 +1,27 @@
 <script lang="ts">
 	import type { Game } from "./+page"
 	import { goto } from "$app/navigation"
+	import { type PaginationSettings, Paginator } from "@skeletonlabs/skeleton"
+	const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 	export let data: { d: Array<Game> }
+
+	let meta = {
+		page: 0,
+		limit: 50,
+		size: data.d[0].id,
+		amounts: [10, 15, 25, 50]
+	} satisfies PaginationSettings
+
+	async function update() {
+		const url = `${BACKEND_URL}/api/game/?offset=${meta.page * meta.limit}&limit=${meta.limit}`
+		try {
+			const resp = await fetch(url)
+			data.d = await resp.json()
+		} catch (e) {
+			/* empty */
+		}
+	}
 </script>
 
 <div class="container mx-auto">
@@ -37,5 +56,15 @@
 				{/each}
 			</tbody>
 		</table>
+		<div class="mt-2">
+			<Paginator
+				bind:settings={meta}
+				showFirstLastButtons={true}
+				showPreviousNextButtons={true}
+				showNumerals={true}
+				on:page={update}
+				on:amount={update}
+			/>
+		</div>
 	</div>
 </div>

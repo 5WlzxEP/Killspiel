@@ -25,6 +25,7 @@ var historyPool = sync.Pool{New: func() any { return User{History: make([]Game, 
 
 func Init(r fiber.Router) {
 	r.Get("/:id/", get)
+	r.Get("/:id/history/", getHistory)
 	r.Delete("/:id/", del)
 	r.Post("/", search)
 }
@@ -64,7 +65,7 @@ func get(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	rows, err := database.GetUserGames.QueryContext(ctx.Context(), id)
+	rows, err := database.GetUserGames.QueryContext(ctx.Context(), id, 25, 0)
 	if err != nil {
 		return err
 	}
@@ -81,6 +82,37 @@ func get(ctx *fiber.Ctx) error {
 	user.History = user.History[:i]
 
 	return ctx.JSON(user)
+}
+
+func getHistory(ctx *fiber.Ctx) error {
+	id, err := ctx.ParamsInt("id")
+	limit := min(ctx.QueryInt("limit", 25), 25)
+	offset := ctx.QueryInt("offset", 0)
+	if err != nil {
+		return err
+	}
+
+	user := historyPool.Get().(User)
+	defer historyPool.Put(user)
+	user.Id = id
+
+	rows, err := database.GetUserGames.QueryContext(ctx.Context(), id, limit, offset)
+	if err != nil {
+		return err
+	}
+
+	i := 0
+	for ; rows.Next(); i++ {
+		err = rows.Scan(&user.History[i].Id, &user.History[i].Correct, &user.History[i].Guess, &user.History[i].Time, &user.History[i].Precision)
+		if err != nil {
+			i--
+			continue
+		}
+	}
+
+	user.History = user.History[:i]
+
+	return ctx.JSON(user.History)
 }
 
 // del requires to steps to delete to avoid accidentally deletes

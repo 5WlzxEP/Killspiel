@@ -4,6 +4,8 @@
 		getModalStore,
 		getToastStore,
 		type ModalSettings,
+		type PaginationSettings,
+		Paginator,
 		type ToastSettings
 	} from "@skeletonlabs/skeleton"
 	import Check from "@components/Check.svelte"
@@ -17,9 +19,19 @@
 	/** @type {import("./$types").PageData} */
 	export let data: User
 
-	data.history.forEach((h) => {
-		h.icon = Math.abs(h.guess - h.correct) < h.precision ? Check : X
-	})
+	let meta = {
+		page: 0,
+		limit: 25,
+		size: data.guesses,
+		amounts: [10, 15, 25]
+	} satisfies PaginationSettings
+
+	function setIcon() {
+		data.history.forEach((h) => {
+			h.icon = Math.abs(h.guess - h.correct) < h.precision ? Check : X
+		})
+	}
+	setIcon()
 
 	async function deleteConfirmed(key: string) {
 		const url = `${BACKEND_URL}/api/user/${data.id}/`
@@ -70,6 +82,19 @@
 		}
 
 		modalStore.trigger(modal)
+	}
+
+	async function update() {
+		const url = `${BACKEND_URL}/api/user/${data.id}/history/?offset=${
+			meta.page * meta.limit
+		}&limit=${meta.limit}`
+		try {
+			const resp = await fetch(url)
+			data.history = await resp.json()
+			setIcon()
+		} catch (e) {
+			/* empty */
+		}
 	}
 </script>
 
@@ -134,6 +159,16 @@
 					{/each}
 				</tbody>
 			</table>
+			<div class="mt-2">
+				<Paginator
+					bind:settings={meta}
+					showFirstLastButtons={true}
+					showPreviousNextButtons={true}
+					showNumerals={true}
+					on:page={update}
+					on:amount={update}
+				/>
+			</div>
 		</div>
 	</div>
 

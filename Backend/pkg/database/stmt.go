@@ -85,7 +85,7 @@ func prepareStmts() (err error) {
 	}
 
 	// DO NOT CHANGE LIMIT, or when changed also change historyPool size in User/user.go
-	GetUserGames, err = DB.Prepare("SELECT id, correct, vote, time, game.precision FROM Game JOIN (SELECT game, vote FROM Votes WHERE player = ? ORDER BY game desc LIMIT 25) V on Game.id = V.game")
+	GetUserGames, err = DB.Prepare("SELECT id, correct, vote, time, game.precision FROM Game JOIN (SELECT game, vote FROM Votes WHERE player = ? ORDER BY game desc LIMIT ? OFFSET ?) V on Game.id = V.game")
 	if err != nil {
 		return
 	}
@@ -120,7 +120,7 @@ func prepareStmts() (err error) {
 		return err
 	}
 
-	GetLatestGames, err = DB.Prepare("SELECT id, correct, userCount, correctCount, game.precision, time FROM Game ORDER BY id DESC LIMIT ?")
+	GetLatestGames, err = DB.Prepare("SELECT id, correct, userCount, correctCount, game.precision, time FROM Game ORDER BY id DESC LIMIT ? OFFSET ?")
 	if err != nil {
 		return err
 	}

@@ -6,8 +6,6 @@ import (
 	"time"
 )
 
-//type Websockets DoubleLinkedList[*websocket.Conn]
-
 var ws = map[*websocket.Conn]chan struct{}{}
 var sendCh = make(chan []byte)
 
@@ -22,8 +20,6 @@ func Init(r fiber.Router) {
 	})
 
 	r.Get("/", websocket.New(func(c *websocket.Conn) {
-
-		// websocket.Conn bindings https://pkg.go.dev/github.com/fasthttp/websocket?tab=doc#pkg-index
 
 		defer c.Close()
 		ch := make(chan struct{})

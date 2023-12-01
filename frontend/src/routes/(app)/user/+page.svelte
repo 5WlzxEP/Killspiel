@@ -50,7 +50,7 @@
 </svelte:head>
 
 <div class="container mx-auto w-2/5">
-	<form>
+	<form role="search">
 		<label class="m-2">
 			<div class="p-2">Suche</div>
 			<div class="input-group input-group-divider grid-cols-[1fr_auto]">

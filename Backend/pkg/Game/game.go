@@ -28,11 +28,12 @@ func Init(r fiber.Router) {
 }
 
 func get(ctx *fiber.Ctx) error {
-	limit := ctx.QueryInt("limit", 50)
+	limit := min(ctx.QueryInt("limit", 50), 50)
+	offset := ctx.QueryInt("offset", 0)
 
 	res := pool.Get().([]Game)
 
-	rows, err := database.GetLatestGames.QueryContext(ctx.Context(), limit)
+	rows, err := database.GetLatestGames.QueryContext(ctx.Context(), limit, offset)
 	if err != nil {
 		return err
 	}
