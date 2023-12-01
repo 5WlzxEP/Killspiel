@@ -220,4 +220,7 @@
 			</td>
 		</tr>
 	</table>
+	<br>
+	<h1 class="text-lg underline">Verbindung trennen</h1>
+	Auf <a class="anchor" href="https://www.twitch.tv/settings/connections">https://www.twitch.tv/settings/connections</a> die "Verbindung" Killspiel-Server trennen. Bei eigener Twitch-App ist der Name entsprechend anders.
 </div>
