@@ -51,6 +51,10 @@ tasks:
     cmds:
       - docker buildx build -f Dockerfile -t {{.image}} .
 
+  windows-icon:
+    dir: backend/icon
+    cmd: windres -o ../main-res.syso main.rc
+
   push:
     cmd: docker push {{.image}}
 
