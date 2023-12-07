@@ -123,7 +123,7 @@ func (a *Api) Begin(ctx context.Context, cancelFunc context.CancelFunc, dbInfo c
 		default:
 			if a.checkInGame() {
 				a.currentSummoner = a.summoner
-				dbInfo <- fmt.Sprintf("LoL,%s,%d,%s", a.currentSummoner.Name, a.currentGame.GameId, a.LoL.Kategorie)
+				dbInfo <- fmt.Sprintf("LoL,%s#%s,%d,%s", a.Name, a.Tag, a.currentGame.GameId, a.LoL.Kategorie)
 				cancelFunc()
 				return
 			}
