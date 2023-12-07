@@ -79,7 +79,7 @@ tasks:
     # -ldflags "-H windowsgui" for hidden shell
     # TODO before adding this, add logging to file
     # drawback: even in shell, no log anymore
-    cmd: go build -o {{.build}}/Killspiel_win_x64.exe main.go
+    cmd: go build -o {{.build}}/Killspiel_win_x64.exe . # if main.go instead of ., the icon won't be used
 
   publish:linux:arm:
     internal: true
