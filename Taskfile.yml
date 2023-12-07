@@ -67,13 +67,18 @@ tasks:
       - publish:linux:64
 
   publish:win:
+    internal: true
     env:
       GOOS: windows
       GOARCH: amd64
     dir: backend
+    # -ldflags "-H windowsgui" for hidden shell
+    # TODO before adding this, add logging to file
+    # drawback: even in shell, no log anymore
     cmd: go build -o {{.build}}/Killspiel_win_x64.exe main.go
 
   publish:linux:arm:
+    internal: true
     env:
       GOOS: linux
       GOARCH: arm
@@ -81,6 +86,7 @@ tasks:
     cmd: go build -o {{.build}}/Killspiel_linux_arm main.go
 
   publish:linux:arm:64:
+    internal: true
     env:
       GOOS: linux
       GOARCH: arm64
@@ -88,6 +94,7 @@ tasks:
     cmd: go build -o {{.build}}/Killspiel_linux_arm64 main.go
 
   publish:linux:64:
+    internal: true
     env:
       GOOS: linux
       GOARCH: amd64
