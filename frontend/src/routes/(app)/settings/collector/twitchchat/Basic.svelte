@@ -146,7 +146,7 @@
 		<InputArea
 			bind:value={d.msgBegin}
 			label="Nachricht zum Begin der Erhebung"
-			placeholder="Das Killspiel hat begonnen. Nimm jetzt Teil mit /guess <Dein Guess>."
+			placeholder="Das Killspiel hat begonnen. Nimm jetzt Teil mit !guess <Dein Guess>."
 			modal={{
 				title: "Nachricht zum Begin der Erhebung",
 				body: "Diese Nachricht wird zum Beginn der Erhebung, also wenn die Zuschauer ihre Schätzungen abgeben können, in den Chat gepostet. <br> "
