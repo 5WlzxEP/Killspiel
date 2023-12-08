@@ -173,7 +173,7 @@
 				title: "Nachricht zum Auflösen der richtigen Schätzungen",
 				body:
 					"Diese Nachricht wird versendet, wenn das Ergebnis feststeht. <br> " +
-					"<i>$WINNERS</i> sind die Gewinner <br> <i>$RESULT</i> sind die erzielten Kills"
+					"<i>$WINNERS</i> wird durch die Gewinner ersetzt. Diese sind ',' separiert. <br> <i>$RESULT</i> wird durch das richtige Ergebnis ersetzt."
 			}}
 		/>
 	</div>

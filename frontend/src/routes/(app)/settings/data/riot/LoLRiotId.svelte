@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { getModalStore, type ModalSettings } from "@skeletonlabs/skeleton"
 	import { IconHelp } from "@tabler/icons-svelte"
-	import { onMount } from "svelte"
 
 	const modalStore = getModalStore()
 
@@ -26,13 +25,13 @@
 		}
 	}
 
-	onMount(() => {
-		value = `${name}#${tag}`
-	})
-
 	let value: string
 
-	$: if (value) [name, tag] = value.split("#", 2)
+	$: value = `${name}#${tag}`
+
+	function change() {
+		if (value) [name, tag] = value.split("#", 2)
+	}
 </script>
 
 <label class="label">
@@ -64,7 +63,7 @@
 				/>
 			</div>
 		{/if}
-		<input type="text" bind:value tabindex="0" {placeholder} required />
+		<input type="text" bind:value tabindex="0" {placeholder} required on:change={change} />
 		<div class="input-group-shim">*</div>
 	</div>
 </label>
