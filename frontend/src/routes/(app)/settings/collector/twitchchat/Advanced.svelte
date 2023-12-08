@@ -74,7 +74,6 @@
 	}
 
 	async function hard() {
-		console.log(oauth)
 		if (oauth.clientId === "") {
 			const t: ToastSettings = {
 				message: "ClientId darf nicht leer sein.",
