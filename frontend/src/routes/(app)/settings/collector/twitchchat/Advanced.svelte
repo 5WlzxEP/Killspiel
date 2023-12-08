@@ -117,8 +117,9 @@
 	</p>
 	<br />
 	<h1 class="text-lg underline">Leichte Variante</h1>
-	Klicke<a class="anchor" href={`${BACKEND_URL}/api/collector/chat/std-oauth/`}> hier</a> oder unten
-	den Button <i>Twitchaccount verknüpfen: leichte Variante</i>.
+	Klicke
+	<a class="anchor" href={`${BACKEND_URL}/api/collector/chat/std-oauth/`}>hier</a> oder unten den
+	Button <i>Twitchaccount verknüpfen: leichte Variante</i>.
 	<br />
 	<br />
 	<h1 class="text-lg underline">Komplizierte Variante</h1>
@@ -220,7 +221,10 @@
 			</td>
 		</tr>
 	</table>
-	<br>
+	<br />
 	<h1 class="text-lg underline">Verbindung trennen</h1>
-	Auf <a class="anchor" href="https://www.twitch.tv/settings/connections">https://www.twitch.tv/settings/connections</a> die "Verbindung" Killspiel-Server trennen. Bei eigener Twitch-App ist der Name entsprechend anders.
+	Auf
+	<a class="anchor" href="https://www.twitch.tv/settings/connections"
+		>https://www.twitch.tv/settings/connections</a
+	> die "Verbindung" Killspiel-Server trennen. Bei eigener Twitch-App ist der Name entsprechend anders.
 </div>
