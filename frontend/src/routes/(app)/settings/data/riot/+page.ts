@@ -1,5 +1,5 @@
-import {localStorageStore} from "@skeletonlabs/skeleton"
-import type {Writable} from "svelte/store"
+import { localStorageStore } from "@skeletonlabs/skeleton"
+import type { Writable } from "svelte/store"
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 

@@ -1,6 +1,6 @@
-import type {PageLoad} from "../../../../../.svelte-kit/types/src/routes/(app)/user/[id]/$types"
-import {error} from "@sveltejs/kit"
-import type {SvelteComponent} from "svelte"
+import type { PageLoad } from "../../../../../.svelte-kit/types/src/routes/(app)/user/[id]/$types"
+import { error } from "@sveltejs/kit"
+import type { SvelteComponent } from "svelte"
 
 export const prerender = false
 

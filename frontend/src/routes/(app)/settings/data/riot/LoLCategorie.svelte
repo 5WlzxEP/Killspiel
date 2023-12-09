@@ -305,7 +305,7 @@
 		<div class="input-group-shim">*</div>
 	</div>
 	<div data-popup="popupAutocomplete" class="card w-[35%]">
-		<div class="card w-full max-h-52 p-4 overflow-y-auto" tabindex="-1">
+		<div class="card w-full max-h-80 p-4 overflow-y-auto" tabindex="-1">
 			<Autocomplete bind:input={value} {options} on:selection={onSelection} />
 			{#if basic}
 				<hr class="m-1" />
