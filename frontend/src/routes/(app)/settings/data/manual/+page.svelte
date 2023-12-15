@@ -74,6 +74,10 @@
 	$: printSt = printState($state)
 
 	$: if ($state === 1) printTime()
+	else {
+		clearInterval(interval)
+		time = ""
+	}
 
 	let time: string = ""
 	// eslint-disable-next-line no-undef
