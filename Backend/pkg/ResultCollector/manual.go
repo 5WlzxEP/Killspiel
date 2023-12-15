@@ -20,11 +20,11 @@ func post(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	if req.States != State.States {
+	if req.States != State {
 		return ctx.Status(http.StatusBadRequest).SendString("wrong state")
 	}
 
-	switch State.States {
+	switch State {
 	case running:
 		if math.IsNaN(req.Result) {
 			return ctx.Status(http.StatusBadRequest).SendString("result is not valid")

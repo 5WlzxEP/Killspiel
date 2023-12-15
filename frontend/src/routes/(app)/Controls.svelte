@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { printState, state } from "@stores/state"
-	import { onMount } from "svelte"
+	import { collectionEnd, printState, state } from "@stores/state"
+	import { onDestroy, onMount } from "svelte"
 	const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 	async function start() {
@@ -63,6 +63,29 @@
 			console.error(e)
 		}
 	})
+
+	$: if ($state === 1) printTime()
+
+	let time: string = ""
+	// eslint-disable-next-line no-undef
+	let interval: NodeJS.Timeout
+	function printTime() {
+		const d = new Date($collectionEnd * 1000)
+		interval = setInterval(() => {
+			const d2 = new Date()
+			const diff = d - d2
+			if (diff < 0) {
+				clearInterval(interval)
+				time = ""
+			} else {
+				time = new Date(diff).toLocaleString("de-DE", { minute: "2-digit", second: "2-digit" })
+			}
+		}, 1000)
+	}
+
+	onDestroy(() => {
+		clearInterval(interval)
+	})
 </script>
 
 <div class=" w-full h-full p-2">
@@ -70,7 +93,12 @@
 		<a href="/settings/data/manual/">Manuell & Status</a>
 	</h1>
 	<div class="text-center card p-2">
-		Aktueller Status: <h3 class="text-lg">{printState($state)}</h3>
+		Aktueller Status: <h3 class="text-lg">
+			{printState($state)}
+			{#if $state === 1}
+				{time}
+			{/if}
+		</h3>
 	</div>
 	<br />
 	{#if $state === 0}

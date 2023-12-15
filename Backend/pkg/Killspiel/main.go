@@ -44,7 +44,7 @@ func Init(app *fiber.App) {
 	api.Post("/", post)
 
 	UserCollector.Init(path, conf, api.Group("/collector"))
-	ResultCollector.Init(path, api.Group("/data"))
+	ResultCollector.Init(path, conf, api.Group("/data"))
 
 	Leaderboard.Init(api.Group("/leaderboard"))
 	User.Init(api.Group("/user"))

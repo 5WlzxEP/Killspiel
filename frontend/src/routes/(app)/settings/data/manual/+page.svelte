@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { type ToastSettings, getToastStore } from "@skeletonlabs/skeleton"
-	import { onMount } from "svelte"
-	import { state, printState } from "@stores/state"
+	import { onDestroy, onMount } from "svelte"
+	import { state, printState, collectionEnd } from "@stores/state"
 
 	const toastStore = getToastStore()
 	const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
@@ -72,6 +72,29 @@
 
 	let printSt: string
 	$: printSt = printState($state)
+
+	$: if ($state === 1) printTime()
+
+	let time: string = ""
+	// eslint-disable-next-line no-undef
+	let interval: NodeJS.Timeout
+	function printTime() {
+		const d = new Date($collectionEnd * 1000)
+		interval = setInterval(() => {
+			const d2 = new Date()
+			const diff = d - d2
+			if (diff < 0) {
+				clearInterval(interval)
+				time = ""
+			} else {
+				time = new Date(diff).toLocaleString("de-DE", { minute: "2-digit", second: "2-digit" })
+			}
+		}, 1000)
+	}
+
+	onDestroy(() => {
+		clearInterval(interval)
+	})
 </script>
 
 <svelte:head>
@@ -96,6 +119,8 @@
 
 			<div class="p-2 grid gap-2 h-3 text-center">
 				{printSt}
+				<br />
+				{time}
 			</div>
 
 			<span class="divider-vertical h-full" />

@@ -3,8 +3,11 @@ package ResultCollector
 import (
 	"Killspiel/pkg/ResultCollector/RiotApi"
 	"Killspiel/pkg/Websocket"
+	"Killspiel/pkg/config"
 	"context"
+	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"time"
 )
 
 type collector struct {
@@ -27,22 +30,20 @@ type Collector interface {
 
 type States uint8
 
-type state struct {
-	States `json:"state"`
-}
-
 func setState(state States) {
-	State.States = state
+	State = state
 	Websocket.Broadcast([]byte{'S', 't', 'a', 't', 'e', ':', ' ', '0' + uint8(state)})
 }
 
 var (
-	State            state
+	State            States
 	beginCancelFunc  context.CancelFunc
 	resultChan       = make(chan float64)
 	currentCollector Collector
 	collectors       []*collector
 	dbInfo           = make(chan string, 5)
+	conf             *config.Config
+	endTime          int64
 )
 
 const (
@@ -52,21 +53,30 @@ const (
 	result
 )
 
-func Init(conf string, r fiber.Router) {
+func Init(confPath string, conf2 *config.Config, r fiber.Router) {
 	r.Get("/", get)
 	r.Post("/", post)
 
-	c, n := RiotApi.New(conf, r.Group("/riot"))
+	c, n := RiotApi.New(confPath, r.Group("/riot"))
 	collectors = append(collectors, &collector{
 		Collector: c,
 		Name:      n,
 	})
 
 	currentCollector = c
+	conf = conf2
 }
 
 func get(ctx *fiber.Ctx) error {
-	return ctx.JSON(State)
+	if State == begin {
+		return ctx.JSON(struct {
+			State States `json:"state"`
+			End   int64  `json:"end"` // end of collection votes
+		}{State, endTime})
+	}
+	return ctx.JSON(struct {
+		State States `json:"state"`
+	}{State})
 }
 
 func Begin() string {
@@ -87,7 +97,10 @@ func Begin() string {
 	// still blocks if no currentCollector exists, which is ok, because the user can manually override it
 	<-ctx.Done()
 
-	setState(begin)
+	//setState(begin)
+	State = begin
+	endTime = time.Now().Add(conf.UserCollector.Duration * time.Second).Unix()
+	Websocket.Broadcast([]byte(fmt.Sprintf("State: 1, %v", endTime)))
 
 	select {
 	case x := <-dbInfo:

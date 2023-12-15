@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from "svelte"
 	import { state } from "@stores/state"
+	import { collectionEnd } from "@stores/state.js"
 
 	const BACKEND_URL: string = import.meta.env.VITE_BACKEND_URL
 
@@ -36,6 +37,9 @@
 	}
 
 	function handleState(s: string) {
-		state.set(parseInt(s))
+		state.set(parseInt(s[0]))
+		if (s.length > 2) {
+			collectionEnd.set(parseInt(s.substring(3)))
+		}
 	}
 </script>
