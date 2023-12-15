@@ -72,7 +72,9 @@
 	<svelte:fragment slot="pageFooter">
 		<AppBar>
 			<svelte:fragment slot="lead">
-				<a href="https://github.com/5WlzxEP/Killspiel"><IconBrandGithub class="inline-block m-1 -translate-y-0.5"/>Github</a>
+				<a href="https://github.com/5WlzxEP/Killspiel"
+					><IconBrandGithub class="inline-block m-1 -translate-y-0.5" />Github</a
+				>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
 				<div class="p-4">
