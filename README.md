@@ -10,6 +10,10 @@ exotischere Werte wie Gold pro Minute, Pentakills oder BaitPing.
 [//]: # (TODO ADD DEMO)
 Eine Demo der Oberfläche ist [hier]() (noch nicht) möglich.
 
+### Beispiel, wie es im Chat aussieht
+
+![Screenshot 2023-12-16 174451.png](%7F%2FScreenshot%202023-12-16%20174451.png)
+
 # Installation & erste Nutzung
 
 Unter [Releases](https://github.com/5WlzxEP/Killspiel/releases) die neuste Version für deine Platform herunterladen.
