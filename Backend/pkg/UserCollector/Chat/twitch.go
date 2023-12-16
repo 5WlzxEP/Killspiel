@@ -78,7 +78,10 @@ func New(configPath string, r fiber.Router) (*TwitchChat, string) {
 		tc = &TwitchChat{
 			configPath: path.Join(configPath, ConfigName),
 		}
-		tc.saveConfig()
+		err := tc.saveConfig()
+		if err != nil {
+			log.Println(err)
+		}
 	}
 
 	tc.client = twitch.NewClient(tc.ChannelSender, tc.ApiKey)
@@ -179,7 +182,7 @@ func (tc *TwitchChat) CollectGuesses(ctx context.Context, collect func(id int, u
 			return
 		}
 
-		collect(id, strings.ToLower(m.User.Name), strings.TrimLeft(m.Message, tc.Prefix))
+		collect(id, strings.ToLower(m.User.Name), strings.TrimSpace(strings.TrimLeft(m.Message, tc.Prefix)))
 	})
 
 	ctx, cancel := context.WithCancel(ctx)
