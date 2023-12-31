@@ -10,6 +10,7 @@ import (
 var ws = map[*websocket.Conn]chan struct{}{}
 var lock = sync.RWMutex{}
 var sendCh = make(chan []byte)
+var channels = sync.Pool{New: func() any { return make(chan struct{}, 1) }}
 
 func Init(r fiber.Router) {
 	r.Use("/", func(c *fiber.Ctx) error {
@@ -24,11 +25,13 @@ func Init(r fiber.Router) {
 	r.Get("/", websocket.New(func(c *websocket.Conn) {
 
 		defer c.Close()
-		ch := make(chan struct{})
+		//ch := make(chan struct{})
+		ch := channels.Get().(chan struct{})
 		lock.Lock()
 		ws[c] = ch
 		lock.Unlock()
 		<-ch
+		channels.Put(ch)
 	}))
 
 	go broadcast()
@@ -61,7 +64,7 @@ func send(msgType int, msg []byte) {
 			lock.RUnlock()
 			lock.Lock()
 			delete(ws, conn)
-			close(ch)
+			ch <- struct{}{}
 			lock.Unlock()
 			lock.RLock()
 		}
