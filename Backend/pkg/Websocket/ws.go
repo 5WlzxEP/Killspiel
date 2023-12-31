@@ -3,10 +3,12 @@ package Websocket
 import (
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
+	"sync"
 	"time"
 )
 
 var ws = map[*websocket.Conn]chan struct{}{}
+var lock = sync.RWMutex{}
 var sendCh = make(chan []byte)
 
 func Init(r fiber.Router) {
@@ -23,7 +25,9 @@ func Init(r fiber.Router) {
 
 		defer c.Close()
 		ch := make(chan struct{})
+		lock.Lock()
 		ws[c] = ch
+		lock.Unlock()
 		<-ch
 	}))
 
@@ -49,11 +53,17 @@ func broadcast() {
 }
 
 func send(msgType int, msg []byte) {
+	lock.RLock()
+	defer lock.RUnlock()
 	for conn, ch := range ws {
 		err := conn.WriteMessage(msgType, msg)
 		if err != nil {
+			lock.RUnlock()
+			lock.Lock()
 			delete(ws, conn)
 			close(ch)
+			lock.Unlock()
+			lock.RLock()
 		}
 	}
 }
