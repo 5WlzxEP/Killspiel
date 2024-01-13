@@ -2,11 +2,71 @@
 	import type { Game } from "./+page"
 	import GameChart from "@components/GameChart.svelte"
 	import { writable } from "svelte/store"
+	import {
+		getModalStore,
+		getToastStore,
+		type ModalSettings,
+		type ToastSettings
+	} from "@skeletonlabs/skeleton"
+	const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 	/** @type {import("./$types").PageData} */
 	export let data: Game
 
+	const modalStore = getModalStore()
+	const toastStore = getToastStore()
+
 	let vert = writable(JSON.parse(data.verteilung))
+
+	async function aufloesen() {
+		const modal: ModalSettings = {
+			type: "prompt",
+			title: `Spiel ${data.id} auflösen`,
+			body: "Korrektes Ergebnis eintragen:",
+			valueAttr: { type: "number", required: true, step: 0.01, min: 0 },
+			value: "0.00",
+			response: async (r: number) => {
+				if (!r) {
+					return
+				}
+				fetch(`${BACKEND_URL}/api/game/${data.id}/`, {
+					method: "PUT",
+					body: r
+				})
+					.catch((e) => {
+						const toast: ToastSettings = {
+							message: e,
+							autohide: true,
+							timeout: 3000,
+							background: "variant-ghost-error"
+						}
+						toastStore.trigger(toast)
+					})
+					.then(async (r: Response) => {
+						if (r.ok) {
+							const toast: ToastSettings = {
+								message: "Erfolgreich gespeichert",
+								autohide: true,
+								timeout: 3000,
+								background: "variant-ghost-success"
+							}
+							toastStore.trigger(toast)
+
+							setTimeout(location.reload, 1000)
+						} else {
+							const toast: ToastSettings = {
+								message: await r.text(),
+								autohide: true,
+								timeout: 3000,
+								background: "variant-ghost-error"
+							}
+							toastStore.trigger(toast)
+						}
+					})
+			}
+		}
+		modalStore.trigger(modal)
+	}
 </script>
 
 <svelte:head>
@@ -51,4 +111,10 @@
 	<div class="p-2 card mt-2">
 		<GameChart verteilung={vert} gameid={data.id} />
 	</div>
+
+	{#if data.correct === null}
+		<div class="flex mt-4">
+			<button class="ms-auto mr-3 btn variant-ghost" on:click={aufloesen}>Auflösen</button>
+		</div>
+	{/if}
 </div>

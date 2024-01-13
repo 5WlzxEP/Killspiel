@@ -1,14 +1,21 @@
 package Game
 
 import (
+	"Killspiel/pkg/config"
 	"Killspiel/pkg/database"
+	"database/sql"
+	"errors"
 	"github.com/gofiber/fiber/v2"
 	"log"
+	"math"
+	"net/http"
+	"strconv"
 	"sync"
 	"time"
 )
 
 var pool = sync.Pool{New: func() any { return make([]Game, 50) }}
+var conf *config.Config
 
 type Game struct {
 	Id           int       `json:"id"`
@@ -20,11 +27,14 @@ type Game struct {
 	Verteilung   string    `json:"verteilung,omitempty"`
 }
 
-func Init(r fiber.Router) {
+func Init(r fiber.Router, c *config.Config) {
 	r.Get("/", get)
 	r.Get("/latest/", latest)
 	r.Get("/:id/", getId)
 	r.Get("/:id/:vote/", getVotes)
+	r.Put("/:id/", setResult)
+
+	conf = c
 }
 
 func get(ctx *fiber.Ctx) error {
@@ -111,4 +121,85 @@ func latest(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(g)
+}
+
+func setResult(ctx *fiber.Ctx) error {
+	id, err := ctx.ParamsInt("id")
+	if err != nil {
+		return err
+	}
+
+	res, err := strconv.ParseFloat(string(ctx.Body()), 64)
+	if err != nil {
+		return err
+	}
+
+	err = database.CheckGameUnfinished.QueryRow(id).Scan(&id)
+	if err != nil {
+		return ctx.Status(http.StatusExpectationFailed).SendString("Result is already set")
+	}
+
+	err = getWinners(res, id)
+	if err != nil {
+		return err
+	}
+
+	return ctx.SendStatus(http.StatusNoContent)
+}
+
+func getWinners(correctGuess float64, gameId int) error {
+
+	tx, err := database.DB.Begin()
+	if err != nil {
+		log.Printf("Error starting db transaction: %v\n", err)
+		return nil
+	}
+	defer tx.Rollback()
+
+	rows, err := tx.Stmt(database.GetUsersByGame).Query(gameId)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+
+			_, err = tx.Stmt(database.SetGameCorrect).Exec(correctGuess, conf.Precision, 0, gameId)
+			if err != nil {
+				log.Printf("Error updating game %d: %v\n", gameId, err)
+				return err
+			}
+
+			return nil
+		}
+		return err
+	}
+	defer rows.Close()
+
+	winners := 0
+
+	var guess float64
+	var userId int64
+	for rows.Next() {
+		err = rows.Scan(&userId, &guess)
+		if err != nil {
+			return err
+		}
+
+		add := 0
+		if math.Abs(guess-correctGuess) < conf.Precision {
+			add = 1
+			winners++
+		}
+		_, err = tx.Stmt(database.UpdateUser).Exec(add, add, userId)
+		if err != nil {
+			log.Printf("Error updating User %d: %v\n", userId, err)
+			continue
+		}
+	}
+
+	_, err = tx.Stmt(database.SetGameCorrect).Exec(correctGuess, conf.Precision, winners, gameId)
+	if err != nil {
+		log.Printf("Error updating game %d: %v\n", gameId, err)
+		return err
+	}
+
+	_ = tx.Commit()
+	return nil
 }

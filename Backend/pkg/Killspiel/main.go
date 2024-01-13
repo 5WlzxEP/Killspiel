@@ -48,7 +48,7 @@ func Init(app *fiber.App) {
 
 	Leaderboard.Init(api.Group("/leaderboard"))
 	User.Init(api.Group("/user"))
-	Game.Init(api.Group("/game"))
+	Game.Init(api.Group("/game"), conf)
 
 	games := ResultCollector.CheckUnfinishedGames()
 	for _, v := range games {

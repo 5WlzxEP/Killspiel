@@ -29,6 +29,9 @@ var (
 	GetLastGame       *sql.Stmt
 
 	GetUnfinishedGames *sql.Stmt
+
+	CheckGameUnfinished *sql.Stmt
+	GetUsersByGame      *sql.Stmt
 )
 
 func prepareStmts() (err error) {
@@ -131,6 +134,16 @@ func prepareStmts() (err error) {
 	}
 
 	GetUnfinishedGames, err = DB.Prepare("SELECT id, info FROM Game WHERE correct is null and info is not null and info != 'manual'")
+	if err != nil {
+		return err
+	}
+
+	CheckGameUnfinished, err = DB.Prepare("SELECT id FROM Game WHERE correct is null and id = ?")
+	if err != nil {
+		return err
+	}
+
+	GetUsersByGame, err = DB.Prepare("SELECT player, vote FROM Votes WHERE game = ?")
 	if err != nil {
 		return err
 	}
