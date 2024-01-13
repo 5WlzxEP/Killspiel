@@ -183,7 +183,7 @@ func getWinners(correctGuess float64, gameId int) error {
 		}
 
 		add := 0
-		if math.Abs(guess-correctGuess) < conf.Precision {
+		if math.Abs(guess-correctGuess) <= conf.Precision {
 			add = 1
 			winners++
 		}

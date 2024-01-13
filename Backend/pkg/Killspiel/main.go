@@ -108,7 +108,7 @@ func getWinners(correctGuess float64, gameId int64) []string {
 
 	for id, user := range guesses {
 		add := 0
-		if math.Abs(user.Guess-correctGuess) < conf.Precision {
+		if math.Abs(user.Guess-correctGuess) <= conf.Precision {
 			add = 1
 			winners = append(winners, user.Name)
 		}
