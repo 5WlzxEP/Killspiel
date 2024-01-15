@@ -10,7 +10,7 @@ tasks:
   frontend:
     dir: frontend
     env:
-      VITE_BACKEND_URL:
+      VITE_BACKEND_URL: ''
     cmds:
       - pnpm run build
     sources:
