@@ -59,6 +59,10 @@
 			const res = await fetch(url)
 			const val = await res.json()
 			$state = val.state
+			if (val.end !== undefined) {
+				$collectionEnd = val.end
+				printTime()
+			}
 		} catch (e) {
 			console.error(e)
 		}
