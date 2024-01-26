@@ -4,13 +4,18 @@ import (
 	"Killspiel/pkg/Killspiel"
 	"Killspiel/pkg/Websocket"
 	"Killspiel/pkg/helper"
+	"context"
 	"embed"
+	"fmt"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"net/http"
+	"os"
+	"os/signal"
+	"time"
 )
 
 var (
@@ -22,6 +27,7 @@ func main() {
 	app := fiber.New(fiber.Config{
 		JSONDecoder: json.Unmarshal,
 		JSONEncoder: json.Marshal,
+		Network:     "tcp",
 	})
 
 	app.Use(logger.New())
@@ -37,8 +43,25 @@ func main() {
 		NotFoundFile: "r.html",
 	}))
 
-	go Killspiel.Run()
+	ctx, cancel := context.WithCancel(context.Background())
 
-	panic(app.Listen(helper.EnvOrDefault("KILLSPIEL_PORT", ":8088")))
+	go Killspiel.Run(ctx)
 
+	go func() {
+		err := app.Listen(helper.EnvOrDefault("KILLSPIEL_HOST", ":8088"))
+		if err != nil {
+			panic(err)
+		}
+	}()
+
+	shutdown := make(chan os.Signal)
+	signal.Notify(shutdown, os.Kill, os.Interrupt)
+
+	<-shutdown
+	cancel()
+	fmt.Println("Shutting down")
+	err := app.ShutdownWithTimeout(time.Minute)
+	if err != nil {
+		fmt.Println(err)
+	}
 }

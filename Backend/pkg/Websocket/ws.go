@@ -38,6 +38,15 @@ func Init(r fiber.Router) {
 
 }
 
+func Close() {
+	lock.Lock()
+	defer lock.Unlock()
+	for conn, c := range ws {
+		delete(ws, conn)
+		c <- struct{}{}
+	}
+}
+
 func Broadcast(msg []byte) {
 	sendCh <- msg
 }

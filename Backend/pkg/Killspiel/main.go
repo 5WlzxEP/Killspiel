@@ -6,9 +6,11 @@ import (
 	"Killspiel/pkg/ResultCollector"
 	"Killspiel/pkg/User"
 	"Killspiel/pkg/UserCollector"
+	"Killspiel/pkg/Websocket"
 	"Killspiel/pkg/config"
 	"Killspiel/pkg/database"
 	"Killspiel/pkg/router"
+	"context"
 	"fmt"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
@@ -66,9 +68,12 @@ func Init(app *fiber.App) {
 	})
 }
 
-func Run() {
-	for Ready() {
-		gameInfo := ResultCollector.Begin()
+func Run(ctx context.Context) {
+
+	canceled := getCancel(ctx)
+
+	for Ready(canceled) || !canceled() {
+		gameInfo := ResultCollector.Begin(ctx)
 
 		clear(guesses)
 
@@ -81,16 +86,32 @@ func Run() {
 			return
 		}
 
-		res := ResultCollector.Result()
+		res := ResultCollector.Result(ctx)
 
 		winners := getWinners(res, gameId)
 
 		UserCollector.AnnounceResult(res, winners)
 	}
+
+	// shutdown of the websockets
+	Websocket.Close()
 }
 
-func Ready() bool {
-	for !UserCollector.Ready() {
+func getCancel(ctx context.Context) func() bool {
+	done := ctx.Done()
+
+	return func() bool {
+		select {
+		case <-done:
+			return true
+		default:
+			return false
+		}
+	}
+}
+
+func Ready(canceled func() bool) bool {
+	for !canceled() && !UserCollector.Ready() {
 		time.Sleep(5 * time.Second)
 	}
 	return true

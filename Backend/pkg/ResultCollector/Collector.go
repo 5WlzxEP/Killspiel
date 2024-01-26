@@ -79,23 +79,23 @@ func get(ctx *fiber.Ctx) error {
 	}{State})
 }
 
-func Begin() string {
+func Begin(ctx context.Context) string {
 	// clear dbInfo
 	for len(dbInfo) > 0 {
 		<-dbInfo
 	}
 
-	var ctx context.Context
-	ctx, beginCancelFunc = context.WithCancel(context.Background())
+	var c context.Context
+	c, beginCancelFunc = context.WithCancel(ctx)
 
 	setState(none)
 
 	if currentCollector != nil && currentCollector.Ready() {
-		go currentCollector.Begin(ctx, beginCancelFunc, dbInfo)
+		go currentCollector.Begin(c, beginCancelFunc, dbInfo)
 	}
 
 	// still blocks if no currentCollector exists, which is ok, because the user can manually override it
-	<-ctx.Done()
+	<-c.Done()
 
 	//setState(begin)
 	State = begin
@@ -110,14 +110,14 @@ func Begin() string {
 	}
 }
 
-func Result() float64 {
+func Result(ctx context.Context) float64 {
 	for len(resultChan) > 0 {
 		<-resultChan
 	}
 
 	setState(running)
 
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(ctx)
 	if currentCollector != nil && currentCollector.Ready() {
 		go currentCollector.Result(ctx, resultChan)
 	}
