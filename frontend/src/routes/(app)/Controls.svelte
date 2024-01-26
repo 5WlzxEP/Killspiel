@@ -21,6 +21,7 @@
 
 	let result: number
 	async function stop() {
+		clearInterval(interval)
 		try {
 			await fetch(`${BACKEND_URL}/api/data/`, {
 				headers: {
