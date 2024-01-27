@@ -254,7 +254,7 @@ func (tc *TwitchChat) get(ctx *fiber.Ctx) error {
 func (tc *TwitchChat) post(ctx *fiber.Ctx) error {
 	success := tc.TryLock()
 	if !success {
-		return ctx.Status(http.StatusConflict).SendString("Killspiel laeuft gerade, keine aenderungen moeglich")
+		return ctx.Status(http.StatusLocked).SendString("Killspiel läuft gerade, keine Änderungen möglich")
 	}
 	defer tc.Unlock()
 
