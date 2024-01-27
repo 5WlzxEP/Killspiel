@@ -7,8 +7,7 @@ zu lassen und Gewinner festzustellen.
 Es kann von verschiedensten Ingame-Werten ausgewählt werden, wie Kills (daher der Name), Tode und KDA aber auch
 exotischere Werte wie Gold pro Minute, Pentakills oder BaitPing.
 
-[//]: # (TODO ADD DEMO)
-Eine Demo der Oberfläche ist [hier]() (noch nicht) möglich.
+Eine Demo der Oberfläche ist [hier](https://5wlzxep.github.io/Killspiel/) vorhanden.
 
 ### Beispiel, wie es im Chat aussieht
 
