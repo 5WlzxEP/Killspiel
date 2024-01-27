@@ -77,7 +77,7 @@ func Run(ctx context.Context) {
 
 		clear(guesses)
 
-		UserCollector.Collect(guesses)
+		UserCollector.Collect(ctx, guesses)
 
 		var err error
 		gameId, err := saveGuesses(gameInfo)

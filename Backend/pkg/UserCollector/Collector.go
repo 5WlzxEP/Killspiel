@@ -19,7 +19,7 @@ type cols struct {
 
 type Collector interface {
 	Ready() bool
-	CollectGuesses(ctx context.Context, collector func(id int, user, guess string))
+	CollectGuesses(ctx context.Context, collector func(id int, user, guess string, color ...string))
 	AnnounceResult(winners []string, correctGuess float64)
 }
 

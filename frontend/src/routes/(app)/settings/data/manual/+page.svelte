@@ -2,6 +2,7 @@
 	import { type ToastSettings, getToastStore } from "@skeletonlabs/skeleton"
 	import { onDestroy, onMount } from "svelte"
 	import { state, printState, collectionEnd } from "@stores/state"
+	import CurrentVotes from "@components/CurrentVotes.svelte"
 
 	const toastStore = getToastStore()
 	const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
@@ -144,5 +145,9 @@
 				</button>
 			</form>
 		</div>
+	</div>
+	<div class="card w-1/5 mx-auto p-2 m-2">
+		<h1 class="text-center text-xl p-3">Aktuelle Votes</h1>
+		<CurrentVotes />
 	</div>
 </div>

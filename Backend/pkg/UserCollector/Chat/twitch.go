@@ -152,7 +152,7 @@ func (tc *TwitchChat) AnnounceResult(winners []string, correctGuess float64) {
 }
 
 // CollectGuesses collect the user votes until the context cancels
-func (tc *TwitchChat) CollectGuesses(ctx context.Context, collect func(id int, user, message string)) {
+func (tc *TwitchChat) CollectGuesses(ctx context.Context, collect func(id int, user, message string, color ...string)) {
 	tc.Lock()
 	defer tc.Unlock()
 	client := tc.client
@@ -182,7 +182,7 @@ func (tc *TwitchChat) CollectGuesses(ctx context.Context, collect func(id int, u
 			return
 		}
 
-		collect(id, strings.ToLower(m.User.Name), strings.TrimSpace(strings.TrimLeft(m.Message, tc.Prefix)))
+		collect(id, strings.ToLower(m.User.Name), strings.TrimSpace(strings.TrimLeft(m.Message, tc.Prefix)), m.User.Color)
 	})
 
 	ctx, cancel := context.WithCancel(ctx)

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { collectionEnd, printState, state } from "@stores/state"
 	import { onDestroy, onMount } from "svelte"
+	import CurrentVotes from "@components/CurrentVotes.svelte"
 	const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 	async function start() {
@@ -125,4 +126,7 @@
 			</button>
 		</form>
 	{/if}
+	<div class="card h-[14.5rem] m-1 pl-5 pr-5 p-1">
+		<CurrentVotes />
+	</div>
 </div>

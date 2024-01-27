@@ -2,6 +2,7 @@
 	import { onMount } from "svelte"
 	import { state } from "@stores/state"
 	import { collectionEnd } from "@stores/state.js"
+	import { latestVotes } from "@stores/vote"
 
 	const BACKEND_URL: string = import.meta.env.VITE_BACKEND_URL
 
@@ -24,6 +25,7 @@
 			if (e.data === "Ping") return
 
 			if (e.data.startsWith("State: ")) handleState(e.data.substring(7))
+			if (e.data.startsWith("Vote: ")) handleVote(e.data.substring(6))
 		}
 
 		websocket.onerror = () => {
@@ -40,6 +42,19 @@
 		state.set(parseInt(s[0]))
 		if (s.length > 2) {
 			collectionEnd.set(parseInt(s.substring(3)))
+		}
+	}
+
+	function handleVote(s: string) {
+		try {
+			const d: { name: string; vote: number; color: string } = JSON.parse(s)
+			d.vote = parseFloat(String(d.vote))
+			$latestVotes.d.push({ time: new Date(), ...d })
+			if ($latestVotes.d.length > 9)
+				$latestVotes.d = $latestVotes.d.slice($latestVotes.d.length - 9)
+			else $latestVotes.d = $latestVotes.d
+		} catch (e) {
+			/* empty */
 		}
 	}
 </script>
