@@ -117,6 +117,9 @@ func latest(ctx *fiber.Ctx) error {
 
 	err := database.GetLastGame.QueryRowContext(ctx.Context()).Scan(&g.Id, &g.Correct, &g.UserCount, &g.CorrectCount, &g.Precision, &g.Time, &g.Verteilung)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return ctx.JSON(fiber.Map{})
+		}
 		return err
 	}
 

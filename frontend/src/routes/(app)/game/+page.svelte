@@ -9,7 +9,7 @@
 	let meta = {
 		page: 0,
 		limit: 50,
-		size: data.d[0].id,
+		size: data?.d[0]?.id,
 		amounts: [10, 15, 25, 50]
 	} satisfies PaginationSettings
 

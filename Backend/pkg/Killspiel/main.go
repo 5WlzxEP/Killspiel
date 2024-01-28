@@ -62,7 +62,7 @@ func Init(app *fiber.App) {
 		ctx.Status(http.StatusMovedPermanently).Location(fmt.Sprintf("/Redirect/?%s", ctx.OriginalURL()))
 		return nil
 	})
-	app.Get("/game/:id/*", func(ctx *fiber.Ctx) error {
+	app.Get("/game/", func(ctx *fiber.Ctx) error {
 		ctx.Status(http.StatusMovedPermanently).Location(fmt.Sprintf("/Redirect/?%s", ctx.OriginalURL()))
 		return nil
 	})
