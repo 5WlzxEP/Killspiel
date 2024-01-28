@@ -6,12 +6,12 @@ import (
 	"Killspiel/pkg/helper"
 	"context"
 	"embed"
-	"fmt"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -21,9 +21,12 @@ import (
 var (
 	//go:embed frontend_build/*
 	frontendBuild embed.FS
+	Build         string
 )
 
 func main() {
+	log.Printf("Version: %s\n", Build)
+
 	app := fiber.New(fiber.Config{
 		JSONDecoder: json.Unmarshal,
 		JSONEncoder: json.Marshal,
@@ -59,9 +62,9 @@ func main() {
 
 	<-shutdown
 	cancel()
-	fmt.Println("Shutting down")
+	log.Println("Shutting down")
 	err := app.ShutdownWithTimeout(time.Minute)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 }

@@ -5,6 +5,7 @@ version: '3'
 vars:
   image: git.5wp.de/ceddy/killspiel
   build: ../build
+  TAG: '{{now | date "20060102-1504"}}'
 
 tasks:
   frontend:
@@ -69,6 +70,7 @@ tasks:
       - publish:linux:arm
       - publish:linux:arm:64
       - publish:linux:64
+    cmd: echo {{.TAG}}
 
   publish:win:
     internal: true
@@ -79,7 +81,7 @@ tasks:
     # -ldflags "-H windowsgui" for hidden shell
     # TODO before adding this, add logging to file
     # drawback: even in shell, no log anymore
-    cmd: go build -o {{.build}}/Killspiel_win_x64.exe . # if main.go instead of ., the icon won't be used
+    cmd: go build -o {{.build}}/Killspiel_win_x64.exe -ldflags="-w -s -n -X main.Build={{.TAG}}" . # if main.go instead of ., the icon won't be used
 
   publish:linux:arm:
     internal: true
@@ -87,7 +89,7 @@ tasks:
       GOOS: linux
       GOARCH: arm
     dir: backend
-    cmd: go build -o {{.build}}/Killspiel_linux_arm main.go
+    cmd: go build -o {{.build}}/Killspiel_linux_arm -ldflags="-w -s -n -X main.Build={{.TAG}}" main.go
 
   publish:linux:arm:64:
     internal: true
@@ -95,7 +97,7 @@ tasks:
       GOOS: linux
       GOARCH: arm64
     dir: backend
-    cmd: go build -o {{.build}}/Killspiel_linux_arm64 main.go
+    cmd: go build -o {{.build}}/Killspiel_linux_arm64 -ldflags="-w -s -n -X main.Build={{.TAG}}" main.go
 
   publish:linux:64:
     internal: true
@@ -103,4 +105,4 @@ tasks:
       GOOS: linux
       GOARCH: amd64
     dir: backend
-    cmd: go build -o {{.build}}/Killspiel_linux_x64 main.go
+    cmd: go build -o {{.build}}/Killspiel_linux_x64 -ldflags="-w -s -n -X main.Build={{.TAG}}" main.go
