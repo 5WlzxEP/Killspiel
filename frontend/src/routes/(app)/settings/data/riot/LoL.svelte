@@ -73,7 +73,7 @@
 				title: "Riot Api key",
 				body:
 					"Dies ist der Api Key, der benutzt wird, um die Riot-Api abzufragen, ob ein Spieler gerade spielt und das Ergenis liefert, wenn das Spiel vorbei ist. <br> Riot empfiehlt, für LoL, TfT und LoR unterschiedliche Keys zu nutzen, es können aber auch dieselben genutzt werden.<br>" +
-					'Ein ApiKey kann über <a class="anchor" href="https://developer.riotgames.com/" target="_blank">developer.riotgames.com</a> angefordert werden. Es wird empfolen, ein Produkt zu registrieren und einen dauerhaften Apikey zu erhalten. Ein temporer funktioniert aber auch. (Läuft halt nur nach 24h ab)'
+					'Ein ApiKey kann über <a class="anchor" href="https://developer.riotgames.com/" target="_blank">developer.riotgames.com</a> angefordert werden. Es wird empfolen, ein Produkt zu registrieren und einen dauerhaften Apikey zu erhalten. Ein temporär funktioniert aber auch. (Läuft halt nur nach 24h ab)'
 			}}
 		/>
 
