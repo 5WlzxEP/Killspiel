@@ -24,6 +24,7 @@ var guesses = map[int]UserCollector.Guess{}
 var verteilung = map[int]int{}
 var conf *config.Config
 
+// Init initializes the Killspiel
 func Init(app *fiber.App) {
 	path, err := config.FindConfOrDefault()
 	if err != nil {
@@ -68,6 +69,7 @@ func Init(app *fiber.App) {
 	})
 }
 
+// Run starts the Killspiel
 func Run(ctx context.Context) {
 
 	canceled := getCancel(ctx)
@@ -97,6 +99,7 @@ func Run(ctx context.Context) {
 	Websocket.Close()
 }
 
+// getCancel returns a function that returns true if the context is canceled
 func getCancel(ctx context.Context) func() bool {
 	done := ctx.Done()
 
@@ -110,6 +113,7 @@ func getCancel(ctx context.Context) func() bool {
 	}
 }
 
+// Ready waits until the UserCollector is ready
 func Ready(canceled func() bool) bool {
 	for !canceled() && !UserCollector.Ready() {
 		time.Sleep(5 * time.Second)
@@ -117,6 +121,7 @@ func Ready(canceled func() bool) bool {
 	return true
 }
 
+// getWinners returns the winner names and saves the result to the database
 func getWinners(correctGuess float64, gameId int64) []string {
 	var winners []string
 
@@ -149,6 +154,7 @@ func getWinners(correctGuess float64, gameId int64) []string {
 	return winners
 }
 
+// saveGuesses saves the guesses to the database and returns the gameId
 func saveGuesses(dbinfo string) (gameId int64, err error) {
 	tx, err := database.DB.Begin()
 	if err != nil {

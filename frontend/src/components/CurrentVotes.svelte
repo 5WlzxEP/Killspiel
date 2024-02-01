@@ -11,9 +11,10 @@
 		</div>
 	{/each}
 </div>
+
 <style>
-    .x:hover {
-        background-color: rgba(100, 100, 100, 50%);
-        border-radius: var(--theme-rounded-container);
-    }
+	.x:hover {
+		background-color: rgba(100, 100, 100, 50%);
+		border-radius: var(--theme-rounded-container);
+	}
 </style>

@@ -18,6 +18,7 @@ type Msg struct {
 	Color   string `json:"color"`
 }
 
+// announce announces a message in the twitch chat using /announce
 func (tc *TwitchChat) announce(msg string) error {
 	req := fasthttp.AcquireRequest()
 	defer fasthttp.ReleaseRequest(req)
