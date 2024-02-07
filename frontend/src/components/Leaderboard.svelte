@@ -14,9 +14,9 @@
 
 	type ascDesc = "asc" | "desc"
 
-	export let page = 0
-	export let limit = 25
-	export let sortedBy: "p" | "n" | "g" = "p"
+	// let page = 0
+	// let limit = 25
+	let sortedBy: "p" | "n" | "g" = "p"
 	let order: { p: ascDesc; n: ascDesc; g: ascDesc } = {
 		p: "asc",
 		n: "asc",
@@ -31,8 +31,8 @@
 	let currentOrder: ascDesc = "asc"
 
 	let meta: PaginationSettings = {
-		page: page,
-		limit: limit,
+		page: 0,
+		limit: 25,
 		size: 1,
 		amounts: [10, 25, 50, 100]
 	}
@@ -74,13 +74,38 @@
 	let data: Array<Leaderboard> = []
 
 	async function update() {
-		// data = []
+		let loc = new URLSearchParams()
+		if (meta.page > 0) {
+			loc.set("page", (meta.page + 1).toString())
+		}
+
+		if (meta.limit !== 25) {
+			loc.set("limit", meta.limit.toString())
+		}
+
+		window.history.replaceState(
+			{},
+			"",
+			window.location.pathname + (loc.size > 0 ? "?" : "") + loc.toString()
+		)
 		data = await fetchLeaderboard()
 	}
 
 	let first: HTMLTableCellElement
 
 	onMount(async () => {
+		window.location.search
+			.slice(1)
+			.split("&")
+			.forEach((p) => {
+				const [k, v] = p.split("=")
+				if (k === "page") {
+					meta.page = parseInt(v, 10) - 1
+				} else if (k === "limit") {
+					meta.limit = parseInt(v, 10)
+				}
+			})
+
 		await update()
 
 		latest = first
@@ -171,7 +196,7 @@
 						</td>
 					</tr>
 				{:else}
-					{#each { length: meta.size } as _}
+					{#each { length: meta.limit } as _}
 						<tr>
 							<td>
 								<div class="placeholder animate-pulse" />

@@ -4,16 +4,31 @@
 	import { type PaginationSettings, Paginator } from "@skeletonlabs/skeleton"
 	const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
-	export let data: { d: Array<Game> }
+	export let data: { d: Array<Game>; page: number; limit: number }
 
 	let meta = {
-		page: 0,
-		limit: 50,
+		page: data.page,
+		limit: data.limit,
 		size: data?.d[0]?.id,
 		amounts: [10, 15, 25, 50]
 	} satisfies PaginationSettings
 
 	async function update() {
+		let loc = new URLSearchParams()
+		if (meta.page > 0) {
+			loc.set("page", (meta.page + 1).toString())
+		}
+
+		if (meta.limit !== 50) {
+			loc.set("limit", meta.limit.toString())
+		}
+
+		window.history.replaceState(
+			{},
+			"",
+			window.location.pathname + (loc.size > 0 ? "?" : "") + loc.toString()
+		)
+
 		const url = `${BACKEND_URL}/api/game/?offset=${meta.page * meta.limit}&limit=${meta.limit}`
 		try {
 			const resp = await fetch(url)
