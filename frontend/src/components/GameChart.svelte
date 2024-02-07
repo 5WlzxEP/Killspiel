@@ -14,10 +14,10 @@
 	import type { Writable } from "svelte/store"
 
 	ChartJS.register(Title, Legend, Tooltip, BarElement, LinearScale, CategoryScale)
-	export let verteilung: Writable<any>
+	export let verteilung: Writable<never>
 	export let gameid: string | number
 
-	let data: { labels: Array<string>; datasets: Array<any> }
+	let data: { labels: Array<string>; datasets: Array<{ type: string, label: string, backgroundColor: string, borderWidth: number, data: Array<string>}> }
 	$: data = {
 		labels: Object.keys($verteilung),
 		datasets: [
@@ -31,7 +31,7 @@
 		]
 	}
 
-	let chart: any
+	let chart: never
 
 	function color() {
 		const c = getComputedStyle(document.body)

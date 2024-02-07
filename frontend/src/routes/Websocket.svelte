@@ -50,8 +50,8 @@
 			const d: { name: string; vote: number; color: string } = JSON.parse(s)
 			d.vote = parseFloat(String(d.vote))
 			$latestVotes.d.push({ time: new Date(), ...d })
-			if ($latestVotes.d.length > 9)
-				$latestVotes.d = $latestVotes.d.slice($latestVotes.d.length - 9)
+			if ($latestVotes.d.length > 200)
+				$latestVotes.d = $latestVotes.d.slice($latestVotes.d.length - 200)
 			else $latestVotes.d = $latestVotes.d
 		} catch (e) {
 			/* empty */

@@ -37,6 +37,15 @@
 					background: "variant-filled-success"
 				}
 				toastStore.trigger(t)
+			} else {
+				const t: ToastSettings = {
+					message: `Es ist ein Fehler beim Speichern der Einstellungen aufgetreten. ${
+						res.statusText
+					}: ${await res.text()}`,
+					timeout: 5000,
+					background: "variant-filled-warning"
+				}
+				toastStore.trigger(t)
 			}
 
 			await isReady()

@@ -87,7 +87,9 @@
 		<Theme />
 
 		<div class="p-4 w-full">
-			<a class="btn w-full variant-ghost" href="/overlay">Overlays</a>
+			<a href="/overlay">
+				<div class="btn w-full variant-ghost">Overlays</div>
+			</a>
 		</div>
 		<hr class="mt-2 mb-2" />
 		<form class="p-4" on:submit|preventDefault={submit}>

@@ -94,11 +94,11 @@
 	})
 </script>
 
-<div class=" w-full h-full p-2">
+<div class="w-full h-full overflow-y-hidden">
 	<h1 class="text-lg text-center anchor">
 		<a href="/settings/data/manual/">Manuell & Status</a>
 	</h1>
-	<div class="text-center card p-2">
+	<div class="text-center card p-1">
 		Aktueller Status: <h3 class="text-lg">
 			{printState($state)}
 			{#if $state === 1}
@@ -108,9 +108,12 @@
 	</div>
 	<br />
 	{#if $state === 0}
-		<button class="btn variant-ghost w-full mt-2" type="button" on:click={start}> Starten </button>
+		<button class="btn variant-ghost w-full" type="button" on:click={start}> Starten </button>
 	{:else if $state === 1}
-		<button class="btn variant-ghost w-full mt-2" type="button" on:click={stop}> Beenden </button>
+		<button class="btn variant-ghost w-full" type="button" on:click={stop}> Beenden </button>
+		<div class="card h-[15.6rem] m-1 pl-5 pr-5 p-1 mt-3">
+			<CurrentVotes />
+		</div>
 	{:else if $state === 2}
 		<form class="p-2 gap-2 grid">
 			<input
@@ -126,7 +129,4 @@
 			</button>
 		</form>
 	{/if}
-	<div class="card h-[14.5rem] m-1 pl-5 pr-5 p-1">
-		<CurrentVotes />
-	</div>
 </div>
