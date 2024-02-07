@@ -46,7 +46,7 @@ func New(configPath string, r fiber.Router) (*Api, string) {
 	r.Get("/", api.get)
 	r.Post("/", api.post)
 	r.Post("/lol/", api.postLoL)
-	r.Get("/ready/", api.getready)
+	r.Get("/ready/", api.getReady)
 
 	return api, "RiotApi"
 }
@@ -292,7 +292,7 @@ func (a *Api) post(ctx *fiber.Ctx) error {
 	return ctx.SendStatus(http.StatusNoContent)
 }
 
-func (a *Api) getready(ctx *fiber.Ctx) error {
+func (a *Api) getReady(ctx *fiber.Ctx) error {
 
 	ctx.Status(http.StatusOK)
 	if a.Ready() {

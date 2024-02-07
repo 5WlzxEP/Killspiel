@@ -85,7 +85,7 @@ func TestApi_setRegion(t *testing.T) {
 					Server: tt.fields.Server,
 				},
 			}
-			a.setRegion()
+			a.region = getRegion(a.Server)
 
 			if a.region != tt.fields.region {
 				t.Errorf("got %q, wanted %q", a.region, tt.fields.region)
