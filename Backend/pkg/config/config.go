@@ -21,7 +21,7 @@ type Config struct {
 	UserCollector UserCollect `json:"userCollector"`
 	// location holds the path the config.json
 	// <br>
-	// is unexported to prevent json serialization
+	// is unexported to prevent json serialization,
 	// and I'm too lazy to implementMarshalJSON and maintain it
 	location  string
 	Precision float64 `json:"precision"`

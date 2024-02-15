@@ -70,11 +70,11 @@ func Init(app *fiber.App) {
 }
 
 // Run starts the Killspiel
-func Run(ctx context.Context) {
+func Run(ctx context.Context, finished chan<- struct{}) {
 
 	canceled := getCancel(ctx)
 
-	for Ready(canceled) || !canceled() {
+	for Ready(canceled) && !canceled() {
 		gameInfo := ResultCollector.Begin(ctx)
 
 		clear(guesses)
@@ -85,7 +85,7 @@ func Run(ctx context.Context) {
 		gameId, err := saveGuesses(gameInfo)
 		if err != nil {
 			log.Printf("Error saving guesses: %v", err)
-			return
+			continue
 		}
 
 		res := ResultCollector.Result(ctx)
@@ -97,6 +97,7 @@ func Run(ctx context.Context) {
 
 	// shutdown of the websockets
 	Websocket.Close()
+	close(finished)
 }
 
 // getCancel returns a function that returns true if the context is canceled
@@ -155,7 +156,7 @@ func getWinners(correctGuess float64, gameId int64) []string {
 }
 
 // saveGuesses saves the guesses to the database and returns the gameId
-func saveGuesses(dbinfo string) (gameId int64, err error) {
+func saveGuesses(dbInfo string) (gameId int64, err error) {
 	tx, err := database.DB.Begin()
 	if err != nil {
 		log.Printf("Error starting db transaction: %v\n", err)
@@ -163,7 +164,7 @@ func saveGuesses(dbinfo string) (gameId int64, err error) {
 	}
 	defer tx.Rollback()
 
-	result, err := tx.Stmt(database.CreateGame).Exec(len(guesses), dbinfo)
+	result, err := tx.Stmt(database.CreateGame).Exec(len(guesses), dbInfo)
 	if err != nil {
 		return
 	}

@@ -121,7 +121,12 @@ func Result(ctx context.Context) float64 {
 	if currentCollector != nil && currentCollector.Ready() {
 		go currentCollector.Result(ctx, resultChan)
 	}
-	res := <-resultChan
+	var res float64
+	select {
+	case res = <-resultChan:
+	case <-ctx.Done():
+		res = -1
+	}
 	cancel()
 
 	setState(result)

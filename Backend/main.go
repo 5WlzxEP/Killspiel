@@ -48,7 +48,9 @@ func main() {
 
 	ctx, cancel := context.WithCancel(context.Background())
 
-	go Killspiel.Run(ctx)
+	finished := make(chan struct{})
+
+	go Killspiel.Run(ctx, finished)
 
 	go func() {
 		err := app.Listen(helper.EnvOrDefault("KILLSPIEL_HOST", ":8088"))
@@ -67,4 +69,5 @@ func main() {
 	if err != nil {
 		log.Println(err)
 	}
+	<-finished
 }
