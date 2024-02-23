@@ -8,8 +8,7 @@ import (
 )
 
 var (
-	ws       = map[*websocket.Conn]chan struct{}{}
-	lock     = sync.Mutex{}
+	ws       = sync.Map{}
 	sendCh   = make(chan []byte)
 	channels = sync.Pool{New: func() any { return make(chan struct{}, 1) }}
 )
@@ -29,9 +28,7 @@ func Init(r fiber.Router) {
 		defer c.Close()
 		//ch := make(chan struct{})
 		ch := channels.Get().(chan struct{})
-		lock.Lock()
-		ws[c] = ch
-		lock.Unlock()
+		ws.Store(c, ch)
 		<-ch
 		channels.Put(ch)
 	}))
@@ -41,12 +38,11 @@ func Init(r fiber.Router) {
 }
 
 func Close() {
-	lock.Lock()
-	defer lock.Unlock()
-	for conn, c := range ws {
-		delete(ws, conn)
-		c <- struct{}{}
-	}
+	ws.Range(func(key, value any) bool {
+		ws.Delete(key)
+		value.(chan struct{}) <- struct{}{}
+		return true
+	})
 }
 
 func Broadcast(msg []byte) {
@@ -67,13 +63,12 @@ func broadcast() {
 }
 
 func send(msgType int, msg []byte) {
-	lock.Lock()
-	defer lock.Unlock()
-	for conn, ch := range ws {
-		err := conn.WriteMessage(msgType, msg)
+	ws.Range(func(key, value any) bool {
+		err := key.(*websocket.Conn).WriteMessage(msgType, msg)
 		if err != nil {
-			delete(ws, conn)
-			ch <- struct{}{}
+			ws.Delete(key)
+			value.(chan struct{}) <- struct{}{}
 		}
-	}
+		return true
+	})
 }
