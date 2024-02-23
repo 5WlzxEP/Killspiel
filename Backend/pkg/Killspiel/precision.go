@@ -6,16 +6,16 @@ import (
 	"net/http"
 )
 
-type precesion struct {
+type precision struct {
 	Precision float64 `json:"precision"`
 }
 
 func get(ctx *fiber.Ctx) error {
-	return ctx.JSON(precesion{Precision: conf.Precision})
+	return ctx.JSON(precision{Precision: conf.Precision})
 }
 
 func post(ctx *fiber.Ctx) error {
-	var pre precesion
+	var pre precision
 	err := ctx.BodyParser(&pre)
 	if err != nil {
 		return ctx.Status(http.StatusBadRequest).SendString(err.Error())

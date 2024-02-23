@@ -23,7 +23,6 @@ In diesem sind das Log des Programms.
 Zur weiteren Einrichtung die Oberfläche aufrufen, welche unter [http://localhost:8088](http://localhost:8088) laufen
 sollte.
 
-
-# Vorraussetzung
+# Voraussetzung
 
 Es wird ein Riot-Api-Key benötigt. Dieser kann [hier](https://developer.riotgames.com/) angefragt werden. Zum Ausprobieren reicht ein Development-Key aus, dieser muss aber alle 24h erneuert werden. Bei längerer Nutzung ist ein [Personal Api Key](https://developer.riotgames.com/app-type) empfohlen.

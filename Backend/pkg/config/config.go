@@ -97,7 +97,7 @@ func GetConfig(p string) (*Config, error) {
 // Default creates the folder config in the current location and creates the default config
 func Default() (string, error) {
 
-	// check if folder exists and create if not exists
+	// check if the folder exists and create if not exists
 	stat, err := os.Stat("./config")
 	if errors.Is(err, fs.ErrNotExist) {
 		err = os.Mkdir("./config", 0744)

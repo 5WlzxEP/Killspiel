@@ -17,7 +17,16 @@
 	export let verteilung: Writable<never>
 	export let gameid: string | number
 
-	let data: { labels: Array<string>; datasets: Array<{ type: string, label: string, backgroundColor: string, borderWidth: number, data: Array<string>}> }
+	let data: {
+		labels: Array<string>
+		datasets: Array<{
+			type: string
+			label: string
+			backgroundColor: string
+			borderWidth: number
+			data: Array<string>
+		}>
+	}
 	$: data = {
 		labels: Object.keys($verteilung),
 		datasets: [

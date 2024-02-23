@@ -48,7 +48,8 @@ func (a *Api) postLoL(ctx *fiber.Ctx) error {
 	return ctx.SendString(strconv.Itoa(a.summoner.ProfileIconId))
 }
 
-// isLoLKategorie returns if something (first value) is a valid lolKategorie. If no value is given checks if LoL.Kategorie is a lolKategorie
+// isLoLKategorie returns if something (first value) is a valid lolKategorie.
+// If no value is given, check if LoL.Kategorie is a lolKategorie
 func (a *Api) isLoLKategorie(kategorie ...string) bool {
 	if len(kategorie) > 0 {
 		return slices.Contains(lolKategorien, kategorie[0])
