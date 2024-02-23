@@ -3,7 +3,7 @@ package main
 import (
 	"Killspiel/pkg/Killspiel"
 	"Killspiel/pkg/Websocket"
-	"Killspiel/pkg/helper"
+	"cmp"
 	"context"
 	"embed"
 	"github.com/goccy/go-json"
@@ -53,7 +53,7 @@ func main() {
 	go Killspiel.Run(ctx, finished)
 
 	go func() {
-		err := app.Listen(helper.EnvOrDefault("KILLSPIEL_HOST", ":8088"))
+		err := app.Listen(cmp.Or(os.Getenv("KILLSPIEL_HOST"), ":8088"))
 		if err != nil {
 			panic(err)
 		}

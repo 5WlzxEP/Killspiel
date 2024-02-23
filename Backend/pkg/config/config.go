@@ -1,6 +1,7 @@
 package config
 
 import (
+	"cmp"
 	"errors"
 	"github.com/goccy/go-json"
 	"io/fs"
@@ -9,12 +10,10 @@ import (
 	"path"
 )
 
-import "Killspiel/pkg/helper"
-
 var (
 	NoConfigFound = errors.New("no config file found")
 	localPaths    = [...]string{"./config", "."}
-	configName    = helper.EnvOrDefault("ConfigName", "config.json")
+	configName    = cmp.Or(os.Getenv("ConfigName"), "config.json")
 )
 
 type Config struct {
@@ -51,7 +50,7 @@ func FindConfigPath() (string, error) {
 		return file, nil
 	}
 	for _, base := range globalPaths {
-		for _, end := range []string{helper.EnvOrDefault("KILLSPIEL_CONFIG_PATH", "Killspiel")} {
+		for _, end := range []string{cmp.Or(os.Getenv("KILLSPIEL_CONFIG_PATH"), "Killspiel")} {
 			p := path.Join(base, end, configName)
 			if ExistsAndFile(p) {
 				return path.Join(base, end), nil
