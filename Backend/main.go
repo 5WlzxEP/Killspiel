@@ -21,7 +21,7 @@ import (
 var (
 	//go:embed frontend_build/*
 	frontendBuild embed.FS
-	Build         string
+	Build         string = "Development"
 )
 
 func main() {

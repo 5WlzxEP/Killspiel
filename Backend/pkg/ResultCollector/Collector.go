@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"math"
 	"time"
 )
 
@@ -97,6 +98,12 @@ func Begin(ctx context.Context) string {
 	// still blocks if no currentCollector exists, which is ok, because the user can manually override it
 	<-c.Done()
 
+	select {
+	case <-ctx.Done():
+		return ""
+	default:
+	}
+
 	//setState(begin)
 	State = begin
 	endTime = time.Now().Add(conf.UserCollector.Duration * time.Second).Unix()
@@ -125,7 +132,7 @@ func Result(ctx context.Context) float64 {
 	select {
 	case res = <-resultChan:
 	case <-ctx.Done():
-		res = -1
+		res = math.NaN()
 	}
 	cancel()
 

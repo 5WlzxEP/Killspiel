@@ -77,6 +77,11 @@ func Run(ctx context.Context, finished chan<- struct{}) {
 	for Ready(canceled) && !canceled() {
 		gameInfo := ResultCollector.Begin(ctx)
 
+		// shutdown
+		if gameInfo == "" {
+			break
+		}
+
 		clear(guesses)
 
 		UserCollector.Collect(ctx, guesses)
@@ -89,6 +94,11 @@ func Run(ctx context.Context, finished chan<- struct{}) {
 		}
 
 		res := ResultCollector.Result(ctx)
+
+		// shutdown
+		if math.IsNaN(res) {
+			break
+		}
 
 		winners := getWinners(res, gameId)
 
