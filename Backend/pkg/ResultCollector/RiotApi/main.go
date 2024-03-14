@@ -32,6 +32,7 @@ type General struct {
 type Api struct {
 	LoL             `json:"lol"`
 	General         `json:"general"`
+	filters         `json:"filters"`
 	client          *fasthttp.Client
 	ready           bool
 	summoner        *Summoner
@@ -47,6 +48,9 @@ func New(configPath string, r fiber.Router) (*Api, string) {
 	r.Post("/", api.post)
 	r.Post("/lol/", api.postLoL)
 	r.Get("/ready/", api.getReady)
+
+	r.Get("/filters/", api.filters.get)
+	r.Post("/filters/", api.filters.add)
 
 	return api, "RiotApi"
 }
@@ -171,6 +175,11 @@ func (a *Api) checkInGame() bool {
 	if err != nil || (a.currentGame != nil && game.GameId == a.currentGame.GameId) {
 		return false
 	}
+
+	if a.skip(game, a.summoner.Id) {
+		return false
+	}
+
 	a.currentGame = game
 	return true
 }

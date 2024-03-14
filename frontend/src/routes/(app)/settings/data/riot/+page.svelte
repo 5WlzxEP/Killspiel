@@ -11,6 +11,7 @@
 	import type { Writable } from "svelte/store"
 	import LoL from "./LoL.svelte"
 	import { _isReady, _ready, type Resp } from "./+page"
+	import Filters from "./Filters.svelte"
 
 	const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
@@ -112,6 +113,9 @@
 				<Tab bind:group={$tabSet} name="LoL" value={1}>
 					<span>LoL</span>
 				</Tab>
+				<Tab bind:group={$tabSet} name="filter" value={2}>
+					<span>Filter</span>
+				</Tab>
 			</div>
 
 			<svelte:fragment slot="panel">
@@ -138,6 +142,8 @@
 					</form>
 				{:else if $tabSet === 1}
 					<LoL bind:lol={data.lol} />
+					{:else if $tabSet === 2}
+					<Filters />
 				{/if}
 			</svelte:fragment>
 		</TabGroup>
