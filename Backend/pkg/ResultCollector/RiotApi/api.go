@@ -65,8 +65,8 @@ type CurrentGameInfo struct {
 	GameLength    int    `json:"gameLength"`
 }
 
-func (a *Api) getActiveGameById(encryptedSummonerId string) (*CurrentGameInfo, error) {
-	url := fmt.Sprintf("https://%s.api.riotgames.com/lol/spectator/v4/active-games/by-summoner/%s", a.Server, encryptedSummonerId)
+func (a *Api) getActiveGameById(Puuid string) (*CurrentGameInfo, error) {
+	url := fmt.Sprintf("https://%s.api.riotgames.com/lol/spectator/v5/active-games/by-summoner/%s", a.Server, Puuid)
 
 	return getWithApi[CurrentGameInfo](a, url)
 }

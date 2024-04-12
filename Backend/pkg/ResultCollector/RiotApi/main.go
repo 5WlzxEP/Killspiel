@@ -167,7 +167,7 @@ func (a *Api) Resolve(dbinfo string) (float64, error) {
 }
 
 func (a *Api) checkInGame() bool {
-	game, err := a.getActiveGameById(a.summoner.Id)
+	game, err := a.getActiveGameById(a.summoner.Puuid)
 	if err != nil || (a.currentGame != nil && game.GameId == a.currentGame.GameId) {
 		return false
 	}
