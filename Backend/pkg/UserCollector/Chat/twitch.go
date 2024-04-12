@@ -21,8 +21,21 @@ import (
 const ConfigName = "Twitch.json"
 
 type ready struct {
-	ready   bool
-	changed bool
+	ready     bool
+	changed   bool
+	timestamp time.Time
+}
+
+func (r *ready) hasChanged() bool {
+	if r.changed {
+		return true
+	}
+	return time.Now().Sub(r.timestamp).Hours() > 24
+}
+
+func (r *ready) setReady() {
+	r.ready = true
+	r.timestamp = time.Now()
 }
 
 type TwitchChat struct {
@@ -35,6 +48,7 @@ type TwitchChat struct {
 	EndMsg        string `json:"msgEnd"`
 	FinalMsg      string `json:"msgFinal"`
 	configPath    string
+	AllowWhisper  bool
 
 	OAuth OAuth `json:"oauth"`
 	// Caches Ready data
@@ -43,7 +57,7 @@ type TwitchChat struct {
 }
 
 func (tc *TwitchChat) Ready() bool {
-	if !tc.ready.changed {
+	if !tc.hasChanged() {
 		return tc.ready.ready
 	}
 	tc.Lock()
@@ -68,7 +82,7 @@ func (tc *TwitchChat) Ready() bool {
 		return false
 	}
 
-	tc.ready.ready = true
+	tc.ready.setReady()
 	return true
 }
 
@@ -85,7 +99,6 @@ func New(configPath string, r fiber.Router) (*TwitchChat, string) {
 	}
 
 	tc.client = twitch.NewClient(tc.ChannelSender, tc.ApiKey)
-	tc.client.Capabilities = []string{twitch.TagsCapability}
 
 	tc.ready.changed = true
 	tc.Ready()
@@ -171,6 +184,24 @@ func (tc *TwitchChat) CollectGuesses(ctx context.Context, collect func(id int, u
 		})
 	}
 
+	if tc.AllowWhisper {
+		tc.client.OnWhisperMessage(func(m twitch.WhisperMessage) {
+			if !strings.HasPrefix(m.Message, tc.Prefix) {
+				return
+			}
+
+			id, err := strconv.Atoi(m.User.ID)
+			if err != nil {
+				log.Printf("Error parsing %s user id (%s): %v\n", m.User.Name, m.User.ID, err)
+				return
+			}
+
+			collect(id, strings.ToLower(m.User.Name), strings.TrimSpace(strings.TrimLeft(m.Message, tc.Prefix)), m.User.Color)
+		})
+	} else {
+		tc.client.OnWhisperMessage(nil)
+	}
+
 	tc.client.OnPrivateMessage(func(m twitch.PrivateMessage) {
 		if !strings.HasPrefix(m.Message, tc.Prefix) {
 			return
@@ -178,7 +209,7 @@ func (tc *TwitchChat) CollectGuesses(ctx context.Context, collect func(id int, u
 
 		id, err := strconv.Atoi(m.User.ID)
 		if err != nil {
-			log.Printf("Error parsing %s user id (%s): %v", m.User.Name, m.User.ID, err)
+			log.Printf("Error parsing %s user id (%s): %v\n", m.User.Name, m.User.ID, err)
 			return
 		}
 
