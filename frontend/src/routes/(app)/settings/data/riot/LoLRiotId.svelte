@@ -57,7 +57,7 @@
 		{:else}
 			<div class="input-group-shim">
 				<img
-					src={`https://ddragon.leagueoflegends.com/cdn/14.2.1/img/profileicon/${prefix}.png`}
+					src={`https://ddragon.leagueoflegends.com/cdn/14.7.1/img/profileicon/${prefix}.png`}
 					alt="Profile icon"
 					class="w-10 rounded-full"
 				/>
