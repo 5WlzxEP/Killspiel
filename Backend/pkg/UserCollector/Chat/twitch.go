@@ -8,7 +8,6 @@ import (
 	"github.com/gempir/go-twitch-irc/v4"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
-	"log"
 	"net/http"
 	"os"
 	"path"
@@ -65,6 +64,7 @@ func (tc *TwitchChat) Ready() bool {
 
 	tc.ready.changed = false
 	tc.ready.ready = false
+	tc.ready.timestamp = time.Now()
 
 	if tc.ApiKey == "" {
 		return false
@@ -76,9 +76,12 @@ func (tc *TwitchChat) Ready() bool {
 	})
 	err := tc.client.Connect()
 	if err != nil && !errors.Is(err, twitch.ErrClientDisconnected) {
+		logger.WithField("ready", "connect").Error(err)
 		return false
 	}
 	if err2 != nil {
+		logger.Error(err)
+
 		return false
 	}
 
@@ -94,7 +97,7 @@ func New(configPath string, r fiber.Router) (*TwitchChat, string) {
 		}
 		err := tc.saveConfig()
 		if err != nil {
-			log.Println(err)
+			logger.Println(err)
 		}
 	}
 
@@ -148,7 +151,7 @@ func (tc *TwitchChat) AnnounceResult(winners []string, correctGuess float64) {
 	if tc.OAuth.Color != 0 && tc.OAuth.ready {
 		err := tc.announce(msg)
 		if err != nil {
-			log.Println(err)
+			logger.Println(err)
 		}
 		return
 	}
@@ -176,7 +179,7 @@ func (tc *TwitchChat) CollectGuesses(ctx context.Context, collect func(id int, u
 		client.OnConnect(func() {})
 		err := tc.announce(tc.StartMsg)
 		if err != nil {
-			log.Println(err)
+			logger.Println(err)
 		}
 	} else {
 		client.OnConnect(func() {
@@ -192,7 +195,7 @@ func (tc *TwitchChat) CollectGuesses(ctx context.Context, collect func(id int, u
 
 			id, err := strconv.Atoi(m.User.ID)
 			if err != nil {
-				log.Printf("Error parsing %s user id (%s): %v\n", m.User.Name, m.User.ID, err)
+				logger.Printf("Error parsing %s user id (%s): %v\n", m.User.Name, m.User.ID, err)
 				return
 			}
 
@@ -209,7 +212,7 @@ func (tc *TwitchChat) CollectGuesses(ctx context.Context, collect func(id int, u
 
 		id, err := strconv.Atoi(m.User.ID)
 		if err != nil {
-			log.Printf("Error parsing %s user id (%s): %v\n", m.User.Name, m.User.ID, err)
+			logger.Printf("Error parsing %s user id (%s): %v\n", m.User.Name, m.User.ID, err)
 			return
 		}
 
@@ -220,7 +223,7 @@ func (tc *TwitchChat) CollectGuesses(ctx context.Context, collect func(id int, u
 	go func() {
 		err := client.Connect()
 		if err != nil && !errors.Is(err, twitch.ErrClientDisconnected) {
-			log.Println(err)
+			logger.Error(err)
 			cancel()
 		}
 	}()
@@ -228,13 +231,13 @@ func (tc *TwitchChat) CollectGuesses(ctx context.Context, collect func(id int, u
 	if c := ctx.Done(); c != nil {
 		<-c
 	} else {
-		log.Println(ctx.Err())
+		logger.Error(ctx.Err())
 	}
 
 	if tc.OAuth.Color != 0 && tc.OAuth.ready {
 		err := tc.announce(tc.EndMsg)
 		if err != nil {
-			log.Println(err)
+			logger.Error(err)
 		}
 	} else {
 		client.Say(tc.Channel, tc.EndMsg)
@@ -315,9 +318,10 @@ func (tc *TwitchChat) post(ctx *fiber.Ctx) error {
 
 	tc.checkEmptySender()
 
+	tc.ready.changed = true
+
 	// recreate the client if credentials change
 	if sender != tc.ChannelSender || key != tc.ApiKey {
-		tc.ready.changed = true
 		tc.client = twitch.NewClient(tc.ChannelSender, tc.ApiKey)
 		tc.client.Capabilities = []string{twitch.TagsCapability}
 	}

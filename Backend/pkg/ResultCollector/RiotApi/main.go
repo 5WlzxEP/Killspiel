@@ -8,7 +8,6 @@ import (
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/valyala/fasthttp"
-	"log"
 	"net/http"
 	"os"
 	"path"
@@ -67,7 +66,7 @@ func getApi(cp string) *Api {
 	}
 
 	if err != nil {
-		log.Printf("An error occured trying to load RiotApi: %v", err)
+		logger.Printf("An error occured trying to load RiotApi: %v", err)
 	}
 
 	api.client = &fasthttp.Client{
@@ -211,7 +210,7 @@ func (a *Api) save() {
 
 	_, err = f.Write(bytes)
 	if err != nil {
-		log.Printf("An Error occurred writing %s: %v\n", configName, err)
+		logger.Printf("An Error occurred writing %s: %v\n", configName, err)
 	}
 }
 

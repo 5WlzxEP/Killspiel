@@ -2,7 +2,6 @@ package Killspiel
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"log"
 	"net/http"
 )
 
@@ -28,7 +27,7 @@ func post(ctx *fiber.Ctx) error {
 	conf.Precision = pre.Precision
 	err = conf.Save()
 	if err != nil {
-		log.Printf("Error occurred saving config after updating precision: %v\n", err)
+		logger.Printf("Error occurred saving config after updating precision: %v\n", err)
 	}
 
 	return ctx.SendStatus(http.StatusNoContent)

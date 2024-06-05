@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/goccy/go-json"
+	log "github.com/sirupsen/logrus"
 	"github.com/valyala/fasthttp"
 	"net/http"
 )
@@ -55,6 +56,12 @@ func get[T any](url, apiKey string, client *fasthttp.Client) (*T, error) {
 	}
 
 	if res.StatusCode() > 300 || res.StatusCode() < 200 {
+		logger.WithFields(log.Fields{
+			"request": url,
+			"method":  "GET",
+			"status":  res.StatusCode(),
+			"body":    string(res.Body()),
+		}).Error()
 		return nil, errors.New(fmt.Sprintf("not a 200 status code: %d", res.StatusCode()))
 	}
 

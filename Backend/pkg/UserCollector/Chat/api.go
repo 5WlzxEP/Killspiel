@@ -40,6 +40,11 @@ func (tc *TwitchChat) announce(msg string) error {
 	req.SetBodyRaw(bytes)
 
 	err = httpClient.Do(req, nil)
+
+	if err != nil {
+		logger.Error(err)
+	}
+
 	return err
 }
 
@@ -70,6 +75,7 @@ func (tc *TwitchChat) getIds() {
 	resp := fasthttp.AcquireResponse()
 	err := httpClient.Do(req, resp)
 	if err != nil {
+		logger.Error(err)
 		return
 	}
 
@@ -121,6 +127,7 @@ func (tc *TwitchChat) getIds() {
 	resp.Reset()
 	err = httpClient.Do(req, resp)
 	if err != nil {
+		logger.Error(err)
 		tc.OAuth.ready = false
 		return
 	}

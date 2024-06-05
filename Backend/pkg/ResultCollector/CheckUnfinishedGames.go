@@ -2,7 +2,6 @@ package ResultCollector
 
 import (
 	"Killspiel/pkg/database"
-	"log"
 	"strings"
 )
 
@@ -27,7 +26,7 @@ func CheckUnfinishedGames() (finishedGames []FinishedGames) {
 	for rows.Next() {
 		err = rows.Scan(&id, &info)
 		if err != nil {
-			log.Println(err)
+			logger.Println(err)
 			continue
 		}
 
@@ -43,7 +42,7 @@ func CheckUnfinishedGames() (finishedGames []FinishedGames) {
 			}
 			finishedGames = append(finishedGames, FinishedGames{id, result})
 		} else {
-			log.Printf("Unknown prefix for id %d: %s\n", id, sub[0])
+			logger.Printf("Unknown prefix for id %d: %s\n", id, sub[0])
 		}
 	}
 

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"github.com/goccy/go-json"
 	"io/fs"
-	"log"
 	"os"
 	"path"
 )
@@ -128,14 +127,14 @@ func Default() (string, error) {
 func FindConfOrDefault() (string, error) {
 	configPath, err := FindConfigPath()
 	if errors.Is(err, NoConfigFound) {
-		log.Println("No config found, creating default.")
+		logger.Println("No config found, creating default.")
 		configPath, err = Default()
 
 		if err != nil {
 			return "", err
 		}
 	} else if err != nil {
-		return "", nil
+		return "", err
 	}
 
 	return configPath, nil

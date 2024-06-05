@@ -7,7 +7,6 @@ import (
 	"errors"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -144,7 +143,7 @@ func getKey() string {
 func deleteUser(id int) {
 	_, err := database.DeleteUser.Exec(id)
 	if err != nil {
-		log.Printf("An error occured deleteing user %d: %v\n", id, err)
+		logger.Printf("An error occured deleteing user %d: %v\n", id, err)
 	}
 }
 

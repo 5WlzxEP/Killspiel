@@ -3,6 +3,7 @@ package main
 import (
 	"Killspiel/pkg/Killspiel"
 	"Killspiel/pkg/Websocket"
+	"Killspiel/pkg/config"
 	"cmp"
 	"context"
 	"embed"
@@ -11,10 +12,11 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
 	"os/signal"
+	path2 "path"
 	"time"
 )
 
@@ -25,7 +27,12 @@ var (
 )
 
 func main() {
-	log.Printf("Version: %s\n", Build)
+	log.SetOutput(os.Stdout)
+	log.SetFormatter(&log.TextFormatter{
+		TimestampFormat: time.DateTime,
+	})
+
+	log.WithField("Version", Build).Println("Starting")
 
 	app := fiber.New(fiber.Config{
 		JSONDecoder: json.Unmarshal,
@@ -33,7 +40,17 @@ func main() {
 		Network:     "tcp",
 	})
 
-	app.Use(logger.New())
+	logFile := getLogFile()
+	defer logFile.Close()
+
+	app.Use(logger.New(logger.Config{
+		Format:        "${time} | ${status} | ${latency} | ${ip} | ${method} | ${path} | ${error}\n",
+		TimeFormat:    "15:04:05",
+		TimeZone:      "Local",
+		TimeInterval:  500 * time.Millisecond,
+		Output:        logFile,
+		DisableColors: false,
+	}))
 	app.Use(cors.New(cors.ConfigDefault))
 	Websocket.Init(app.Group("/ws"))
 
@@ -42,7 +59,7 @@ func main() {
 	app.Use("/", filesystem.New(filesystem.Config{
 		Root:         http.FS(frontendBuild),
 		PathPrefix:   "frontend_build",
-		MaxAge:       30 * 60,
+		MaxAge:       60 * 60,
 		NotFoundFile: "r.html",
 	}))
 
@@ -70,4 +87,32 @@ func main() {
 		log.Println(err)
 	}
 	<-finished
+}
+
+func getLogFile() *os.File {
+	path, err := config.FindConfOrDefault()
+	if err != nil {
+		log.Error("Error finding config path", err)
+		os.Exit(-1)
+	}
+
+	filepath := path2.Join(path, "webserver.log")
+
+	if s, err := os.Stat(filepath); err != nil {
+		if s.Size() > 24*1024*1024 {
+			newName := path2.Join(path, "webserver.log.1")
+			_ = os.Remove(newName)
+
+			err := os.Rename(filepath, newName)
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
+
+	logFile, err := os.OpenFile(filepath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		panic(err)
+	}
+	return logFile
 }

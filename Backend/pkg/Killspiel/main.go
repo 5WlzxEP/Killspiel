@@ -14,7 +14,6 @@ import (
 	"fmt"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
-	"log"
 	"math"
 	"net/http"
 	"time"
@@ -28,17 +27,17 @@ var conf *config.Config
 func Init(app *fiber.App) {
 	path, err := config.FindConfOrDefault()
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	conf, err = config.GetConfig(path)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	err = database.Init(path)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	api := router.CreateApiGroup(app)
@@ -89,7 +88,7 @@ func Run(ctx context.Context, finished chan<- struct{}) {
 		var err error
 		gameId, err := saveGuesses(gameInfo)
 		if err != nil {
-			log.Printf("Error saving guesses: %v", err)
+			logger.Printf("Error saving guesses: %v", err)
 			continue
 		}
 
@@ -138,7 +137,7 @@ func getWinners(correctGuess float64, gameId int64) []string {
 
 	tx, err := database.DB.Begin()
 	if err != nil {
-		log.Printf("Error starting db transaction: %v\n", err)
+		logger.Printf("Error starting db transaction: %v\n", err)
 		return nil
 	}
 	defer tx.Rollback()
@@ -151,14 +150,14 @@ func getWinners(correctGuess float64, gameId int64) []string {
 		}
 		_, err = tx.Stmt(database.UpdateUser).Exec(add, add, id)
 		if err != nil {
-			log.Printf("Error updating User %d: %v\n", id, err)
+			logger.Printf("Error updating User %d: %v\n", id, err)
 			continue
 		}
 	}
 
 	_, err = tx.Stmt(database.SetGameCorrect).Exec(correctGuess, conf.Precision, len(winners), gameId)
 	if err != nil {
-		log.Printf("Error updating game %d: %v\n", gameId, err)
+		logger.Printf("Error updating game %d: %v\n", gameId, err)
 	}
 
 	_ = tx.Commit()
@@ -169,7 +168,7 @@ func getWinners(correctGuess float64, gameId int64) []string {
 func saveGuesses(dbInfo string) (gameId int64, err error) {
 	tx, err := database.DB.Begin()
 	if err != nil {
-		log.Printf("Error starting db transaction: %v\n", err)
+		logger.Printf("Error starting db transaction: %v\n", err)
 		return
 	}
 	defer tx.Rollback()
@@ -191,23 +190,23 @@ func saveGuesses(dbInfo string) (gameId int64, err error) {
 		verteilung[int(math.Floor(guess.Guess))]++
 		res, err := tx.Stmt(database.UpdateUserGuesses).Exec(id)
 		if err != nil {
-			log.Printf("Error occurd getting player %d: %v\n", id, err)
+			logger.Printf("Error occurred getting player %d: %v\n", id, err)
 			continue
 		}
 		if n, err := res.RowsAffected(); n == 0 && err == nil {
 			_, err = tx.Stmt(database.CreateUser).Exec(id, guess.Name)
 			if err != nil {
-				log.Printf("Error occurd creating player %d: %v\n", id, err)
+				logger.Printf("Error occurred creating player %d: %v\n", id, err)
 				continue
 			}
 		} else if err != nil {
-			log.Printf("Error occurd checking if player exists player %d: %v\n", id, err)
+			logger.Printf("Error occurred checking if player exists player %d: %v\n", id, err)
 			continue
 		}
 
 		_, err = tx.Stmt(database.CreateVote).Exec(gameId, id, guess.Guess)
 		if err != nil {
-			log.Printf("Error occurd getting player %d: %v\n", id, err)
+			logger.Printf("Error occurred getting player %d: %v\n", id, err)
 			continue
 		}
 
@@ -215,17 +214,17 @@ func saveGuesses(dbInfo string) (gameId int64, err error) {
 
 	bytes, err := json.Marshal(verteilung)
 	if err != nil {
-		log.Printf("An error occurred marshaling verteilung: %v\n", err)
+		logger.Printf("An error occurred marshaling verteilung: %v\n", err)
 	} else {
 		_, err = tx.Stmt(database.SetGameVerteilung).Exec(string(bytes), gameId)
 		if err != nil {
-			log.Printf("An error occured saving Verteilung to DB: %v\n", err)
+			logger.Printf("An error occured saving Verteilung to DB: %v\n", err)
 		}
 	}
 
 	err = tx.Commit()
 	if err != nil {
-		log.Printf("Error occured commiting game %d: %v\n", gameId, err)
+		logger.Printf("Error occured commiting game %d: %v\n", gameId, err)
 	}
 
 	return

@@ -2,7 +2,6 @@ package RiotApi
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"log"
 	"net/http"
 	"slices"
 	"strconv"
@@ -32,10 +31,12 @@ func (a *Api) postLoL(ctx *fiber.Ctx) error {
 	}
 	lol.region = getRegion(lol.Server)
 	if !validKey(lol.ApiKey, a.client) {
+		logger.Error("Api Key invalid")
 		return ctx.Status(http.StatusBadRequest).SendString("Api Key nicht valide.")
 	}
 	summoner, err := getLoLSummonerByAccount(lol.Name, lol.Tag, lol.region, lol.Server, lol.ApiKey, a.client)
 	if err != nil || summoner == nil {
+		logger.Error("Summoner name invalid")
 		return ctx.Status(http.StatusBadRequest).SendString("Beschwörername nicht valide.")
 	}
 
@@ -542,7 +543,7 @@ func (a *Api) getValue(game *MatchDto, kategorie string) any {
 		return player.Win
 	}
 
-	log.Println("No valid LoLKategorie chosen.")
+	logger.Error("No valid LoLKategorie chosen.")
 
 	return 0
 }

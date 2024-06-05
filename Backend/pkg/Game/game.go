@@ -6,7 +6,6 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/gofiber/fiber/v2"
-	"log"
 	"math"
 	"net/http"
 	"strconv"
@@ -53,7 +52,7 @@ func get(ctx *fiber.Ctx) error {
 	for ; rows.Next() && i < 50; i++ {
 		err = rows.Scan(&res[i].Id, &res[i].Correct, &res[i].UserCount, &res[i].CorrectCount, &res[i].Precision, &res[i].Time)
 		if err != nil {
-			log.Println(err)
+			logger.Println(err)
 			i--
 			continue
 		}
@@ -154,7 +153,7 @@ func getWinners(correctGuess float64, gameId int) error {
 
 	tx, err := database.DB.Begin()
 	if err != nil {
-		log.Printf("Error starting db transaction: %v\n", err)
+		logger.Printf("Error starting db transaction: %v\n", err)
 		return nil
 	}
 	defer tx.Rollback()
@@ -165,7 +164,7 @@ func getWinners(correctGuess float64, gameId int) error {
 
 			_, err = tx.Stmt(database.SetGameCorrect).Exec(correctGuess, conf.Precision, 0, gameId)
 			if err != nil {
-				log.Printf("Error updating game %d: %v\n", gameId, err)
+				logger.Printf("Error updating game %d: %v\n", gameId, err)
 				return err
 			}
 
@@ -192,14 +191,14 @@ func getWinners(correctGuess float64, gameId int) error {
 		}
 		_, err = tx.Stmt(database.UpdateUser).Exec(add, add, userId)
 		if err != nil {
-			log.Printf("Error updating User %d: %v\n", userId, err)
+			logger.Printf("Error updating User %d: %v\n", userId, err)
 			continue
 		}
 	}
 
 	_, err = tx.Stmt(database.SetGameCorrect).Exec(correctGuess, conf.Precision, winners, gameId)
 	if err != nil {
-		log.Printf("Error updating game %d: %v\n", gameId, err)
+		logger.Printf("Error updating game %d: %v\n", gameId, err)
 		return err
 	}
 
