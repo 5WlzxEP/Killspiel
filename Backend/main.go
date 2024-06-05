@@ -98,7 +98,7 @@ func getLogFile() *os.File {
 
 	filepath := path2.Join(path, "webserver.log")
 
-	if s, err := os.Stat(filepath); err != nil {
+	if s, err := os.Stat(filepath); err != nil && s != nil {
 		if s.Size() > 24*1024*1024 {
 			newName := path2.Join(path, "webserver.log.1")
 			_ = os.Remove(newName)

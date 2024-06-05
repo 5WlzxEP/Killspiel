@@ -48,6 +48,7 @@ func FindConfigPath() (string, error) {
 	if exists && ExistsAndFile(file) {
 		return file, nil
 	}
+
 	for _, base := range globalPaths {
 		for _, end := range []string{cmp.Or(os.Getenv("KILLSPIEL_CONFIG_PATH"), "Killspiel")} {
 			p := path.Join(base, end, configName)
@@ -56,6 +57,7 @@ func FindConfigPath() (string, error) {
 			}
 		}
 	}
+
 	for _, pa := range localPaths {
 		p := path.Join(pa, configName)
 		if ExistsAndFile(p) {
